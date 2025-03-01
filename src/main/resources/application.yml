@@ -1,0 +1,25 @@
+server:
+  port: 9999
+  shutdown: graceful
+  servlet:
+    context-path: /api
+  compression:
+    enabled: true
+    min-response-size: 1KB
+spring:
+  profiles:
+    active: dev
+nacos:
+  config:
+    server-addr: 127.0.0.1:8848
+    data-id: app
+    group: DEFAULT_GROUP
+    namespace: iotgenius-cloud-${spring.profiles.active}
+    type: yaml
+    max-retry: 10
+    auto-refresh: true
+    config-retry-time: 2333
+    config-long-poll-timeout: 46000
+    remote-first: true
+  discovery:
+    server-addr: 127.0.0.1:8848
