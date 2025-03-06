@@ -2,22 +2,21 @@ package com.jinelei.iotgenius.auth.dto.permission;
 
 import com.jinelei.iotgenius.common.entity.BaseEntity;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-@ApiModel("权限请求对象")
+@Schema(description = "权限请求对象")
 public class PermissionRequest extends BaseEntity<Long> {
     @NotBlank(groups = { Create.class, Update.class }, message = "权限名称不能为空")
-    @ApiModelProperty("权限名称")
+    @Schema(description = "权限名称")
     private String name;
     @NotBlank(groups = { Create.class, Update.class }, message = "权限编码不能为空")
-    @ApiModelProperty("权限编码")
+    @Schema(description = "权限编码")
     private String code;
-    @ApiModelProperty("排序值")
+    @Schema(description = "排序值")
     private Integer sortValue;
-    @ApiModelProperty("上级权限编码")
+    @Schema(description = "上级权限编码")
     private String parentId;
 
     @Override

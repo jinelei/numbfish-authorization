@@ -1,0 +1,30 @@
+server:
+  port: 8080
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.jinelei.iotgenius.auth.provider.controller
+
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+  # 开启Swagger的Basic认证功能,默认是false
+  basic:
+      enable: true
+      # Basic认证用户名
+      username: iotgenius
+      # Basic认证密码
+      password: iotgenius
+
+# Logger Config
+logging:
+  level:
+    root: warn
+    com.jinelei: debug

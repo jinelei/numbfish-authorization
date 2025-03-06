@@ -2,18 +2,17 @@ package com.jinelei.iotgenius.auth.dto.permission;
 
 import com.jinelei.iotgenius.common.response.BaseResponse;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel("权限响应对象")
+@Schema(description = "权限响应对象")
 public class PermissionResponse extends BaseResponse<Long> {
-    @ApiModelProperty("权限名称")
+    @Schema(description = "权限名称")
     private String name;
-    @ApiModelProperty("权限编码")
+    @Schema(description = "权限编码")
     private String code;
-    @ApiModelProperty("排序值")
+    @Schema(description = "排序值")
     private Integer sortValue;
-    @ApiModelProperty("上级权限编码")
+    @Schema(description = "上级权限编码")
     private String parentCode;
 
     public String getName() {
