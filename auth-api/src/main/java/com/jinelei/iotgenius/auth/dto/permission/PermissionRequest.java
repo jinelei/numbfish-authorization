@@ -1,12 +1,11 @@
 package com.jinelei.iotgenius.auth.dto.permission;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 import com.jinelei.iotgenius.common.entity.BaseEntity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @ApiModel("权限请求对象")
 public class PermissionRequest extends BaseEntity<Long> {

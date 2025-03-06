@@ -25,6 +25,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <nacos-config-spring-boot.version>0.2.12</nacos-config-spring-boot.version>
         <spring-boot.version>3.4.3</spring-boot.version>
+        <springfox-swagger2.version>3.0.0</springfox-swagger2.version>
+        <iotgenius-common.version>1.0.0-SNAPSHOT</iotgenius-common.version>
+        <iotgenius-auth-api.version>1.0.0-SNAPSHOT</iotgenius-auth-api.version>
+        <springboot-maven-plugin.version>3.4.3</springboot-maven-plugin.version>
+        <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
+        <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
     </properties>
 
     <modules>
@@ -80,12 +86,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                <version>2.6.0</version>
-            </dependency>
-
-            <dependency>
                 <groupId>com.alibaba.boot</groupId>
                 <artifactId>nacos-config-spring-boot-starter</artifactId>
                 <version>${nacos-config-spring-boot.version}</version>
@@ -124,7 +124,7 @@
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter-test</artifactId>
-                <version>3.0.4</version>
+                <version>${spring-boot.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -140,7 +140,7 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>3.4.3</version>
+                    <version>${springboot-maven-plugin.version}</version>
                     <executions>
                         <execution>
                             <goals>
@@ -152,7 +152,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.4.3</version>
+                    <version>${maven-compiler-plugin.version}</version>
                     <configuration>
                         <source>17</source>
                         <target>17</target>
