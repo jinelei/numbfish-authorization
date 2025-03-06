@@ -4,7 +4,7 @@ import com.jinelei.iotgenius.auth.dto.permission.PermissionRequest;
 import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import java.util.List;
 
-public interface PermissionService {
+public interface PermissionApi {
     /**
      * 创建权限
      * @param request 权限请求对象

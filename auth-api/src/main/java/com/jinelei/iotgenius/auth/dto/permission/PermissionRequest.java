@@ -1,40 +1,31 @@
 package com.jinelei.iotgenius.auth.dto.permission;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import com.jinelei.iotgenius.common.entity.BaseEntity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel("权限请求对象")
-public class PermissionRequest extends BaseEntity {
-    @NotBlank(groups = { Create.class }, message = "缺点的ID不能为空")
+public class PermissionRequest extends BaseEntity<Long> {
+    @NotBlank(groups = { Create.class, Update.class }, message = "权限名称不能为空")
     @ApiModelProperty("权限名称")
     private String name;
+    @NotBlank(groups = { Create.class, Update.class }, message = "权限编码不能为空")
     @ApiModelProperty("权限编码")
     private String code;
     @ApiModelProperty("排序值")
     private Integer sortValue;
-    @ApiModelProperty("是否启用")
-    private Boolean enabled;
     @ApiModelProperty("上级权限编码")
     private String parentId;
-    @ApiModelProperty("权限备注")
-    private String remark;
-    @ApiModelProperty("创建人")
-    private String creator;
-    @ApiModelProperty("创建时间")
-    private LocalDateTime createTime;
-    @ApiModelProperty("更新人")
-    private String updater;
-    @ApiModelProperty("更新时间")
-    private LocalDateTime updateTime;
-    @ApiModelProperty("删除人")
-    private String deleter;
-    @ApiModelProperty("删除时间")
-    private LocalDateTime deleteTime;
+
+    @Override
+    @NotNull(groups = { Update.class, Delete.class }, message = "权限的ID不能为空")
+    public Long getId() {
+        return id;
+    }
 
     public String getName() {
         return name;
@@ -60,121 +51,61 @@ public class PermissionRequest extends BaseEntity {
         this.sortValue = sortValue;
     }
 
-    public Boolean getEnabled() {
-        return enabled;
+    public String getParentId() {
+        return parentId;
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getParentCode() {
-        return ParentCode;
-    }
-
-    public void setParentCode(String ParentCode) {
-        this.ParentCode = ParentCode;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getUpdater() {
-        return updater;
-    }
-
-    public void setUpdater(String updater) {
-        this.updater = updater;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getDeleter() {
-        return deleter;
-    }
-
-    public void setDeleter(String deleter) {
-        this.deleter = deleter;
-    }
-
-    public LocalDateTime getDeleteTime() {
-        return deleteTime;
-    }
-
-    public void setDeleteTime(LocalDateTime deleteTime) {
-        this.deleteTime = deleteTime;
-    }
-
-    @Override
-    public String toString() {
-        return "PermissionRequest{" +
-                "name='" + name + '\'' +
-                ", code='" + code + '\'' +
-                ", sortValue=" + sortValue +
-                ", enabled=" + enabled +
-                ", ParentCode='" + ParentCode + '\'' +
-                ", remark='" + remark + '\'' +
-                ", creator='" + creator + '\'' +
-                ", createTime=" + createTime +
-                ", updater='" + updater + '\'' +
-                ", updateTime=" + updateTime +
-                ", deleter='" + deleter + '\'' +
-                ", deleteTime=" + deleteTime +
-                '}';
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, code, sortValue, enabled, ParentCode, remark, creator, createTime, updater,
-                updateTime, deleter, deleteTime);
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((code == null) ? 0 : code.hashCode());
+        result = prime * result + ((sortValue == null) ? 0 : sortValue.hashCode());
+        result = prime * result + ((parentId == null) ? 0 : parentId.hashCode());
+        return result;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(Object obj) {
+        if (this == obj)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (!super.equals(obj))
             return false;
-        PermissionRequest that = (PermissionRequest) o;
-        return Objects.equals(name, that.name) &&
-                Objects.equals(code, that.code) &&
-                Objects.equals(sortValue, that.sortValue) &&
-                Objects.equals(enabled, that.enabled) &&
-                Objects.equals(ParentCode, that.ParentCode) &&
-                Objects.equals(remark, that.remark) &&
-                Objects.equals(creator, that.creator) &&
-                Objects.equals(createTime, that.createTime) &&
-                Objects.equals(updater, that.updater) &&
-                Objects.equals(updateTime, that.updateTime) &&
-                Objects.equals(deleter, that.deleter) &&
-                Objects.equals(deleteTime, that.deleteTime);
+        if (getClass() != obj.getClass())
+            return false;
+        PermissionRequest other = (PermissionRequest) obj;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (code == null) {
+            if (other.code != null)
+                return false;
+        } else if (!code.equals(other.code))
+            return false;
+        if (sortValue == null) {
+            if (other.sortValue != null)
+                return false;
+        } else if (!sortValue.equals(other.sortValue))
+            return false;
+        if (parentId == null) {
+            if (other.parentId != null)
+                return false;
+        } else if (!parentId.equals(other.parentId))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "PermissionRequest [name=" + name + ", code=" + code + ", sortValue=" + sortValue + ", parentId="
+                + parentId + "]";
     }
 
     public interface Create {
