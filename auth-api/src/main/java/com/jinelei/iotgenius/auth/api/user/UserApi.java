@@ -1,4 +1,4 @@
-package com.jinelei.auth.api.user;
+package com.jinelei.iotgenius.auth.api.user;
 
 /*
  * @Author: jinelei

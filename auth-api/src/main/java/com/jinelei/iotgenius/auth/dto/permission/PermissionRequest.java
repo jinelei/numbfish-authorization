@@ -1,10 +1,16 @@
 package com.jinelei.iotgenius.auth.dto.permission;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+import javax.validation.constraints.NotBlank;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel("权限请求对象")
-public class PermissionRequest {
+public class PermissionRequest extends BaseEntity {
+    @NotBlank(groups = { Create.class }, message = "缺点的ID不能为空")
     @ApiModelProperty("权限名称")
     private String name;
     @ApiModelProperty("权限编码")
@@ -14,7 +20,7 @@ public class PermissionRequest {
     @ApiModelProperty("是否启用")
     private Boolean enabled;
     @ApiModelProperty("上级权限编码")
-    private String ParentCode;
+    private String parentId;
     @ApiModelProperty("权限备注")
     private String remark;
     @ApiModelProperty("创建人")
@@ -146,13 +152,16 @@ public class PermissionRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, code, sortValue, enabled, ParentCode, remark, creator, createTime, updater, updateTime, deleter, deleteTime);
+        return Objects.hash(name, code, sortValue, enabled, ParentCode, remark, creator, createTime, updater,
+                updateTime, deleter, deleteTime);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         PermissionRequest that = (PermissionRequest) o;
         return Objects.equals(name, that.name) &&
                 Objects.equals(code, that.code) &&
@@ -166,5 +175,14 @@ public class PermissionRequest {
                 Objects.equals(updateTime, that.updateTime) &&
                 Objects.equals(deleter, that.deleter) &&
                 Objects.equals(deleteTime, that.deleteTime);
+    }
+
+    public interface Create {
+    }
+
+    public interface Update {
+    }
+
+    public interface Delete {
     }
 }

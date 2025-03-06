@@ -1,5 +1,8 @@
 package com.jinelei.iotgenius.auth.dto.permission;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -32,7 +35,6 @@ public class PermissionResponse {
     @ApiModelProperty("删除时间")
     private LocalDateTime deleteTime;
 
-    // Getters and Setters
     public Long getPermissionId() {
         return permissionId;
     }
@@ -136,7 +138,7 @@ public class PermissionResponse {
     public void setDeleteTime(LocalDateTime deleteTime) {
         this.deleteTime = deleteTime;
     }
-    
+
     @Override
     public String toString() {
         return "PermissionResponse{" +
@@ -158,13 +160,16 @@ public class PermissionResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(permissionId, name, code, sortValue, enabled, ParentCode, remark, creator, createTime, updater, updateTime, deleter, deleteTime);
+        return Objects.hash(permissionId, name, code, sortValue, enabled, ParentCode, remark, creator, createTime,
+                updater, updateTime, deleter, deleteTime);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         PermissionResponse that = (PermissionResponse) o;
         return Objects.equals(permissionId, that.permissionId) &&
                 Objects.equals(name, that.name) &&
