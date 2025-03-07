@@ -8,7 +8,7 @@ public class IotgeniusAuthApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(IotgeniusAuthApplication.class, args);
-        System.out.println("IoTGenius Auth startup!!!");
+        System.out.println("IoTGenius auth service startup!!!");
     }
 
 }
