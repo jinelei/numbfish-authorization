@@ -4,6 +4,8 @@
 !**/src/main/**/target/
 !**/src/test/**/target/
 *.class
+!**/target/
+!**/target/
 
 ### IntelliJ IDEA ###
 .idea

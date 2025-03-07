@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-03-07T15:05:01+0800",
+    date = "2025-03-07T17:26:49+0800",
     comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.41.0.z20250115-2156, environment: Java 21.0.5 (Eclipse Adoptium)"
 )
 @Component
@@ -29,13 +29,13 @@ public class PermissionConvertorImpl implements PermissionConvertor {
         permissionEntity.setRemark( source.getRemark() );
         permissionEntity.setUpdatedTime( source.getUpdatedTime() );
         permissionEntity.setUpdatedUserId( source.getUpdatedUserId() );
-        permissionEntity.setCode( source.getCode() );
         permissionEntity.setId( source.getId() );
         permissionEntity.setName( source.getName() );
+        permissionEntity.setCode( source.getCode() );
+        permissionEntity.setSortValue( source.getSortValue() );
         if ( source.getParentId() != null ) {
             permissionEntity.setParentId( Long.parseLong( source.getParentId() ) );
         }
-        permissionEntity.setSortValue( source.getSortValue() );
 
         return permissionEntity;
     }
