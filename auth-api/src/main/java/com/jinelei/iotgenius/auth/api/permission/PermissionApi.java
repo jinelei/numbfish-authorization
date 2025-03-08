@@ -14,21 +14,21 @@ public interface PermissionApi {
      * @param request 权限请求对象
      * @return 权限响应对象
      */
-    BaseView<PermissionResponse> create(PermissionRequest request);
+    BaseView<Long> create(PermissionRequest request);
 
     /**
      * 删除权限
      * 
      * @param request 权限请求对象
      */
-    BaseView<PermissionResponse> delete(PermissionRequest request);
+    BaseView<Long> delete(PermissionRequest request);
 
     /**
      * 删除权限
      * 
      * @param id 权限id
      */
-    BaseView<PermissionResponse> deleteById(Long id);
+    BaseView<Long> deleteById(Long id);
 
     /**
      * 更新权限
@@ -36,7 +36,7 @@ public interface PermissionApi {
      * @param request 权限请求对象
      * @return 权限响应对象
      */
-    BaseView<PermissionResponse> update(PermissionRequest request);
+    BaseView<Long> update(PermissionRequest request);
 
     /**
      * 查询权限详情

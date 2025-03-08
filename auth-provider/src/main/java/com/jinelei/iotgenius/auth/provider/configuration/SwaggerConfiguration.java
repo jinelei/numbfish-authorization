@@ -9,7 +9,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 
 @Configuration
-public class SwaggerConfig {
+public class SwaggerConfiguration {
 
     
     @Bean

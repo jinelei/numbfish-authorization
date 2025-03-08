@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-03-07T17:26:49+0800",
-    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.41.0.z20250115-2156, environment: Java 21.0.5 (Eclipse Adoptium)"
+    date = "2025-03-08T12:49:57+0800",
+    comments = "version: 1.6.3, compiler: javac, environment: Java 17.0.13 (Azul Systems, Inc.)"
 )
 @Component
 public class PermissionConvertorImpl implements PermissionConvertor {
@@ -21,14 +21,14 @@ public class PermissionConvertorImpl implements PermissionConvertor {
 
         PermissionEntity permissionEntity = new PermissionEntity();
 
-        permissionEntity.setCreatedTime( source.getCreatedTime() );
-        permissionEntity.setCreatedUserId( source.getCreatedUserId() );
-        permissionEntity.setDeletedTime( source.getDeletedTime() );
-        permissionEntity.setDeletedUserId( source.getDeletedUserId() );
-        permissionEntity.setEnabled( source.getEnabled() );
         permissionEntity.setRemark( source.getRemark() );
-        permissionEntity.setUpdatedTime( source.getUpdatedTime() );
+        permissionEntity.setEnabled( source.getEnabled() );
+        permissionEntity.setCreatedUserId( source.getCreatedUserId() );
+        permissionEntity.setCreatedTime( source.getCreatedTime() );
         permissionEntity.setUpdatedUserId( source.getUpdatedUserId() );
+        permissionEntity.setUpdatedTime( source.getUpdatedTime() );
+        permissionEntity.setDeletedUserId( source.getDeletedUserId() );
+        permissionEntity.setDeletedTime( source.getDeletedTime() );
         permissionEntity.setId( source.getId() );
         permissionEntity.setName( source.getName() );
         permissionEntity.setCode( source.getCode() );

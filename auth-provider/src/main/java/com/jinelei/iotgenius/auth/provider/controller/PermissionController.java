@@ -33,35 +33,38 @@ public class PermissionController implements PermissionApi {
     @ApiOperationSupport(order = 1)
     @Operation(summary = "创建权限")
     @PostMapping("/create")
-    public BaseView<PermissionResponse> create(@RequestBody PermissionRequest request) {
-        permissionService.create(request);
-        return new BaseView<>(new RuntimeException("暂未实现"));
+    public BaseView<Long> create(@RequestBody PermissionRequest request) {
+        Long created = permissionService.create(request);
+        return new BaseView<>("创建成功", created);
     }
 
     @Override
     @ApiOperationSupport(order = 2)
     @Operation(summary = "删除权限")
     @PostMapping("/delete")
-    public BaseView<PermissionResponse> delete(@RequestBody PermissionRequest request) {
-
-        return new BaseView<>("暂未实现");
+    public BaseView<Long> delete(@RequestBody PermissionRequest request) {
+        Long deleted = permissionService.delete(request);
+        return new BaseView<>("删除成功", deleted);
     }
 
     @Override
     @ApiOperationSupport(order = 3)
     @Operation(summary = "删除权限通过ID")
     @PostMapping("/deleteById")
-    public BaseView<PermissionResponse> deleteById(Long id) {
-
-        return new BaseView<>("暂未实现");
+    public BaseView<Long> deleteById(Long id) {
+        PermissionRequest request = new PermissionRequest();
+        request.setId(id);
+        Long deleted = permissionService.delete(request);
+        return new BaseView<>("删除成功", deleted);
     }
 
     @Override
     @ApiOperationSupport(order = 4)
     @Operation(summary = "更新权限")
     @PostMapping("/update")
-    public BaseView<PermissionResponse> update(@RequestBody PermissionRequest request) {
-        return null;
+    public BaseView<Long> update(@RequestBody PermissionRequest request) {
+        Long updated = permissionService.update(request);
+        return new BaseView<>("更新成功", updated);
     }
 
     @Override
@@ -69,7 +72,6 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限")
     @PostMapping("/get")
     public BaseView<PermissionResponse> get(@RequestBody PermissionRequest request) {
-
         return new BaseView<>("暂未实现");
     }
 

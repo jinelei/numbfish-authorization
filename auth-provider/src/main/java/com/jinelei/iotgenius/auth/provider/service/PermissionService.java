@@ -8,4 +8,8 @@ public interface PermissionService extends IService<PermissionEntity> {
 
     Long create(PermissionRequest request);
 
+    Long delete(PermissionRequest request);
+
+    Long update(PermissionRequest request);
+
 }

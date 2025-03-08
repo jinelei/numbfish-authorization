@@ -1,6 +1,5 @@
 server:
   port: 9999
-  
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -31,8 +30,13 @@ logging:
     com.jinelei: debug
 
 spring:
+  application:
+    name: iotgenius-auth-service
   datasource:
     url: jdbc:mysql://localhost:3306/iotgenius?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: iotG@2025
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  mapper-locations: classpath*:sqlmap/*/*Mapper.xml,classpath*:sqlmap/*Mapper.xml
