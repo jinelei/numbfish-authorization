@@ -37,6 +37,8 @@
         <mybatis-plus-boot-starter.version>3.5.10</mybatis-plus-boot-starter.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <mysql-connector-j.version>9.2.0</mysql-connector-j.version>
+        <pagehelper.version>6.1.0</pagehelper.version>
+        <mybatis-plus-jsqlparser.version>3.5.10</mybatis-plus-jsqlparser.version>
     </properties>
 
     <modules>

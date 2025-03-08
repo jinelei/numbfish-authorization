@@ -1,5 +1,6 @@
 package com.jinelei.iotgenius.auth.client.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinelei.iotgenius.auth.dto.permission.*;
 import com.jinelei.iotgenius.auth.client.domain.PermissionEntity;
@@ -19,6 +20,8 @@ public interface PermissionService extends IService<PermissionEntity> {
     List<PermissionEntity> tree(PermissionQueryRequest request);
 
     List<PermissionEntity> list(PermissionQueryRequest request);
+
+    IPage<PermissionEntity> page(IPage<PermissionEntity> page, PermissionQueryRequest request);
 
     PermissionResponse convert(PermissionEntity entity);
 

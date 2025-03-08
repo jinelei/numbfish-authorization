@@ -1,6 +1,9 @@
 package com.jinelei.iotgenius.auth.client.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.jinelei.iotgenius.auth.client.domain.PermissionEntity;
+import com.jinelei.iotgenius.auth.client.helper.PageHelper;
 import com.jinelei.iotgenius.auth.dto.permission.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -96,7 +99,10 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限分页")
     @PostMapping("/page")
     public PageView<PermissionResponse> page(@RequestBody PageRequest<PermissionQueryRequest> request) {
-        return new PageView<>("暂未实现");
+        IPage<PermissionEntity> page = permissionService.page(PageHelper.toPage(new PageDTO<>(), request), request.getParams());
+        List<PermissionResponse> collect = page.getRecords().parallelStream().map(entity -> permissionService.convert(entity))
+                .collect(Collectors.toList());
+        return new PageView<>(collect, page.getTotal(), page.getPages(), page.getSize());
     }
 
 }

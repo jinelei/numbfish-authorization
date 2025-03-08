@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jinelei.iotgenius.auth.client.domain.BaseEntity;
 import com.jinelei.iotgenius.auth.dto.permission.*;
 import com.jinelei.iotgenius.common.exception.NotExistException;
@@ -108,6 +109,18 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         wrapper.eq(Objects.nonNull(request.getParentId()), PermissionEntity::getParentId, request.getParentId());
         wrapper.eq(Objects.nonNull(request.getSortValue()), PermissionEntity::getSortValue, request.getSortValue());
         return baseMapper.selectList(wrapper);
+    }
+
+    @Override
+    public IPage<PermissionEntity> page(IPage<PermissionEntity> page, PermissionQueryRequest request) {
+        LambdaQueryWrapper<PermissionEntity> wrapper = Wrappers.lambdaQuery(PermissionEntity.class);
+        wrapper.eq(Objects.nonNull(request.getId()), PermissionEntity::getId, request.getId());
+        wrapper.eq(Objects.nonNull(request.getName()), PermissionEntity::getName, request.getName());
+        wrapper.eq(Objects.nonNull(request.getCode()), PermissionEntity::getCode, request.getCode());
+        wrapper.eq(Objects.nonNull(request.getParentId()), PermissionEntity::getParentId, request.getParentId());
+        wrapper.isNull(Objects.isNull(request.getParentId()), PermissionEntity::getParentId);
+        wrapper.eq(Objects.nonNull(request.getSortValue()), PermissionEntity::getSortValue, request.getSortValue());
+        return baseMapper.selectPage(page, wrapper);
     }
 
     @Override
