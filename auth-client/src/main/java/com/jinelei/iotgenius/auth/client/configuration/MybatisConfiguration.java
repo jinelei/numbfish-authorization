@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusPropertiesCustomizer;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.core.handlers.CompositeEnumTypeHandler;
+import com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.apache.ibatis.type.EnumOrdinalTypeHandler;
@@ -31,7 +32,7 @@ public class MybatisConfiguration {
             GlobalConfig globalConfig = properties.getGlobalConfig();
             globalConfig.setBanner(false);
             MybatisPlusProperties.CoreConfiguration configuration = new MybatisPlusProperties.CoreConfiguration();
-            configuration.setDefaultEnumTypeHandler(CompositeEnumTypeHandler.class);
+            configuration.setDefaultEnumTypeHandler(MybatisEnumTypeHandler.class);
             properties.setConfiguration(configuration);
         };
     }

@@ -3,6 +3,7 @@ CREATE TABLE permission (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '权限实体的唯一标识，自增主键',
     name VARCHAR(255) COMMENT '权限名称',
     code VARCHAR(255) COMMENT '权限代码',
+    type VARCHAR(255) COMMENT '权限类型',
     sort_value INT DEFAULT 0 COMMENT '权限排序值',
     parent_id BIGINT COMMENT '父权限 ID',
     remark TEXT COMMENT '权限备注信息',

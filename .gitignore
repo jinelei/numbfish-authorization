@@ -1,11 +1,7 @@
 !**/HELP.md
 !**/target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
 *.class
-!**/target/
-!**/target/
 
 ### IntelliJ IDEA ###
 .idea

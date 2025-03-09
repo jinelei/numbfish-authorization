@@ -3,6 +3,7 @@ package com.jinelei.iotgenius.auth.dto.permission;
 import com.jinelei.iotgenius.auth.enums.PermissionType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -15,7 +16,7 @@ public class PermissionCreateRequest implements Serializable {
     @NotBlank(message = "权限编码不能为空")
     @Schema(description = "权限编码")
     private String code;
-    @NotBlank(message = "权限类型不能为空")
+    @NotNull(message = "权限类型不能为空")
     @Schema(description = "权限类型")
     private PermissionType type;
     @Schema(description = "排序值")
