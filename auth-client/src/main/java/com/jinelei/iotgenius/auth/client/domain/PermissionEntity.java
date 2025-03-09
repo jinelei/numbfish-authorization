@@ -2,6 +2,7 @@ package com.jinelei.iotgenius.auth.client.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.jinelei.iotgenius.auth.enums.PermissionType;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.Objects;
 public class PermissionEntity extends BaseEntity<Long> {
     protected String name;
     protected String code;
+    protected PermissionType type;
     protected Integer sortValue;
     protected Long parentId;
     @TableField(exist = false)
@@ -30,6 +32,14 @@ public class PermissionEntity extends BaseEntity<Long> {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public PermissionType getType() {
+        return type;
+    }
+
+    public void setType(PermissionType type) {
+        this.type = type;
     }
 
     public Integer getSortValue() {
@@ -61,12 +71,12 @@ public class PermissionEntity extends BaseEntity<Long> {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         PermissionEntity that = (PermissionEntity) o;
-        return Objects.equals(name, that.name) && Objects.equals(code, that.code) && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(children, that.children);
+        return Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(children, that.children);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), name, code, sortValue, parentId, children);
+        return Objects.hash(super.hashCode(), name, code, type, sortValue, parentId, children);
     }
 
     @Override
@@ -74,6 +84,7 @@ public class PermissionEntity extends BaseEntity<Long> {
         return "PermissionEntity{" +
                 "name='" + name + '\'' +
                 ", code='" + code + '\'' +
+                ", type=" + type +
                 ", sortValue=" + sortValue +
                 ", parentId=" + parentId +
                 ", children=" + children +
