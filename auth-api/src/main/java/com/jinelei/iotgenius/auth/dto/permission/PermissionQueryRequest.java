@@ -2,7 +2,6 @@ package com.jinelei.iotgenius.auth.dto.permission;
 
 import com.jinelei.iotgenius.auth.enums.PermissionType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.util.List;

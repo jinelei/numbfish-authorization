@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jinelei.iotgenius.auth.client.domain.BaseEntity;
 import com.jinelei.iotgenius.auth.dto.permission.*;
 import com.jinelei.iotgenius.common.exception.NotExistException;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     protected PermissionConvertor permissionConvertor;
 
     @Override
-    public void create(@NotNull PermissionCreateRequest request) {
+    public void create(PermissionCreateRequest request) {
         final PermissionEntity entity = permissionConvertor.entityFromCreateRequest(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("权限信息不合法"));
         Optional.of(entity).map(PermissionEntity::getParentId)
@@ -52,7 +51,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public void delete(@NotNull PermissionDeleteRequest request) {
+    public void delete(PermissionDeleteRequest request) {
         if (Objects.nonNull(request.getId())) {
             int deleted = baseMapper.deleteById(request.getId());
             Assert.state(deleted == 1, "权限删除失败");
@@ -83,7 +82,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public PermissionEntity get(@NotNull PermissionQueryRequest request) {
+    public PermissionEntity get(PermissionQueryRequest request) {
         LambdaQueryWrapper<PermissionEntity> wrapper = Wrappers.lambdaQuery(PermissionEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), PermissionEntity::getId, request.getId());
         wrapper.eq(Objects.nonNull(request.getName()), PermissionEntity::getName, request.getName());
@@ -94,14 +93,14 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public List<PermissionEntity> tree(@NotNull PermissionQueryRequest request) {
+    public List<PermissionEntity> tree(PermissionQueryRequest request) {
         List<PermissionEntity> list = this.list(request);
         List<PermissionEntity> tree = baseMapper.getPermissionTreeByIds(list.parallelStream().map(BaseEntity::getId).toList());
         return tree;
     }
 
     @Override
-    public List<PermissionEntity> list(@NotNull PermissionQueryRequest request) {
+    public List<PermissionEntity> list(PermissionQueryRequest request) {
         LambdaQueryWrapper<PermissionEntity> wrapper = Wrappers.lambdaQuery(PermissionEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), PermissionEntity::getId, request.getId());
         wrapper.eq(Objects.nonNull(request.getName()), PermissionEntity::getName, request.getName());
@@ -124,13 +123,13 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public PermissionResponse convert(@NotNull PermissionEntity entity) {
+    public PermissionResponse convert(PermissionEntity entity) {
         PermissionResponse response = permissionConvertor.entityToResponse(entity);
         return response;
     }
 
     @Override
-    public List<PermissionResponse> convertTree(@NotNull List<PermissionEntity> entity) {
+    public List<PermissionResponse> convertTree(List<PermissionEntity> entity) {
         List<PermissionEntity> tree = permissionConvertor.tree(entity);
         List<PermissionResponse> response = tree.parallelStream().map(permissionConvertor::entityToResponse).toList();
         return response;
