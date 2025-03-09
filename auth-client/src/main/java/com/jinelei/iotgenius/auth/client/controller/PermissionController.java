@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.jinelei.iotgenius.auth.client.domain.PermissionEntity;
 import com.jinelei.iotgenius.auth.client.helper.PageHelper;
 import com.jinelei.iotgenius.auth.dto.permission.*;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unused")
 @ApiSupport(order = 1)
 @Tag(name = "权限管理")
+@Validated
 @RestController
 @RequestMapping("/permission")
 public class PermissionController implements PermissionApi {
@@ -40,7 +43,7 @@ public class PermissionController implements PermissionApi {
     @ApiOperationSupport(order = 1)
     @Operation(summary = "创建权限")
     @PostMapping("/create")
-    public BaseView<Void> create(@RequestBody PermissionCreateRequest request) {
+    public BaseView<Void> create(@RequestBody @Valid PermissionCreateRequest request) {
         permissionService.create(request);
         return new BaseView<>("创建成功");
     }
@@ -49,7 +52,7 @@ public class PermissionController implements PermissionApi {
     @ApiOperationSupport(order = 2)
     @Operation(summary = "删除权限")
     @PostMapping("/delete")
-    public BaseView<Void> delete(@RequestBody PermissionDeleteRequest request) {
+    public BaseView<Void> delete(@RequestBody @Valid PermissionDeleteRequest request) {
         permissionService.delete(request);
         return new BaseView<>("删除成功");
     }
@@ -58,7 +61,7 @@ public class PermissionController implements PermissionApi {
     @ApiOperationSupport(order = 3)
     @Operation(summary = "更新权限")
     @PostMapping("/update")
-    public BaseView<Void> update(@RequestBody PermissionUpdateRequest request) {
+    public BaseView<Void> update(@RequestBody @Valid PermissionUpdateRequest request) {
         permissionService.update(request);
         return new BaseView<>("更新成功");
     }
@@ -67,7 +70,7 @@ public class PermissionController implements PermissionApi {
     @ApiOperationSupport(order = 4)
     @Operation(summary = "获取权限")
     @PostMapping("/get")
-    public BaseView<PermissionResponse> get(@RequestBody PermissionQueryRequest request) {
+    public BaseView<PermissionResponse> get(@RequestBody @Valid PermissionQueryRequest request) {
         PermissionEntity entity = permissionService.get(request);
         PermissionResponse convert = permissionService.convert(entity);
         return new BaseView<>(convert);
@@ -77,7 +80,7 @@ public class PermissionController implements PermissionApi {
     @ApiOperationSupport(order = 4)
     @Operation(summary = "获取权限树")
     @PostMapping("/tree")
-    public BaseView<List<PermissionResponse>> tree(@RequestBody PermissionQueryRequest request) {
+    public BaseView<List<PermissionResponse>> tree(@RequestBody @Valid PermissionQueryRequest request) {
         List<PermissionEntity> entities = permissionService.tree(request);
         List<PermissionResponse> convert = permissionService.convertTree(entities);
         return new BaseView<>(convert);
@@ -87,7 +90,7 @@ public class PermissionController implements PermissionApi {
     @ApiOperationSupport(order = 5)
     @Operation(summary = "获取权限列表")
     @PostMapping("/list")
-    public ListView<PermissionResponse> list(@RequestBody PermissionQueryRequest request) {
+    public ListView<PermissionResponse> list(@RequestBody @Valid PermissionQueryRequest request) {
         List<PermissionEntity> entities = permissionService.list(request);
         List<PermissionResponse> convert = entities.parallelStream().map(entity -> permissionService.convert(entity))
                 .collect(Collectors.toList());
@@ -98,7 +101,7 @@ public class PermissionController implements PermissionApi {
     @ApiOperationSupport(order = 6)
     @Operation(summary = "获取权限分页")
     @PostMapping("/page")
-    public PageView<PermissionResponse> page(@RequestBody PageRequest<PermissionQueryRequest> request) {
+    public PageView<PermissionResponse> page(@RequestBody @Valid PageRequest<PermissionQueryRequest> request) {
         IPage<PermissionEntity> page = permissionService.page(PageHelper.toPage(new PageDTO<>(), request), request.getParams());
         List<PermissionResponse> collect = page.getRecords().parallelStream().map(entity -> permissionService.convert(entity))
                 .collect(Collectors.toList());

@@ -37,7 +37,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     protected PermissionConvertor permissionConvertor;
 
     @Override
-    public void create(@Validated PermissionCreateRequest request) {
+    public void create(@NotNull PermissionCreateRequest request) {
         final PermissionEntity entity = permissionConvertor.entityFromCreateRequest(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("权限信息不合法"));
         Optional.of(entity).map(PermissionEntity::getParentId)
@@ -130,7 +130,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public List<PermissionResponse> convertTree(List<PermissionEntity> entity) {
+    public List<PermissionResponse> convertTree(@NotNull List<PermissionEntity> entity) {
         List<PermissionEntity> tree = permissionConvertor.tree(entity);
         List<PermissionResponse> response = tree.parallelStream().map(permissionConvertor::entityToResponse).toList();
         return response;
