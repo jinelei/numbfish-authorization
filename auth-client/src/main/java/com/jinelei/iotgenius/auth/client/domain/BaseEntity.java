@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@SuppressWarnings("rawtypes")
 @Schema(description = "基础实体对象")
 public class BaseEntity<T> implements Serializable {
     @TableId

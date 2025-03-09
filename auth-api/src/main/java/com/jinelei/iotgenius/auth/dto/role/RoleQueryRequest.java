@@ -1,32 +1,29 @@
-package com.jinelei.iotgenius.auth.dto.permission;
+package com.jinelei.iotgenius.auth.dto.role;
 
-import com.jinelei.iotgenius.auth.enums.PermissionType;
+import com.jinelei.iotgenius.auth.enums.RoleType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
-@Schema(description = "权限修改请求对象")
-public class PermissionUpdateRequest implements Serializable {
-    @NotNull(message = "权限id不能为空")
+@Schema(description = "角色查询请求对象")
+public class RoleQueryRequest implements Serializable {
     @Schema(description = "id")
     protected Long id;
-    @NotBlank(message = "权限名称不能为空")
-    @Schema(description = "权限名称")
+    @Schema(description = "id列表")
+    protected List<Long> ids;
+    @Schema(description = "角色名称")
     private String name;
-    @NotBlank(message = "权限编码不能为空")
-    @Schema(description = "权限编码")
+    @Schema(description = "角色编码")
     private String code;
-    @NotNull(message = "权限类型不能为空")
-    @Schema(description = "权限类型")
-    private PermissionType type;
+    @Schema(description = "角色类型")
+    private RoleType type;
     @Schema(description = "排序值")
     private Integer sortValue;
-    @Schema(description = "上级权限编码")
-    private Long parentId;
-    @Schema(description = "权限备注")
+    @Schema(description = "上级角色编码")
+    private String parentId;
+    @Schema(description = "角色备注")
     protected String remark;
 
     public Long getId() {
@@ -35,6 +32,14 @@ public class PermissionUpdateRequest implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Long> getIds() {
+        return ids;
+    }
+
+    public void setIds(List<Long> ids) {
+        this.ids = ids;
     }
 
     public String getName() {
@@ -53,11 +58,11 @@ public class PermissionUpdateRequest implements Serializable {
         this.code = code;
     }
 
-    public PermissionType getType() {
+    public RoleType getType() {
         return type;
     }
 
-    public void setType(PermissionType type) {
+    public void setType(RoleType type) {
         this.type = type;
     }
 
@@ -69,11 +74,11 @@ public class PermissionUpdateRequest implements Serializable {
         this.sortValue = sortValue;
     }
 
-    public Long getParentId() {
+    public String getParentId() {
         return parentId;
     }
 
-    public void setParentId(Long parentId) {
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 
@@ -88,24 +93,25 @@ public class PermissionUpdateRequest implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        PermissionUpdateRequest that = (PermissionUpdateRequest) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark);
+        RoleQueryRequest that = (RoleQueryRequest) o;
+        return Objects.equals(id, that.id) && Objects.equals(ids, that.ids) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, code, type, sortValue, parentId, remark);
+        return Objects.hash(id, ids, name, code, type, sortValue, parentId, remark);
     }
 
     @Override
     public String toString() {
-        return "PermissionUpdateRequest{" +
+        return "PermissionQueryRequest{" +
                 "id=" + id +
+                ", ids=" + ids +
                 ", name='" + name + '\'' +
                 ", code='" + code + '\'' +
                 ", type=" + type +
                 ", sortValue=" + sortValue +
-                ", parentId=" + parentId +
+                ", parentId='" + parentId + '\'' +
                 ", remark='" + remark + '\'' +
                 '}';
     }
