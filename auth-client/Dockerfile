@@ -1,4 +1,4 @@
-FROM openjdk:17-jre
+FROM eclipse-temurin:17.0.14_7-jre
 
 # 设置工作目录
 WORKDIR /app
@@ -10,4 +10,4 @@ COPY target/auth-client.jar /app/auth-client.jar
 EXPOSE 9999
 
 # 启动 Java 应用
-CMD ["java", "-jar", "app/auth-client.jar"]
+CMD ["java", "-jar", "auth-client.jar"]
