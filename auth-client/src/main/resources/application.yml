@@ -35,10 +35,20 @@ spring:
   banner:
     location: banner.txt
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/iotgenius?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://192.168.3.130:3306/iotgenius?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: iotG@2025
     driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: 192.168.3.130
+    port: 6379
+    password: iotG@2025
+    database: 0
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
 
 mybatis:
   mapper-locations: classpath*:mapper/*/*Mapper.xml,classpath*:mapper/*Mapper.xml

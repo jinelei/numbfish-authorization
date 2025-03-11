@@ -62,4 +62,18 @@ public interface UserApi {
      */
     PageView<UserResponse> page(@Valid PageRequest<UserQueryRequest> request);
 
+    /**
+     * 用户登录
+     *
+     * @param request 用户请求对象
+     * @return 用户响应对象
+     */
+    BaseView<String> login(@Valid UserLoginRequest request);
+
+    /**
+     * 用户登出
+     *
+     * @return 用户响应对象
+     */
+    BaseView<Void> logout();
 }

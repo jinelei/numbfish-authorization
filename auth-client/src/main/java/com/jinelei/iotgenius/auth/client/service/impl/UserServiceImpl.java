@@ -5,26 +5,39 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jinelei.iotgenius.auth.client.convertor.UserConvertor;
-import com.jinelei.iotgenius.auth.client.domain.UserEntity;
-import com.jinelei.iotgenius.auth.client.domain.UserRoleEntity;
+import com.jinelei.iotgenius.auth.client.domain.*;
 import com.jinelei.iotgenius.auth.client.mapper.UserMapper;
-import com.jinelei.iotgenius.auth.client.service.UserRoleService;
-import com.jinelei.iotgenius.auth.client.service.UserService;
+import com.jinelei.iotgenius.auth.client.service.*;
 import com.jinelei.iotgenius.auth.dto.user.*;
+import com.jinelei.iotgenius.common.exception.InternalException;
 import com.jinelei.iotgenius.common.exception.InvalidArgsException;
+import io.swagger.v3.oas.annotations.headers.Header;
 import org.apache.ibatis.executor.BatchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestHeader;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.Duration;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 
 @SuppressWarnings("unused")
 @Service
@@ -32,11 +45,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     public static final String PASSWORD = "123456";
+    public static final Function<String, String> GENERATE_TOKEN_INFO = s -> "user:token:info:" + s;
+    public static final Function<String, String> GENERATE_TOKEN_ROLES = s -> "user:token:roles:" + s;
+    public static final Function<String, String> GENERATE_TOKEN_PERMISSIONS = s -> "user:token:permissions:" + s;
 
     @Autowired
     protected UserConvertor userConvertor;
     @Autowired
     protected UserRoleService userRoleService;
+    @Autowired
+    protected PasswordEncoder passwordEncoder;
+    @Autowired
+    protected RoleService roleService;
+    @Autowired
+    protected RolePermissionService rolePermissionService;
+    @Autowired
+    protected PermissionService permissionService;
+    @Autowired
+    protected StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     @Override
     public void create(UserCreateRequest request) {
@@ -46,8 +74,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
             if (password.length() < 6) {
                 throw new InvalidArgsException("密码长度不能小于6位");
             }
+            entity.setPassword(passwordEncoder.encode(password));
         }, () -> {
-            entity.setPassword(PASSWORD);
+            entity.setPassword(passwordEncoder.encode(PASSWORD));
         });
         int inserted = baseMapper.insert(entity);
         log.info("创建用户: {}", inserted);
@@ -148,9 +177,96 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     }
 
     @Override
+    public String login(UserLoginRequest request) {
+        LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
+        wrapper.eq(UserEntity::getUsername, request.getUsername());
+        UserEntity userEntity = baseMapper.selectOne(wrapper);
+        if (Objects.isNull(userEntity)) {
+            throw new InvalidArgsException("用户不存在");
+        }
+        if (!passwordEncoder.matches(request.getPassword(), userEntity.getPassword())) {
+            throw new InvalidArgsException("密码错误");
+        }
+        userEntity.setPassword(null);
+        // 查询用户关联的所有的角色
+        final List<UserRoleEntity> userRoleEntities = userRoleService.list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, userEntity.getId()));
+        final List<Long> roleIds = userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).toList();
+        final List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class).in(RoleEntity::getId, roleIds));
+        userEntity.setRoles(roleEntities);
+        // 查询角色关联的所有的权限(菜单和按钮)
+        final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
+        final List<Long> permissionIds = rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId).toList();
+        // 查询权限关联的所有的菜单和按钮
+        final List<PermissionEntity> permissionEntities = permissionService.list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getId, permissionIds));
+        userEntity.setPermissions(permissionEntities);
+        final String token = UUID.randomUUID().toString();
+        String userEntityString = null;
+        try {
+            userEntityString = objectMapper.writeValueAsString(userEntity);
+        } catch (JsonProcessingException e) {
+            log.error("用户信息序列化失败: {}", e.getMessage());
+            throw new InternalException("用户信息序列化失败", e);
+        }
+        final String keyUserTokenInfo = GENERATE_TOKEN_INFO.apply(token);
+        final String keyUserTokenRoles = GENERATE_TOKEN_ROLES.apply(token);
+        final String keyUserTokenPermissions = GENERATE_TOKEN_PERMISSIONS.apply(token);
+        stringRedisTemplate.opsForValue().set(keyUserTokenInfo, userEntityString);
+        stringRedisTemplate.opsForSet().add(keyUserTokenRoles, roleIds.stream().map(String::valueOf).toArray(String[]::new));
+        stringRedisTemplate.opsForSet().add(keyUserTokenPermissions, permissionIds.stream().map(String::valueOf).toArray(String[]::new));
+        stringRedisTemplate.expire(keyUserTokenInfo, Duration.ofMinutes(30));
+        stringRedisTemplate.expire(keyUserTokenRoles, Duration.ofMinutes(30));
+        stringRedisTemplate.expire(keyUserTokenPermissions, Duration.ofMinutes(30));
+        log.info("用户登录: {}", userEntity);
+        return token;
+    }
+
+    @Override
+    public void logout() {
+        String token = "";
+        stringRedisTemplate.delete(GENERATE_TOKEN_INFO.apply(token));
+        stringRedisTemplate.delete(GENERATE_TOKEN_ROLES.apply(token));
+        stringRedisTemplate.delete(GENERATE_TOKEN_PERMISSIONS.apply(token));
+        log.info("用户登出");
+    }
+
+
+    @Override
     public UserResponse convert(UserEntity entity) {
         UserResponse response = userConvertor.entityToResponse(entity);
         return response;
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        final List<SimpleGrantedAuthority> authorities = new CopyOnWriteArrayList<>();
+        final UserEntity userEntity = getBaseMapper().selectOne(Wrappers.lambdaQuery(UserEntity.class).eq(UserEntity::getUsername, username));
+        if (Objects.isNull(userEntity)) {
+            log.error("用户不存在: {}", username);
+            throw new UsernameNotFoundException("用户不存在");
+        }
+        // 查询用户关联的所有的角色
+        final List<UserRoleEntity> userRoleEntities = userRoleService.list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, userEntity.getId()));
+        final List<Long> roleIds = userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).toList();
+        List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class).in(RoleEntity::getId, roleIds));
+        userEntity.setRoles(roleEntities);
+        roleEntities.parallelStream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getCode()))
+                .forEach(authorities::add);
+        // 查询角色关联的所有的权限(菜单和按钮)
+        final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
+        final List<Long> permissionIds = rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId).toList();
+        // 查询权限关联的所有的菜单和按钮
+        final List<PermissionEntity> permissionEntities = permissionService.list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getId, permissionIds));
+        userEntity.setPermissions(permissionEntities);
+        permissionEntities.parallelStream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getCode()))
+                .forEach(authorities::add);
+        userEntity.setPassword(null);
+        User user = new User(userEntity.getUsername(), userEntity.getPassword(), true, true, true, true, authorities);
+        SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();
+        emptyContext.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities()));
+        SecurityContextHolder.setContext(emptyContext);
+        log.info("加载用户: {}", user);
+        return user;
+    }
 }

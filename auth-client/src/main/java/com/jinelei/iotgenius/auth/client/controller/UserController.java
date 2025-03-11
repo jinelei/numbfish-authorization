@@ -96,4 +96,22 @@ public class UserController implements UserApi {
         return new PageView<>(collect, page.getTotal(), page.getPages(), page.getSize());
     }
 
+    @Override
+    @ApiOperationSupport(order = 7)
+    @Operation(summary = "用户登陆")
+    @PostMapping("/login")
+    public BaseView<String> login(@RequestBody @Valid UserLoginRequest request) {
+        String token = userService.login(request);
+        return new BaseView<>(token);
+    }
+
+    @Override
+    @ApiOperationSupport(order = 8)
+    @Operation(summary = "用户登出")
+    @PostMapping("/logout")
+    public BaseView<Void> logout() {
+        userService.logout();
+        return new BaseView<>();
+    }
+
 }

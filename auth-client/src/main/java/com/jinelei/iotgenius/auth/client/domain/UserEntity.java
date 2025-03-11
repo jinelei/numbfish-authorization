@@ -16,6 +16,8 @@ public class UserEntity extends BaseEntity<Long> {
     protected String phone;
     @TableField(exist = false)
     private List<RoleEntity> roles;
+    @TableField(exist = false)
+    private List<PermissionEntity> permissions;
 
     public String getUsername() {
         return username;
@@ -65,17 +67,25 @@ public class UserEntity extends BaseEntity<Long> {
         this.roles = roles;
     }
 
+    public List<PermissionEntity> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<PermissionEntity> permissions) {
+        this.permissions = permissions;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         UserEntity that = (UserEntity) o;
-        return Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(avatar, that.avatar) && Objects.equals(email, that.email) && Objects.equals(phone, that.phone) && Objects.equals(roles, that.roles);
+        return Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(avatar, that.avatar) && Objects.equals(email, that.email) && Objects.equals(phone, that.phone) && Objects.equals(roles, that.roles) && Objects.equals(permissions, that.permissions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), username, password, avatar, email, phone, roles);
+        return Objects.hash(super.hashCode(), username, password, avatar, email, phone, roles, permissions);
     }
 
     @Override
@@ -87,6 +97,7 @@ public class UserEntity extends BaseEntity<Long> {
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
                 ", roles=" + roles +
+                ", permissions=" + permissions +
                 ", id=" + id +
                 ", remark='" + remark + '\'' +
                 ", createdUserId='" + createdUserId + '\'' +

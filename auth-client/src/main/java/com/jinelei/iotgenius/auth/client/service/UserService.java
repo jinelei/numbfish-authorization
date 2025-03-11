@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinelei.iotgenius.auth.client.domain.UserEntity;
 import com.jinelei.iotgenius.auth.dto.user.*;
+import jakarta.validation.Valid;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface UserService extends IService<UserEntity> {
+public interface UserService extends IService<UserEntity>, UserDetailsService {
 
     void create(UserCreateRequest request);
 
@@ -20,6 +22,10 @@ public interface UserService extends IService<UserEntity> {
     List<UserEntity> list(UserQueryRequest request);
 
     IPage<UserEntity> page(IPage<UserEntity> page, UserQueryRequest request);
+
+    String login(UserLoginRequest request);
+
+    void logout();
 
     UserResponse convert(UserEntity entity);
 
