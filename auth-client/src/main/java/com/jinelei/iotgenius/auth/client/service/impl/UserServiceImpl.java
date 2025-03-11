@@ -5,20 +5,18 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jinelei.iotgenius.auth.client.convertor.UserConvertor;
 import com.jinelei.iotgenius.auth.client.domain.*;
 import com.jinelei.iotgenius.auth.client.mapper.UserMapper;
 import com.jinelei.iotgenius.auth.client.service.*;
 import com.jinelei.iotgenius.auth.dto.user.*;
-import com.jinelei.iotgenius.common.exception.InternalException;
 import com.jinelei.iotgenius.common.exception.InvalidArgsException;
-import io.swagger.v3.oas.annotations.headers.Header;
 import org.apache.ibatis.executor.BatchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,22 +30,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Function;
 
 @SuppressWarnings("unused")
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
-    public static final String PASSWORD = "123456";
-    public static final Function<String, String> GENERATE_TOKEN_INFO = s -> "user:token:info:" + s;
-    public static final Function<String, String> GENERATE_TOKEN_ROLES = s -> "user:token:roles:" + s;
-    public static final Function<String, String> GENERATE_TOKEN_PERMISSIONS = s -> "user:token:permissions:" + s;
 
     @Autowired
     protected UserConvertor userConvertor;
@@ -63,6 +55,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     protected PermissionService permissionService;
     @Autowired
     protected StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    protected RedisTemplate<String, UserResponse> userRedisTemplate;
     @Autowired
     protected ObjectMapper objectMapper;
 
@@ -188,34 +182,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
             throw new InvalidArgsException("密码错误");
         }
         userEntity.setPassword(null);
+        userEntity.setRoles(new ArrayList<>());
+        userEntity.setPermissions(new ArrayList<>());
         // 查询用户关联的所有的角色
         final List<UserRoleEntity> userRoleEntities = userRoleService.list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, userEntity.getId()));
         final List<Long> roleIds = userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).toList();
-        final List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class).in(RoleEntity::getId, roleIds));
-        userEntity.setRoles(roleEntities);
-        // 查询角色关联的所有的权限(菜单和按钮)
-        final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
-        final List<Long> permissionIds = rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId).toList();
-        // 查询权限关联的所有的菜单和按钮
-        final List<PermissionEntity> permissionEntities = permissionService.list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getId, permissionIds));
-        userEntity.setPermissions(permissionEntities);
-        final String token = UUID.randomUUID().toString();
-        String userEntityString = null;
-        try {
-            userEntityString = objectMapper.writeValueAsString(userEntity);
-        } catch (JsonProcessingException e) {
-            log.error("用户信息序列化失败: {}", e.getMessage());
-            throw new InternalException("用户信息序列化失败", e);
+        if (!roleIds.isEmpty()) {
+            final List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class).in(RoleEntity::getId, roleIds));
+            userEntity.setRoles(roleEntities);
+            final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
+            final List<Long> permissionIds = rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId).toList();
+            if (!permissionIds.isEmpty()) {
+                final List<PermissionEntity> permissionEntities = permissionService.list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getId, permissionIds));
+                userEntity.setPermissions(permissionEntities);
+            }
         }
+        final UserResponse userResponse = userConvertor.entityToResponse(userEntity);
+        final String token = UUID.randomUUID().toString();
         final String keyUserTokenInfo = GENERATE_TOKEN_INFO.apply(token);
-        final String keyUserTokenRoles = GENERATE_TOKEN_ROLES.apply(token);
-        final String keyUserTokenPermissions = GENERATE_TOKEN_PERMISSIONS.apply(token);
-        stringRedisTemplate.opsForValue().set(keyUserTokenInfo, userEntityString);
-        stringRedisTemplate.opsForSet().add(keyUserTokenRoles, roleIds.stream().map(String::valueOf).toArray(String[]::new));
-        stringRedisTemplate.opsForSet().add(keyUserTokenPermissions, permissionIds.stream().map(String::valueOf).toArray(String[]::new));
+        userRedisTemplate.opsForValue().set(keyUserTokenInfo, userResponse);
+        if (!userEntity.getRoles().isEmpty()) {
+            userEntity.getRoles().parallelStream().map(String::valueOf)
+                    .map(CACHED_ROLE_ID_TOKEN)
+                    .forEach(s -> stringRedisTemplate.opsForSet().add(s, token));
+        }
+        if (!userEntity.getPermissions().isEmpty()) {
+            userEntity.getPermissions().parallelStream().map(String::valueOf)
+                    .map(CACHED_PERMISSION_ID_TOKEN)
+                    .forEach(s -> stringRedisTemplate.opsForSet().add(s, token));
+        }
         stringRedisTemplate.expire(keyUserTokenInfo, Duration.ofMinutes(30));
-        stringRedisTemplate.expire(keyUserTokenRoles, Duration.ofMinutes(30));
-        stringRedisTemplate.expire(keyUserTokenPermissions, Duration.ofMinutes(30));
         log.info("用户登录: {}", userEntity);
         return token;
     }
@@ -224,8 +220,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     public void logout() {
         String token = "";
         stringRedisTemplate.delete(GENERATE_TOKEN_INFO.apply(token));
-        stringRedisTemplate.delete(GENERATE_TOKEN_ROLES.apply(token));
-        stringRedisTemplate.delete(GENERATE_TOKEN_PERMISSIONS.apply(token));
         log.info("用户登出");
     }
 

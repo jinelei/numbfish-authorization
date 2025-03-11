@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.jinelei.iotgenius.auth.client.domain.PermissionEntity;
 import com.jinelei.iotgenius.auth.client.helper.PageHelper;
 import com.jinelei.iotgenius.auth.dto.permission.*;
+import com.jinelei.iotgenius.auth.dto.user.UserResponse;
+import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -91,6 +93,7 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限列表")
     @PostMapping("/list")
     public ListView<PermissionResponse> list(@RequestBody @Valid PermissionQueryRequest request) {
+        UserResponse userResponse = AuthorizationHelper.currentUser();
         List<PermissionEntity> entities = permissionService.list(request);
         List<PermissionResponse> convert = entities.parallelStream().map(entity -> permissionService.convert(entity))
                 .collect(Collectors.toList());

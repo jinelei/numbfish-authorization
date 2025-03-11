@@ -9,6 +9,7 @@ import com.jinelei.iotgenius.auth.client.domain.UserEntity;
 import com.jinelei.iotgenius.auth.client.helper.PageHelper;
 import com.jinelei.iotgenius.auth.client.service.UserService;
 import com.jinelei.iotgenius.auth.dto.user.*;
+import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
 import com.jinelei.iotgenius.common.request.PageRequest;
 import com.jinelei.iotgenius.common.view.BaseView;
 import com.jinelei.iotgenius.common.view.ListView;
@@ -102,7 +103,7 @@ public class UserController implements UserApi {
     @PostMapping("/login")
     public BaseView<String> login(@RequestBody @Valid UserLoginRequest request) {
         String token = userService.login(request);
-        return new BaseView<>(token);
+        return new BaseView<>("登陆成功", token);
     }
 
     @Override

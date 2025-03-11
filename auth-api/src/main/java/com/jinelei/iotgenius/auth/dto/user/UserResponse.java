@@ -1,5 +1,6 @@
 package com.jinelei.iotgenius.auth.dto.user;
 
+import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.dto.role.RoleResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -23,6 +24,8 @@ public class UserResponse implements Serializable {
     protected List<Long> roleIds;
     @Schema(description = "角色实体列表")
     protected List<RoleResponse> roles;
+    @Schema(description = "权限列表")
+    protected List<PermissionResponse> permissions;
 
     public Long getId() {
         return id;
@@ -80,16 +83,24 @@ public class UserResponse implements Serializable {
         this.roles = roles;
     }
 
+    public List<PermissionResponse> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<PermissionResponse> permissions) {
+        this.permissions = permissions;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         UserResponse that = (UserResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(username, that.username) && Objects.equals(email, that.email) && Objects.equals(phone, that.phone) && Objects.equals(remark, that.remark) && Objects.equals(roleIds, that.roleIds) && Objects.equals(roles, that.roles);
+        return Objects.equals(id, that.id) && Objects.equals(username, that.username) && Objects.equals(email, that.email) && Objects.equals(phone, that.phone) && Objects.equals(remark, that.remark) && Objects.equals(roleIds, that.roleIds) && Objects.equals(roles, that.roles) && Objects.equals(permissions, that.permissions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, email, phone, remark, roleIds, roles);
+        return Objects.hash(id, username, email, phone, remark, roleIds, roles, permissions);
     }
 
     @Override
@@ -102,6 +113,7 @@ public class UserResponse implements Serializable {
                 ", remark='" + remark + '\'' +
                 ", roleIds=" + roleIds +
                 ", roles=" + roles +
+                ", permissions=" + permissions +
                 '}';
     }
 }

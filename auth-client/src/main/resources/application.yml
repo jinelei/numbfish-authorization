@@ -17,7 +17,7 @@ knife4j:
     language: zh_cn
   # 开启Swagger的Basic认证功能,默认是false
   basic:
-    enable: false
+    enable: true
     # Basic认证用户名
     username: iotgenius
     # Basic认证密码
@@ -35,12 +35,12 @@ spring:
   banner:
     location: banner.txt
   datasource:
-    url: jdbc:mysql://192.168.3.130:3306/iotgenius?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/iotgenius?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: iotG@2025
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
-    host: 192.168.3.130
+    host: 127.0.0.1
     port: 6379
     password: iotG@2025
     database: 0
