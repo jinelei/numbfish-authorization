@@ -31,7 +31,6 @@ public class LoginUserFilter implements Filter {
      * @param response 响应
      * @param chain    链
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
         if (request instanceof HttpServletRequest httpRequest) {
