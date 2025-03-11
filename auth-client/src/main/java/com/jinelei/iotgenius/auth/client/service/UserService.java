@@ -4,13 +4,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinelei.iotgenius.auth.client.domain.UserEntity;
 import com.jinelei.iotgenius.auth.dto.user.*;
-import jakarta.validation.Valid;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 import java.util.function.Function;
 
-public interface UserService extends IService<UserEntity>, UserDetailsService {
+public interface UserService extends IService<UserEntity> {
     String PASSWORD = "123456";
     Function<String, String> GENERATE_TOKEN_INFO = s -> "user:token:info:" + s;
     Function<String, String> CACHED_ROLE_ID_TOKEN = s -> "user:role:id:" + s;

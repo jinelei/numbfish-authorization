@@ -18,13 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -33,7 +26,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressWarnings("unused")
 @Service
@@ -230,37 +222,4 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         return response;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        final List<SimpleGrantedAuthority> authorities = new CopyOnWriteArrayList<>();
-        final UserEntity userEntity = getBaseMapper().selectOne(Wrappers.lambdaQuery(UserEntity.class).eq(UserEntity::getUsername, username));
-        if (Objects.isNull(userEntity)) {
-            log.error("用户不存在: {}", username);
-            throw new UsernameNotFoundException("用户不存在");
-        }
-        // 查询用户关联的所有的角色
-        final List<UserRoleEntity> userRoleEntities = userRoleService.list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, userEntity.getId()));
-        final List<Long> roleIds = userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).toList();
-        List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class).in(RoleEntity::getId, roleIds));
-        userEntity.setRoles(roleEntities);
-        roleEntities.parallelStream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getCode()))
-                .forEach(authorities::add);
-        // 查询角色关联的所有的权限(菜单和按钮)
-        final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
-        final List<Long> permissionIds = rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId).toList();
-        // 查询权限关联的所有的菜单和按钮
-        final List<PermissionEntity> permissionEntities = permissionService.list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getId, permissionIds));
-        userEntity.setPermissions(permissionEntities);
-        permissionEntities.parallelStream()
-                .map(permission -> new SimpleGrantedAuthority(permission.getCode()))
-                .forEach(authorities::add);
-        userEntity.setPassword(null);
-        User user = new User(userEntity.getUsername(), userEntity.getPassword(), true, true, true, true, authorities);
-        SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();
-        emptyContext.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities()));
-        SecurityContextHolder.setContext(emptyContext);
-        log.info("加载用户: {}", user);
-        return user;
-    }
 }

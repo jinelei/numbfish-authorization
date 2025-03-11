@@ -21,11 +21,11 @@ public class AuthorizationHelper {
         if (requestAttributes instanceof ServletRequestAttributes attributes) {
             HttpServletRequest request = attributes.getRequest();
             UserResponse user = (UserResponse) request.getAttribute("user");
-            log.info("获取用户信息成功: {}", user);
+            log.info("获取当前登陆用户信息成功: {}", user);
             return user;
         }
-        log.error("获取用户信息失败: 不支持的RequestAttributes: {}", requestAttributes);
-        throw new InternalException("获取用户信息失败: 不支持的RequestAttributes");
+        log.error("获取当前登陆用户信息失败: 不支持的RequestAttributes: {}", requestAttributes);
+        throw new InternalException("获取当前登陆用户信息失败: 不支持的RequestAttributes", new RuntimeException());
     }
 
 }
