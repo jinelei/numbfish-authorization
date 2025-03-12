@@ -7,12 +7,12 @@
     <parent>
         <groupId>com.jinelei.iotgenius</groupId>
         <artifactId>auth</artifactId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
     </parent>
 
     <groupId>com.jinelei.iotgenius</groupId>
     <artifactId>auth-api</artifactId>
-    <version>0.0.1</version>
+    <version>${iotgenius-auth.version}</version>
 
     <properties>
         <java.version>17</java.version>

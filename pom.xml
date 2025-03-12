@@ -13,7 +13,7 @@
     <groupId>com.jinelei.iotgenius</groupId>
     <artifactId>auth</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <name>iotgenius-auth</name>
     <description>iotgenius authorization center</description>
     <url>https://jinelei.com/iotgenius</url>
@@ -27,7 +27,8 @@
         <spring-boot.version>3.4.3</spring-boot.version>
         <springfox-swagger2.version>3.0.0</springfox-swagger2.version>
         <iotgenius-common.version>0.0.1</iotgenius-common.version>
-        <iotgenius-auth-api.version>1.0.0-SNAPSHOT</iotgenius-auth-api.version>
+        <iotgenius-auth.version>0.0.1</iotgenius-auth.version>
+        <iotgenius-auth-api.version>0.0.1</iotgenius-auth-api.version>
         <springboot-maven-plugin.version>3.4.3</springboot-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
