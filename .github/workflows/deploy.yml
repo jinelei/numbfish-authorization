@@ -1,9 +1,13 @@
 name: 编译并发布
 
+#on:
+#  push:
+#    tags:
+#      - v*.*.*
 on:
   push:
-    tags:
-      - v*.*.*
+    branches:
+      - main
 
 jobs:
   build_api:
@@ -19,6 +23,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           overwrite-settings: true
+      - name: Install dependencies
+        run: mvn install -B -DskipTests
       - name: 发布Maven仓库
         uses: samuelmeuli/action-maven-publish@v1
         with:
@@ -41,6 +47,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           overwrite-settings: true
+      - name: Install dependencies
+        run: mvn install -B -DskipTests
       - name: 发布Maven仓库
         uses: samuelmeuli/action-maven-publish@v1
         with:
