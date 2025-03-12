@@ -26,7 +26,7 @@
         <nacos-config-spring-boot.version>0.2.12</nacos-config-spring-boot.version>
         <spring-boot.version>3.4.3</spring-boot.version>
         <springfox-swagger2.version>3.0.0</springfox-swagger2.version>
-        <iotgenius-common.version>1.0.0-SNAPSHOT</iotgenius-common.version>
+        <iotgenius-common.version>0.0.1</iotgenius-common.version>
         <iotgenius-auth-api.version>1.0.0-SNAPSHOT</iotgenius-auth-api.version>
         <springboot-maven-plugin.version>3.4.3</springboot-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
