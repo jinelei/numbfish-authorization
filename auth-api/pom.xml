@@ -7,12 +7,12 @@
     <parent>
         <groupId>com.jinelei.iotgenius</groupId>
         <artifactId>auth</artifactId>
-        <version>1.0.0</version>
+        <version>0.0.1</version>
     </parent>
 
     <groupId>com.jinelei.iotgenius</groupId>
     <artifactId>auth-api</artifactId>
-    <version>${iotgenius-auth.version}</version>
+    <version>0.0.1</version>
     <url>https://jinelei.com/iotgenius-auth</url>
 
     <licenses>
