@@ -1,13 +1,13 @@
 name: 编译并发布
 
-#on:
-#  push:
-#    tags:
-#      - v*.*.*
 on:
   push:
-    branches:
-      - main
+    tags:
+      - v*.*.*
+#on:
+#  push:
+#    branches:
+#      - main
 
 jobs:
   build_api:
