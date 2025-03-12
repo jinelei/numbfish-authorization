@@ -10,9 +10,10 @@
         <version>0.0.1</version>
     </parent>
 
-    <groupId>com.jinelei</groupId>
+    <groupId>com.jinelei.iotgenius</groupId>
     <artifactId>auth-client</artifactId>
     <version>0.0.1</version>
+    <description>iotgenius auth client module</description>
     <url>https://jinelei.com/iotgenius-auth</url>
 
     <licenses>

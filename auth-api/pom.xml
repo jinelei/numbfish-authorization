@@ -13,6 +13,7 @@
     <groupId>com.jinelei.iotgenius</groupId>
     <artifactId>auth-api</artifactId>
     <version>0.0.1</version>
+    <description>iotgenius auth client module</description>
     <url>https://jinelei.com/iotgenius-auth</url>
 
     <licenses>
@@ -61,6 +62,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <version>${spring-boot.version}</version>
         </dependency>
 
         <dependency>
