@@ -28,6 +28,7 @@ jobs:
       - name: 发布Maven仓库
         uses: samuelmeuli/action-maven-publish@v1
         with:
+          maven_profiles: 'release'
           maven_args: '-DskipTests -pl auth-api'
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
@@ -52,6 +53,7 @@ jobs:
       - name: 发布Maven仓库
         uses: samuelmeuli/action-maven-publish@v1
         with:
+          maven_profiles: 'release'
           maven_args: '-DskipTests -pl auth-client'
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
