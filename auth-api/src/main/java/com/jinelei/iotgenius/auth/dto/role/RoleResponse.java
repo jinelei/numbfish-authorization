@@ -4,8 +4,6 @@ import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.enums.RoleType;
 import com.jinelei.iotgenius.common.response.TreeResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
