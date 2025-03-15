@@ -9,7 +9,6 @@ import com.jinelei.iotgenius.auth.client.domain.UserEntity;
 import com.jinelei.iotgenius.auth.client.helper.PageHelper;
 import com.jinelei.iotgenius.auth.client.service.UserService;
 import com.jinelei.iotgenius.auth.dto.user.*;
-import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
 import com.jinelei.iotgenius.common.request.PageRequest;
 import com.jinelei.iotgenius.common.view.BaseView;
 import com.jinelei.iotgenius.common.view.ListView;
@@ -113,6 +112,15 @@ public class UserController implements UserApi {
     public BaseView<Void> logout() {
         userService.logout();
         return new BaseView<>();
+    }
+
+    @Override
+    @ApiOperationSupport(order = 9)
+    @Operation(summary = "用户修改密码")
+    @PostMapping("/updatePassword")
+    public BaseView<String> updatePassword(UserUpdatePasswordRequest request) {
+        userService.updatePassword(request);
+        return new BaseView<>("修改成功");
     }
 
 }

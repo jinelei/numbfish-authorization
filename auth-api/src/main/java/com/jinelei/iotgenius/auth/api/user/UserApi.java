@@ -76,4 +76,12 @@ public interface UserApi {
      * @return 用户响应对象
      */
     BaseView<Void> logout();
+
+    /**
+     * 用户修改密码
+     * @param request 用户请求对象
+     * @return 用户响应对象
+     */
+    BaseView<String> updatePassword(@Valid UserUpdatePasswordRequest request);
+
 }

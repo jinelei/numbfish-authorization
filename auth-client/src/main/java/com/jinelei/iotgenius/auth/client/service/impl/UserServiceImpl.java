@@ -215,6 +215,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         log.info("用户登出");
     }
 
+    @Override
+    public void updatePassword(UserUpdatePasswordRequest request) {
+        Optional.ofNullable(request).map(UserUpdatePasswordRequest::getUsername).orElseThrow(() -> new InvalidArgsException("用户名不能为空"));
+        String password = Optional.ofNullable(request).map(UserUpdatePasswordRequest::getPassword).orElse(PASSWORD);
+        if (password.length() < 6) {
+            throw new InvalidArgsException("密码长度不能小于6位");
+        }
+        LambdaUpdateWrapper<UserEntity> wrapper = Wrappers.lambdaUpdate(UserEntity.class);
+        wrapper.eq(UserEntity::getUsername, request.getUsername());
+        wrapper.set(UserEntity::getPassword, passwordEncoder.encode(password));
+        int updated = baseMapper.update(wrapper);
+        log.info("更新用户密码: {}", updated);
+        Assert.state(updated == 1, "用户密码更新失败");
+    }
 
     @Override
     public UserResponse convert(UserEntity entity) {
