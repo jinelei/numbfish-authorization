@@ -13,7 +13,7 @@ import com.jinelei.iotgenius.auth.client.mapper.RoleMapper;
 import com.jinelei.iotgenius.auth.client.service.RolePermissionService;
 import com.jinelei.iotgenius.auth.client.service.RoleService;
 import com.jinelei.iotgenius.auth.dto.role.*;
-import com.jinelei.iotgenius.auth.enums.RolePermissionType;
+import com.jinelei.iotgenius.auth.enumeration.RolePermissionType;
 import com.jinelei.iotgenius.common.exception.InvalidArgsException;
 import com.jinelei.iotgenius.common.exception.NotExistException;
 import org.apache.ibatis.executor.BatchResult;

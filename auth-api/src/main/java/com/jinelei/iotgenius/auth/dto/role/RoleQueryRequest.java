@@ -1,11 +1,12 @@
 package com.jinelei.iotgenius.auth.dto.role;
 
-import com.jinelei.iotgenius.auth.enums.RoleType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+
+import com.jinelei.iotgenius.auth.enumeration.RoleType;
 
 @Schema(description = "角色查询请求对象")
 public class RoleQueryRequest implements Serializable {

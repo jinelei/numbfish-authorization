@@ -1,7 +1,7 @@
 package com.jinelei.iotgenius.auth.client.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jinelei.iotgenius.auth.enums.RolePermissionType;
+import com.jinelei.iotgenius.auth.enumeration.RolePermissionType;
 
 import java.util.Objects;
 

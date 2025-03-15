@@ -1,11 +1,12 @@
 package com.jinelei.iotgenius.auth.dto.permission;
 
-import com.jinelei.iotgenius.auth.enums.PermissionType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+
+import com.jinelei.iotgenius.auth.enumeration.PermissionType;
 
 @Schema(description = "权限查询请求对象")
 public class PermissionQueryRequest implements Serializable {

@@ -2,7 +2,7 @@ package com.jinelei.iotgenius.auth.client.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jinelei.iotgenius.auth.enums.PermissionType;
+import com.jinelei.iotgenius.auth.enumeration.PermissionType;
 
 import java.util.List;
 import java.util.Objects;

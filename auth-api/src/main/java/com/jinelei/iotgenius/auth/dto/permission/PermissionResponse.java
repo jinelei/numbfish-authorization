@@ -1,6 +1,6 @@
 package com.jinelei.iotgenius.auth.dto.permission;
 
-import com.jinelei.iotgenius.auth.enums.PermissionType;
+import com.jinelei.iotgenius.auth.enumeration.PermissionType;
 import com.jinelei.iotgenius.common.response.TreeResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
