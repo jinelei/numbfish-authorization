@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jinelei.iotgenius.auth.client.configuration.permission.PermissionInstance;
 import com.jinelei.iotgenius.auth.client.convertor.UserConvertor;
 import com.jinelei.iotgenius.auth.client.domain.*;
 import com.jinelei.iotgenius.auth.client.mapper.UserMapper;
 import com.jinelei.iotgenius.auth.client.service.*;
 import com.jinelei.iotgenius.auth.dto.user.*;
+import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
 import com.jinelei.iotgenius.common.exception.InvalidArgsException;
 import org.apache.ibatis.executor.BatchResult;
 import org.slf4j.Logger;
@@ -54,6 +56,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
 
     @Override
     public void create(UserCreateRequest request) {
+        AuthorizationHelper.checkPermission(PermissionInstance.USER_ADMINISTRATOR);
         final UserEntity entity = userConvertor.entityFromCreateRequest(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("角色信息不合法"));
         Optional.ofNullable(entity).map(UserEntity::getPassword).ifPresentOrElse(password -> {

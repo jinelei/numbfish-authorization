@@ -2,6 +2,8 @@ package com.jinelei.iotgenius.auth.helper;
 
 import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.dto.user.UserResponse;
+import com.jinelei.iotgenius.auth.permission.PermissionDeclaration;
+import com.jinelei.iotgenius.common.exception.BaseException;
 import com.jinelei.iotgenius.common.exception.InternalException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -21,6 +23,7 @@ public class AuthorizationHelper {
 
     /**
      * 请求头中获取用户信息
+     * 
      * @return 用户信息
      */
     public static UserResponse currentUser() {
@@ -37,6 +40,7 @@ public class AuthorizationHelper {
 
     /**
      * 检查当前登录用户是否具有指定权限
+     * 
      * @param permission
      * @return 是否包含
      */
@@ -46,23 +50,41 @@ public class AuthorizationHelper {
                 .map(UserResponse::getPermissions)
                 .orElse(new ArrayList<>())
                 .stream()
-                .anyMatch(r->r.getCode().equals(permission));
+                .anyMatch(r -> r.getCode().equals(permission));
     }
 
     /**
      * 检查当前登录用户是否具有指定权限列表
+     * 
      * @param permission
      * @return 是否包含
      */
     public static Boolean hasPermission(List<String> permissions) {
         UserResponse response = currentUser();
-        List<String> codes =  Optional.ofNullable(response)
+        List<String> codes = Optional.ofNullable(response)
                 .map(UserResponse::getPermissions)
                 .orElse(new ArrayList<>())
                 .parallelStream()
                 .map(PermissionResponse::getCode)
                 .toList();
         return codes.containsAll(permissions);
+    }
+
+    /**
+     * 检查当前登录用户是否具有指定权限
+     * 
+     * @param permission
+     * @return 是否包含
+     */
+    public static void checkPermission(PermissionDeclaration permission) {
+        UserResponse response = currentUser();
+        if (Optional.ofNullable(response)
+                .map(UserResponse::getPermissions)
+                .orElse(new ArrayList<>())
+                .stream()
+                .noneMatch(r -> r.getCode().equals(permission.getCode()))) {
+            throw new BaseException(500, "无访问权限", new Throwable("缺少权限: " + permission.getDescription()));
+        }
     }
 
 }
