@@ -9,7 +9,6 @@ import com.jinelei.iotgenius.auth.client.domain.UserEntity;
 import com.jinelei.iotgenius.auth.client.helper.PageHelper;
 import com.jinelei.iotgenius.auth.client.service.UserService;
 import com.jinelei.iotgenius.auth.dto.user.*;
-import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
 import com.jinelei.iotgenius.common.request.PageRequest;
 import com.jinelei.iotgenius.common.view.BaseView;
 import com.jinelei.iotgenius.common.view.ListView;
@@ -116,12 +115,12 @@ public class UserController implements UserApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 7)
-    @Operation(summary = "用户修改秘密")
+    @ApiOperationSupport(order = 9)
+    @Operation(summary = "用户修改密码")
     @PostMapping("/updatePassword")
-    public BaseView<String> updatePassword(@RequestBody @Valid UserUpdatePasswordRequest request) {
-        userService.updatePassowrd(request);
-        return new BaseView<>("修改秘密成功","");
+    public BaseView<String> updatePassword(UserUpdatePasswordRequest request) {
+        userService.updatePassword(request);
+        return new BaseView<>("修改成功");
     }
-    
+
 }

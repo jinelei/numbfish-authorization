@@ -30,6 +30,8 @@ public interface UserService extends IService<UserEntity> {
 
     void logout();
 
+    void updatePassword(UserUpdatePasswordRequest request);
+
     UserResponse convert(UserEntity entity);
 
 }
