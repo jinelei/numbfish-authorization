@@ -107,7 +107,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         LambdaUpdateWrapper<UserEntity> wrapper = Wrappers.lambdaUpdate(UserEntity.class);
         wrapper.eq(UserEntity::getId, request.getId());
         wrapper.set(UserEntity::getUsername, request.getUsername());
-        wrapper.set(UserEntity::getPassword, request.getPassword());
         wrapper.set(UserEntity::getAvatar, request.getAvatar());
         wrapper.set(UserEntity::getEmail, request.getEmail());
         wrapper.set(UserEntity::getPhone, request.getPhone());

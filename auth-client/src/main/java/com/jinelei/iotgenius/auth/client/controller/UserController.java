@@ -115,4 +115,13 @@ public class UserController implements UserApi {
         return new BaseView<>();
     }
 
+    @Override
+    @ApiOperationSupport(order = 7)
+    @Operation(summary = "用户修改秘密")
+    @PostMapping("/updatePassword")
+    public BaseView<String> updatePassword(@RequestBody @Valid UserUpdatePasswordRequest request) {
+        userService.updatePassowrd(request);
+        return new BaseView<>("修改秘密成功","");
+    }
+    
 }
