@@ -61,20 +61,8 @@ public class RolePermissionEntity extends BaseEntity<Long> {
 
     @Override
     public String toString() {
-        return "RolePermissionEntity{" +
-                "id=" + id +
-                ", roleId=" + roleId +
-                ", permissionId=" + permissionId +
-                ", type=" + type +
-                ", id=" + id +
-                ", remark='" + remark + '\'' +
-                ", createdUserId='" + createdUserId + '\'' +
-                ", createdTime=" + createdTime +
-                ", updatedUserId='" + updatedUserId + '\'' +
-                ", updatedTime=" + updatedTime +
-                ", deleted=" + deleted +
-                ", deletedUserId='" + deletedUserId + '\'' +
-                ", deletedTime=" + deletedTime +
-                '}';
+        return "RolePermissionEntity [roleId=" + roleId + ", permissionId=" + permissionId + ", type=" + type + ", id="
+                + id + ", remark=" + remark + ", createdUserId=" + createdUserId + ", createdTime=" + createdTime
+                + ", updatedUserId=" + updatedUserId + ", updatedTime=" + updatedTime + "]";
     }
 }

@@ -101,24 +101,10 @@ public class RoleEntity extends BaseEntity<Long> {
 
     @Override
     public String toString() {
-        return "RoleEntity{" +
-                "name='" + name + '\'' +
-                ", code='" + code + '\'' +
-                ", type=" + type +
-                ", sortValue=" + sortValue +
-                ", parentId=" + parentId +
-                ", children=" + children +
-                ", whitePermissions=" + whitePermissions +
-                ", blackPermissions=" + blackPermissions +
-                ", id=" + id +
-                ", remark='" + remark + '\'' +
-                ", createdUserId='" + createdUserId + '\'' +
-                ", createdTime=" + createdTime +
-                ", updatedUserId='" + updatedUserId + '\'' +
-                ", updatedTime=" + updatedTime +
-                ", deleted=" + deleted +
-                ", deletedUserId='" + deletedUserId + '\'' +
-                ", deletedTime=" + deletedTime +
-                '}';
+        return "RoleEntity [name=" + name + ", code=" + code + ", type=" + type + ", sortValue=" + sortValue + ", id="
+                + id + ", parentId=" + parentId + ", children=" + children + ", remark=" + remark
+                + ", whitePermissions=" + whitePermissions + ", createdUserId=" + createdUserId + ", blackPermissions="
+                + blackPermissions + ", createdTime=" + createdTime + ", updatedUserId=" + updatedUserId
+                + ", updatedTime=" + updatedTime + "]";
     }
 }

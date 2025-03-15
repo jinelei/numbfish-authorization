@@ -81,22 +81,9 @@ public class PermissionEntity extends BaseEntity<Long> {
 
     @Override
     public String toString() {
-        return "PermissionEntity{" +
-                "name='" + name + '\'' +
-                ", code='" + code + '\'' +
-                ", type=" + type +
-                ", sortValue=" + sortValue +
-                ", parentId=" + parentId +
-                ", children=" + children +
-                ", id=" + id +
-                ", remark='" + remark + '\'' +
-                ", createdUserId='" + createdUserId + '\'' +
-                ", createdTime=" + createdTime +
-                ", updatedUserId='" + updatedUserId + '\'' +
-                ", updatedTime=" + updatedTime +
-                ", deleted=" + deleted +
-                ", deletedUserId='" + deletedUserId + '\'' +
-                ", deletedTime=" + deletedTime +
-                '}';
+        return "PermissionEntity [name=" + name + ", code=" + code + ", type=" + type + ", id=" + id + ", sortValue="
+                + sortValue + ", parentId=" + parentId + ", remark=" + remark + ", children=" + children
+                + ", createdUserId=" + createdUserId + ", createdTime=" + createdTime + ", updatedUserId="
+                + updatedUserId + ", updatedTime=" + updatedTime + "]";
     }
 }

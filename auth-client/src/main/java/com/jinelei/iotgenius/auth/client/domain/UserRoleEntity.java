@@ -41,18 +41,8 @@ public class UserRoleEntity extends BaseEntity<Long> {
 
     @Override
     public String toString() {
-        return "UserRoleEntity{" +
-                "userId=" + userId +
-                ", roleId=" + roleId +
-                ", id=" + id +
-                ", remark='" + remark + '\'' +
-                ", createdUserId='" + createdUserId + '\'' +
-                ", createdTime=" + createdTime +
-                ", updatedUserId='" + updatedUserId + '\'' +
-                ", updatedTime=" + updatedTime +
-                ", deleted=" + deleted +
-                ", deletedUserId='" + deletedUserId + '\'' +
-                ", deletedTime=" + deletedTime +
-                '}';
+        return "UserRoleEntity [userId=" + userId + ", roleId=" + roleId + ", id=" + id + ", remark=" + remark
+                + ", createdUserId=" + createdUserId + ", createdTime=" + createdTime + ", updatedUserId="
+                + updatedUserId + ", updatedTime=" + updatedTime + "]";
     }
 }
