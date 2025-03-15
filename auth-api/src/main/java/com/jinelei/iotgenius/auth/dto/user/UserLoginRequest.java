@@ -2,10 +2,7 @@ package com.jinelei.iotgenius.auth.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
 import java.io.Serializable;
-import java.util.List;
 import java.util.Objects;
 
 @Schema(description = "用户登陆请求对象")
