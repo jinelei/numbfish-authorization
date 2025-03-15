@@ -84,4 +84,5 @@ public interface UserApi {
      */
     BaseView<String> updatePassword(@Valid UserUpdatePasswordRequest request);
     
+    
 }

@@ -122,5 +122,5 @@ public class UserController implements UserApi {
         userService.updatePassword(request);
         return new BaseView<>("修改成功");
     }
-
+    
 }
