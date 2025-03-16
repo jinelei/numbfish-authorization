@@ -2,7 +2,8 @@ package com.jinelei.iotgenius.auth.helper;
 
 import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.dto.user.UserResponse;
-import com.jinelei.iotgenius.auth.permission.PermissionDeclaration;
+import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
+import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
 import com.jinelei.iotgenius.common.exception.BaseException;
 import com.jinelei.iotgenius.common.exception.InternalException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +79,34 @@ public class AuthorizationHelper {
      * @param permission
      * @return 是否包含
      */
+    public static Boolean hasPermission(UserResponse user, PermissionDeclaration permission) {
+        return Optional.ofNullable(user)
+                .map(UserResponse::getPermissions)
+                .orElse(new ArrayList<>())
+                .stream()
+                .anyMatch(r -> r.getCode().equals(permission.getCode()));
+    }
+
+    /**
+     * 检查当前登录用户是否具有指定权限
+     * 
+     * @param role
+     * @return 是否包含
+     */
+    public static Boolean hasRole(UserResponse user, RoleDeclaration role) {
+        return Optional.ofNullable(user)
+                .map(UserResponse::getRoles)
+                .orElse(new ArrayList<>())
+                .stream()
+                .anyMatch(r -> r.getCode().equals(role.getCode()));
+    }
+
+    /**
+     * 检查当前登录用户是否具有指定权限
+     * 
+     * @param permission
+     * @return 是否包含
+     */
     public static void checkPermission(PermissionDeclaration permission) {
         UserResponse response = currentUser();
         if (Optional.ofNullable(response)
@@ -84,6 +115,49 @@ public class AuthorizationHelper {
                 .stream()
                 .noneMatch(r -> r.getCode().equals(permission.getCode()))) {
             throw new BaseException(500, "无访问权限", new Throwable("缺少权限: " + permission.getDescription()));
+        }
+    }
+
+    /**
+     * 检查当前登录用户是否具有指定角色
+     * 
+     * @param role
+     * @return 是否包含
+     */
+    public static void checkRole(PermissionDeclaration role) {
+        UserResponse response = currentUser();
+        if (Optional.ofNullable(response)
+                .map(UserResponse::getRoles)
+                .orElse(new ArrayList<>())
+                .stream()
+                .noneMatch(r -> r.getCode().equals(role.getCode()))) {
+            throw new BaseException(500, "无访问权限", new Throwable("缺少角色: " + role.getDescription()));
+        }
+    }
+
+    /**
+     * 检查当前登录用户是否具有指定权限
+     * 
+     * @param permission
+     * @return 是否包含
+     */
+    public static void check(Predicate<UserResponse> predicate) {
+        UserResponse response = currentUser();
+        if (Optional.ofNullable(response).filter(predicate).isEmpty()) {
+            throw new BaseException(500, "无访问权限", new Throwable("无访问权限"));
+        }
+    }
+
+    /**
+     * 检查当前登录用户是否具有指定权限
+     * 
+     * @param permission
+     * @return 是否包含
+     */
+    public static void check(Predicate<UserResponse> predicate, Supplier<String> messagSupplier) {
+        UserResponse response = currentUser();
+        if (Optional.ofNullable(response).filter(predicate).isEmpty()) {
+            throw new BaseException(500, "无访问权限", new Throwable(messagSupplier.get()));
         }
     }
 

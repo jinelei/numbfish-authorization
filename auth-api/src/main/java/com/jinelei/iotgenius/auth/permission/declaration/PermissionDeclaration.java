@@ -1,4 +1,4 @@
-package com.jinelei.iotgenius.auth.permission;
+package com.jinelei.iotgenius.auth.permission.declaration;
 
 import com.jinelei.iotgenius.auth.enumeration.PermissionType;
 
