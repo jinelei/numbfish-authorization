@@ -8,8 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
+import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 @SpringBootApplication
 @MapperScan("com.jinelei.iotgenius.auth.client.mapper")
@@ -20,17 +23,24 @@ public class IotgeniusAuthApplication {
         ConfigurableApplicationContext run = SpringApplication.run(IotgeniusAuthApplication.class, args);
         Environment env = run.getEnvironment();
         log.info("\n----------------------------------------------------------\n\t" +
-                        "Application '{}' is running!\n\t" +
-                        "Local: \t\thttp://localhost:{}\n\t" +
-                        "External: \thttp://{}:{}\n\t" +
-                        "Doc: \t\thttp://{}:{}/doc.html\n" +
-                        "----------------------------------------------------------",
+                "Application '{}' is running!\n\t" +
+                "Local: \t\thttp://localhost:{}\n\t" +
+                "External: \thttp://{}:{}\n\t" +
+                "Doc: \t\thttp://{}:{}/doc.html\n" +
+                "----------------------------------------------------------",
                 env.getProperty("spring.application.name"),
                 env.getProperty("server.port"),
                 InetAddress.getLocalHost().getHostAddress(),
                 env.getProperty("server.port"),
                 InetAddress.getLocalHost().getHostAddress(),
                 env.getProperty("server.port"));
+        List<PermissionDeclaration> permissions = PermissionDeclaration.getPermissions("com.jinelei.iotgenius.auth");
+        permissions.forEach(permission -> {
+            PermissionDeclaration[] list = permission.getClass().getEnumConstants();
+            for (PermissionDeclaration p : list) {
+                log.info("Found permission: {}", p);
+            }
+        });
     }
 
 }
