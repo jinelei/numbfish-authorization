@@ -15,6 +15,7 @@ import com.jinelei.iotgenius.auth.client.service.*;
 import com.jinelei.iotgenius.auth.dto.user.*;
 import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
 import com.jinelei.iotgenius.common.exception.InvalidArgsException;
+
 import org.apache.ibatis.executor.BatchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
