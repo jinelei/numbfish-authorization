@@ -9,6 +9,7 @@ import com.jinelei.iotgenius.common.exception.InternalException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -26,7 +27,7 @@ public class AuthorizationHelper {
 
     /**
      * 请求头中获取用户信息
-     * 
+     *
      * @return 用户信息
      */
     public static UserResponse currentUser() {
@@ -43,8 +44,8 @@ public class AuthorizationHelper {
 
     /**
      * 检查当前登录用户是否具有指定权限
-     * 
-     * @param permission
+     *
+     * @param permission 权限
      * @return 是否包含
      */
     public static Boolean hasPermission(String permission) {
@@ -58,8 +59,8 @@ public class AuthorizationHelper {
 
     /**
      * 检查当前登录用户是否具有指定权限列表
-     * 
-     * @param permission
+     *
+     * @param permissions 权限列表
      * @return 是否包含
      */
     public static Boolean hasPermission(List<String> permissions) {
@@ -70,13 +71,14 @@ public class AuthorizationHelper {
                 .parallelStream()
                 .map(PermissionResponse::getCode)
                 .toList();
-        return codes.containsAll(permissions);
+        return new HashSet<>(codes).containsAll(permissions);
     }
 
     /**
      * 检查当前登录用户是否具有指定权限
-     * 
-     * @param permission
+     *
+     * @param user       用户信息
+     * @param permission 权限
      * @return 是否包含
      */
     public static Boolean hasPermission(UserResponse user, PermissionDeclaration permission) {
@@ -89,8 +91,9 @@ public class AuthorizationHelper {
 
     /**
      * 检查当前登录用户是否具有指定权限
-     * 
-     * @param role
+     *
+     * @param user 用户信息
+     * @param role 角色
      * @return 是否包含
      */
     public static Boolean hasRole(UserResponse user, RoleDeclaration role) {
@@ -103,9 +106,8 @@ public class AuthorizationHelper {
 
     /**
      * 检查当前登录用户是否具有指定权限
-     * 
-     * @param permission
-     * @return 是否包含
+     *
+     * @param permission 权限
      */
     public static void checkPermission(PermissionDeclaration permission) {
         UserResponse response = currentUser();
@@ -120,9 +122,8 @@ public class AuthorizationHelper {
 
     /**
      * 检查当前登录用户是否具有指定角色
-     * 
-     * @param role
-     * @return 是否包含
+     *
+     * @param role 角色
      */
     public static void checkRole(PermissionDeclaration role) {
         UserResponse response = currentUser();
@@ -137,9 +138,8 @@ public class AuthorizationHelper {
 
     /**
      * 检查当前登录用户是否具有指定权限
-     * 
-     * @param permission
-     * @return 是否包含
+     *
+     * @param predicate 断言
      */
     public static void check(Predicate<UserResponse> predicate) {
         UserResponse response = currentUser();
@@ -150,14 +150,14 @@ public class AuthorizationHelper {
 
     /**
      * 检查当前登录用户是否具有指定权限
-     * 
-     * @param permission
-     * @return 是否包含
+     *
+     * @param predicate       断言
+     * @param messageSupplier 消息提供器
      */
-    public static void check(Predicate<UserResponse> predicate, Supplier<String> messagSupplier) {
+    public static void check(Predicate<UserResponse> predicate, Supplier<String> messageSupplier) {
         UserResponse response = currentUser();
         if (Optional.ofNullable(response).filter(predicate).isEmpty()) {
-            throw new BaseException(500, "无访问权限", new Throwable(messagSupplier.get()));
+            throw new BaseException(500, "无访问权限", new Throwable(messageSupplier.get()));
         }
     }
 

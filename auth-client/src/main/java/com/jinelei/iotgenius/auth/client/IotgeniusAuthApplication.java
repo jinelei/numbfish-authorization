@@ -1,5 +1,6 @@
 package com.jinelei.iotgenius.auth.client;
 
+import com.jinelei.iotgenius.auth.property.AuthApiProperty;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackageClasses = {IotgeniusAuthApplication.class, AuthApiProperty.class})
 @MapperScan("com.jinelei.iotgenius.auth.client.mapper")
 public class IotgeniusAuthApplication {
     private static final Logger log = LoggerFactory.getLogger(IotgeniusAuthApplication.class);
@@ -23,11 +24,11 @@ public class IotgeniusAuthApplication {
         ConfigurableApplicationContext run = SpringApplication.run(IotgeniusAuthApplication.class, args);
         Environment env = run.getEnvironment();
         log.info("\n----------------------------------------------------------\n\t" +
-                "Application '{}' is running!\n\t" +
-                "Local: \t\thttp://localhost:{}\n\t" +
-                "External: \thttp://{}:{}\n\t" +
-                "Doc: \t\thttp://{}:{}/doc.html\n" +
-                "----------------------------------------------------------",
+                        "Application '{}' is running!\n\t" +
+                        "Local: \t\thttp://localhost:{}\n\t" +
+                        "External: \thttp://{}:{}\n\t" +
+                        "Doc: \t\thttp://{}:{}/doc.html\n" +
+                        "----------------------------------------------------------",
                 env.getProperty("spring.application.name"),
                 env.getProperty("server.port"),
                 InetAddress.getLocalHost().getHostAddress(),
