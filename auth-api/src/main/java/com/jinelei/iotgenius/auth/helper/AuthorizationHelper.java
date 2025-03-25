@@ -4,6 +4,7 @@ import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.dto.user.UserResponse;
 import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
+import com.jinelei.iotgenius.auth.property.AuthApiProperty;
 import com.jinelei.iotgenius.common.exception.BaseException;
 import com.jinelei.iotgenius.common.exception.InternalException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +25,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @SuppressWarnings("unused")
 public class AuthorizationHelper {
     private static final Logger log = LoggerFactory.getLogger(AuthorizationHelper.class);
+    private AuthApiProperty authApiProperty;
+
+    public void setAuthApiProperty(AuthApiProperty authApiProperty) {
+        this.authApiProperty = authApiProperty;
+    }
 
     /**
      * 请求头中获取用户信息
@@ -159,6 +165,46 @@ public class AuthorizationHelper {
         if (Optional.ofNullable(response).filter(predicate).isEmpty()) {
             throw new BaseException(500, "无访问权限", new Throwable(messageSupplier.get()));
         }
+    }
+
+    /**
+     * 是否是超级管理员
+     * 
+     * @param user 用户
+     */
+    public static Boolean isAdmin(UserResponse user, AuthApiProperty property) {
+        final String username = Optional.ofNullable(property)
+                .map(i -> i.getAdmin())
+                .map(i -> i.getUsername())
+                .orElseThrow(() -> new BaseException(500, "未找到权限属性配置"));
+        return username.equals(Optional.ofNullable(user).map(i -> i.getUsername()).orElse(""));
+    }
+
+    /**
+     * 是否是超级管理员
+     * 
+     * @param user 用户
+     */
+    public static Boolean isAdmin(AuthApiProperty property) {
+        return isAdmin(currentUser(), property);
+    }
+
+    /**
+     * 是否是超级管理员
+     * 
+     * @param user 用户
+     */
+    public Boolean isAdmin() {
+        return AuthorizationHelper.isAdmin(currentUser(), authApiProperty);
+    }
+
+    /**
+     * 是否是超级管理员
+     * 
+     * @param user 用户
+     */
+    public Boolean isAdmin(UserResponse user) {
+        return AuthorizationHelper.isAdmin(user, authApiProperty);
     }
 
 }

@@ -8,12 +8,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jinelei.iotgenius.auth.client.configuration.permission.instance.PermissionInstance;
 import com.jinelei.iotgenius.auth.client.configuration.permission.instance.RoleInstance;
+import com.jinelei.iotgenius.auth.client.convertor.PermissionConvertor;
+import com.jinelei.iotgenius.auth.client.convertor.RoleConvertor;
 import com.jinelei.iotgenius.auth.client.convertor.UserConvertor;
 import com.jinelei.iotgenius.auth.client.domain.*;
 import com.jinelei.iotgenius.auth.client.mapper.UserMapper;
 import com.jinelei.iotgenius.auth.client.service.*;
 import com.jinelei.iotgenius.auth.dto.user.*;
 import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
+import com.jinelei.iotgenius.auth.property.AuthApiProperty;
 import com.jinelei.iotgenius.common.exception.InvalidArgsException;
 
 import org.apache.ibatis.executor.BatchResult;
@@ -40,6 +43,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     @Autowired
     protected UserConvertor userConvertor;
     @Autowired
+    protected RoleConvertor roleConvertor;
+    @Autowired
+    protected PermissionConvertor permissionConvertor;
+    @Autowired
     protected UserRoleService userRoleService;
     @Autowired
     protected PasswordEncoder passwordEncoder;
@@ -55,6 +62,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     protected RedisTemplate<String, UserResponse> userRedisTemplate;
     @Autowired
     protected ObjectMapper objectMapper;
+    @Autowired
+    protected AuthorizationHelper authorizationHelper;
 
     @Override
     public void create(UserCreateRequest request) {
@@ -203,6 +212,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         userEntity.setPassword(null);
         userEntity.setRoles(new ArrayList<>());
         userEntity.setPermissions(new ArrayList<>());
+        final UserResponse userResponse = userConvertor.entityToResponse(userEntity);
         // 查询用户关联的所有的角色
         final List<UserRoleEntity> userRoleEntities = userRoleService
                 .list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, userEntity.getId()));
@@ -210,7 +220,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         if (!roleIds.isEmpty()) {
             final List<RoleEntity> roleEntities = roleService
                     .list(Wrappers.lambdaQuery(RoleEntity.class).in(RoleEntity::getId, roleIds));
-            userEntity.setRoles(roleEntities);
+            userResponse.getRoleIds().addAll(roleIds);
+            roleEntities.stream().map(roleConvertor::entityToResponse).forEach(userResponse.getRoles()::add);
             final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(
                     Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
             final List<Long> permissionIds = rolePermissionEntities.parallelStream()
@@ -218,10 +229,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
             if (!permissionIds.isEmpty()) {
                 final List<PermissionEntity> permissionEntities = permissionService
                         .list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getId, permissionIds));
-                userEntity.setPermissions(permissionEntities);
+                // userResponse.getPermissions().addAll(permissionIds);
+                permissionEntities.stream().map(permissionConvertor::entityToResponse)
+                        .forEach(userResponse.getPermissions()::add);
             }
         }
-        final UserResponse userResponse = userConvertor.entityToResponse(userEntity);
+        if (authorizationHelper.isAdmin(userResponse)) {
+            final List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class));
+            if (!roleEntities.isEmpty()) {
+                userResponse.getRoleIds().addAll(roleIds);
+                roleEntities.stream().map(roleConvertor::entityToResponse).forEach(userResponse.getRoles()::add);
+            }
+            final List<PermissionEntity> permissionEntities = permissionService
+                    .list(Wrappers.lambdaQuery(PermissionEntity.class));
+            if (!permissionEntities.isEmpty()) {
+                // userResponse.getPermissionIds().addAll(permissionIds);
+                permissionEntities.stream().map(permissionConvertor::entityToResponse)
+                        .forEach(userResponse.getPermissions()::add);
+            }
+        }
         final String token = UUID.randomUUID().toString();
         final String keyUserTokenInfo = GENERATE_TOKEN_INFO.apply(token);
         userRedisTemplate.opsForValue().set(keyUserTokenInfo, userResponse);
@@ -251,10 +277,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     public void updatePassword(UserUpdatePasswordRequest request) {
         final String username = Optional.ofNullable(request).map(UserUpdatePasswordRequest::getUsername)
                 .orElseThrow(() -> new InvalidArgsException("用户名不能为空"));
-                AuthorizationHelper.check(
-                        user -> AuthorizationHelper.hasPermission(user, PermissionInstance.User.UPDATE)
-                                || AuthorizationHelper.hasRole(user, RoleInstance.User.ADMINISTRATOR)
-                                || user.getUsername().equals(username));
+        AuthorizationHelper.check(
+                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.User.UPDATE)
+                        || AuthorizationHelper.hasRole(user, RoleInstance.User.ADMINISTRATOR)
+                        || user.getUsername().equals(username));
         String password = Optional.ofNullable(request).map(UserUpdatePasswordRequest::getPassword).orElse(PASSWORD);
         if (password.length() < 6) {
             throw new InvalidArgsException("密码长度不能小于6位");

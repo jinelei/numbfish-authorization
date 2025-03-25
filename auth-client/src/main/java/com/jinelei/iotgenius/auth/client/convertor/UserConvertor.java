@@ -6,6 +6,7 @@ import com.jinelei.iotgenius.auth.dto.user.UserResponse;
 import com.jinelei.iotgenius.auth.dto.user.UserUpdateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,12 +17,21 @@ import java.util.Map;
 @Mapper(componentModel = "spring")
 public interface UserConvertor {
 
-    @Mapping(target = "roles", ignore = true)
+    @Mappings(value = {
+            @Mapping(target = "roles", ignore = true),
+            @Mapping(target = "permissions", ignore = true)
+    })
     UserEntity entityFromCreateRequest(UserCreateRequest source);
 
-    @Mapping(target = "roles", ignore = true)
+    @Mappings(value = {
+            @Mapping(target = "roles", ignore = true),
+            @Mapping(target = "permissions", ignore = true)
+    })
     UserEntity entityFromUpdateRequest(UserUpdateRequest source);
 
-    @Mapping(target = "roles", ignore = true)
+    @Mappings(value = {
+            @Mapping(target = "roles", ignore = true),
+            @Mapping(target = "permissions", ignore = true)
+    })
     UserResponse entityToResponse(UserEntity source);
 }
