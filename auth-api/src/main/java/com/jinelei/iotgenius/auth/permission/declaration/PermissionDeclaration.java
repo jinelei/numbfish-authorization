@@ -18,6 +18,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public interface PermissionDeclaration {
     public static final Logger log = LoggerFactory.getLogger(PermissionDeclaration.class);
 
+    @Schema(description = "权限分组")
+    public default String getGroup() {
+        return "DEFAULT";
+    }
+
     @Schema(description = "权限编码")
     public String getCode();
 
@@ -33,6 +38,26 @@ public interface PermissionDeclaration {
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AssignableTypeFilter(PermissionDeclaration.class));
         Set<BeanDefinition> candidateComponents = scanner.findCandidateComponents(basePackage);
+        for (BeanDefinition candidateComponent : candidateComponents) {
+            String className = candidateComponent.getBeanClassName();
+            if (className != null) {
+                try {
+                    Class<PermissionDeclaration> clazz = (Class<PermissionDeclaration>) Class.forName(className);
+                    permissions.add(clazz.getDeclaredConstructor().newInstance());
+                } catch (Throwable e) {
+                    log.error("Failed to load class: {}", className);
+                }
+            }
+        }
+        return permissions;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<PermissionDeclaration> getPermissions(Class<?> permissionDeclaration) {
+        final List<PermissionDeclaration> permissions = new ArrayList<>();
+        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+        scanner.addIncludeFilter(new AssignableTypeFilter(PermissionDeclaration.class));
+        Set<BeanDefinition> candidateComponents = scanner.findCandidateComponents(permissionDeclaration.getPackageName());
         for (BeanDefinition candidateComponent : candidateComponents) {
             String className = candidateComponent.getBeanClassName();
             if (className != null) {

@@ -10,6 +10,7 @@ import com.jinelei.iotgenius.common.exception.InternalException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -108,6 +109,21 @@ public class AuthorizationHelper {
                 .orElse(new ArrayList<>())
                 .stream()
                 .anyMatch(r -> r.getCode().equals(role.getCode()));
+    }
+
+    /**
+     * 检查当前登录用户是否具有指定权限
+     *
+     * @param user 用户信息
+     * @param role 角色
+     * @return 是否包含
+     */
+    public static Boolean hasRoles(UserResponse user, RoleDeclaration... roles) {
+        return Optional.ofNullable(user)
+                .map(UserResponse::getRoles)
+                .orElse(new ArrayList<>())
+                .stream()
+                .anyMatch(r -> Arrays.stream(roles).anyMatch(e -> e.getCode().equals(r.getCode())));
     }
 
     /**

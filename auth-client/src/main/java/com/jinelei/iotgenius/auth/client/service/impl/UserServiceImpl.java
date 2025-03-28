@@ -68,8 +68,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     @Override
     public void create(UserCreateRequest request) {
         AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.User.CREATE)
-                        || AuthorizationHelper.hasRole(user, RoleInstance.User.ADMINISTRATOR));
+                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_CREATE)
+                        || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR));
         final UserEntity entity = userConvertor.entityFromCreateRequest(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("角色信息不合法"));
         Optional.ofNullable(entity).map(UserEntity::getPassword).ifPresentOrElse(password -> {
@@ -101,8 +101,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     @Override
     public void delete(UserDeleteRequest request) {
         AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.User.DELETE)
-                        || AuthorizationHelper.hasRole(user, RoleInstance.User.ADMINISTRATOR));
+                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_DELETE)
+                        || AuthorizationHelper.hasRoles(user, RoleInstance.SUPER_ADMINISTRATOR, RoleInstance.USER_ADMIN));
         if (Objects.nonNull(request.getId())) {
             int deleted = baseMapper.deleteById(request.getId());
             log.info("删除用户: {}", deleted);
@@ -128,8 +128,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         final String username = Optional.ofNullable(request).map(i -> i.getUsername())
                 .orElseThrow(() -> new InvalidArgsException("用户名不能为空"));
         AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.User.UPDATE)
-                        || AuthorizationHelper.hasRole(user, RoleInstance.User.ADMINISTRATOR)
+                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_UPDATE)
+                        || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR)
                         || user.getUsername().equals(username));
         LambdaUpdateWrapper<UserEntity> wrapper = Wrappers.lambdaUpdate(UserEntity.class);
         wrapper.eq(UserEntity::getId, request.getId());
@@ -162,8 +162,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     @Override
     public UserEntity get(UserQueryRequest request) {
         AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.User.DETAIL)
-                        || AuthorizationHelper.hasRole(user, RoleInstance.User.ADMINISTRATOR));
+                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_DETAIL)
+                        || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR));
         LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), UserEntity::getId, request.getId());
         wrapper.like(Objects.nonNull(request.getUsername()), UserEntity::getUsername, request.getUsername());
@@ -175,8 +175,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     @Override
     public List<UserEntity> list(UserQueryRequest request) {
         AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.User.SUMMARY)
-                        || AuthorizationHelper.hasRole(user, RoleInstance.User.ADMINISTRATOR));
+                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_SUMMARY)
+                        || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR));
         LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), UserEntity::getId, request.getId());
         wrapper.like(Objects.nonNull(request.getUsername()), UserEntity::getUsername, request.getUsername());
@@ -188,8 +188,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     @Override
     public IPage<UserEntity> page(IPage<UserEntity> page, UserQueryRequest request) {
         AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.User.SUMMARY)
-                        || AuthorizationHelper.hasRole(user, RoleInstance.User.ADMINISTRATOR));
+                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_SUMMARY)
+                        || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR));
         LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), UserEntity::getId, request.getId());
         wrapper.like(Objects.nonNull(request.getUsername()), UserEntity::getUsername, request.getUsername());
@@ -278,8 +278,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         final String username = Optional.ofNullable(request).map(UserUpdatePasswordRequest::getUsername)
                 .orElseThrow(() -> new InvalidArgsException("用户名不能为空"));
         AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.User.UPDATE)
-                        || AuthorizationHelper.hasRole(user, RoleInstance.User.ADMINISTRATOR)
+                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_UPDATE)
+                        || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR)
                         || user.getUsername().equals(username));
         String password = Optional.ofNullable(request).map(UserUpdatePasswordRequest::getPassword).orElse(PASSWORD);
         if (password.length() < 6) {
