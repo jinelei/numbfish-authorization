@@ -13,21 +13,22 @@ import java.util.Optional;
 @Component
 @ConfigurationProperties(prefix = "iotgenius.auth")
 public class AuthApiProperty {
-    protected AuthLoginProperty login = new AuthLoginProperty("/user/login");
-    protected AuthLoginProperty logout = new AuthLoginProperty("/user/logout");
-    protected AuthAdminProperty admin = new AuthAdminProperty("admin");
-    protected AuthIgnoreProperty ignore = new AuthIgnoreProperty();
-    protected AuthHeaderProperty header = new AuthHeaderProperty("Authorization", "user");
+    protected AuthLoginProperty login;
+    protected AuthLoginProperty logout;
+    protected AuthAdminProperty admin;
+    protected AuthIgnoreProperty ignore;
+    protected AuthHeaderProperty header;
 
     public String getLoginUrl(ServerProperties serverProperties) {
         return "%s/%s".formatted(Optional.ofNullable(serverProperties)
                 .map(ServerProperties::getServlet)
                 .map(ServerProperties.Servlet::getContextPath)
                 .map(s -> s.endsWith("/") ? s.substring(0, s.length() - 1) : s)
-                .orElse(""), Optional.ofNullable(this.login)
-                .map(AuthLoginProperty::getUrl)
-                .map(s -> s.startsWith("/") ? s.substring(1) : s)
-                .orElse(""));
+                .orElse(""),
+                Optional.ofNullable(this.login)
+                        .map(AuthLoginProperty::getUrl)
+                        .map(s -> s.startsWith("/") ? s.substring(1) : s)
+                        .orElse(""));
     }
 
     public String getLogoutUrl(ServerProperties serverProperties) {
@@ -35,10 +36,11 @@ public class AuthApiProperty {
                 .map(ServerProperties::getServlet)
                 .map(ServerProperties.Servlet::getContextPath)
                 .map(s -> s.endsWith("/") ? s.substring(0, s.length() - 1) : s)
-                .orElse(""), Optional.ofNullable(this.logout)
-                .map(AuthLoginProperty::getUrl)
-                .map(s -> s.startsWith("/") ? s.substring(1) : s)
-                .orElse(""));
+                .orElse(""),
+                Optional.ofNullable(this.logout)
+                        .map(AuthLoginProperty::getUrl)
+                        .map(s -> s.startsWith("/") ? s.substring(1) : s)
+                        .orElse(""));
     }
 
     public List<String> getIgnoreUrls() {
@@ -101,9 +103,12 @@ public class AuthApiProperty {
 
     @Override
     public boolean equals(Object object) {
-        if (object == null || getClass() != object.getClass()) return false;
+        if (object == null || getClass() != object.getClass())
+            return false;
         AuthApiProperty that = (AuthApiProperty) object;
-        return Objects.equals(login, that.login) && Objects.equals(logout, that.logout) && Objects.equals(admin, that.admin) && Objects.equals(ignore, that.ignore) && Objects.equals(header, that.header);
+        return Objects.equals(login, that.login) && Objects.equals(logout, that.logout)
+                && Objects.equals(admin, that.admin) && Objects.equals(ignore, that.ignore)
+                && Objects.equals(header, that.header);
     }
 
     @Override

@@ -57,4 +57,11 @@ mybatis:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
+iotgenius:
+  auth:
+    admin:
+      username: administrator
+    ignore:
+      urls: 
+        - /webjars
+        - /doc.html
