@@ -5,7 +5,7 @@ import com.jinelei.iotgenius.auth.enumeration.RolePermissionType;
 
 import java.util.Objects;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 @TableName("role_permission")
 public class RolePermissionEntity extends BaseEntity<Long> {
     protected Long roleId;

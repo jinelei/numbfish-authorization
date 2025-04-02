@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public class AuthIgnoreProperty {
     private List<String> urls = new ArrayList<>();
 

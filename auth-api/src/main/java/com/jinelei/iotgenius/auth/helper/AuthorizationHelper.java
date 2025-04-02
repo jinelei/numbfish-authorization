@@ -23,7 +23,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public class AuthorizationHelper {
     private static final Logger log = LoggerFactory.getLogger(AuthorizationHelper.class);
     private AuthApiProperty authApiProperty;

@@ -2,7 +2,7 @@ package com.jinelei.iotgenius.auth.property;
 
 import java.util.Objects;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public class AuthHeaderProperty {
     protected String header;
     protected String placeholder;

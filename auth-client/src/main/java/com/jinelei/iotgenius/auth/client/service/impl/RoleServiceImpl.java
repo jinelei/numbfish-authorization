@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
         implements RoleService {

@@ -17,20 +17,30 @@ import java.util.Map;
 @Mapper(componentModel = "spring")
 public interface UserConvertor {
 
-    @Mappings(value = {
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "createdTime", ignore = true),
+            @Mapping(target = "createdUserId", ignore = true),
+            @Mapping(target = "updatedTime", ignore = true),
+            @Mapping(target = "updatedUserId", ignore = true),
             @Mapping(target = "roles", ignore = true),
-            @Mapping(target = "permissions", ignore = true)
+            @Mapping(target = "permissions", ignore = true),
     })
     UserEntity entityFromCreateRequest(UserCreateRequest source);
 
     @Mappings(value = {
+            @Mapping(target = "createdTime", ignore = true),
+            @Mapping(target = "createdUserId", ignore = true),
+            @Mapping(target = "updatedTime", ignore = true),
+            @Mapping(target = "updatedUserId", ignore = true),
             @Mapping(target = "roles", ignore = true),
-            @Mapping(target = "permissions", ignore = true)
+            @Mapping(target = "permissions", ignore = true),
     })
     UserEntity entityFromUpdateRequest(UserUpdateRequest source);
 
     @Mappings(value = {
             @Mapping(target = "roles", ignore = true),
+            @Mapping(target = "roleIds", ignore = true),
             @Mapping(target = "permissions", ignore = true)
     })
     UserResponse entityToResponse(UserEntity source);

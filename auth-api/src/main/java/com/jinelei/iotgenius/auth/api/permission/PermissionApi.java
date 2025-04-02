@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public interface PermissionApi {
     /**
      * 创建权限

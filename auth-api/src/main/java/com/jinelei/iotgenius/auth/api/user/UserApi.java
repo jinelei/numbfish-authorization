@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
  * @LastEditTime: 2025-02-28 16:09:00
  * @Description: UserApi
  */
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public interface UserApi {
     /**
      * 创建用户

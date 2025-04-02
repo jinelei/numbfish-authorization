@@ -7,7 +7,7 @@ import com.jinelei.iotgenius.auth.enumeration.RoleType;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 @TableName("role")
 public class RoleEntity extends BaseEntity<Long> {
     protected String name;

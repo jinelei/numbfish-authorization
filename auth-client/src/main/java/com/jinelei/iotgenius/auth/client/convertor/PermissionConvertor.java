@@ -3,7 +3,11 @@ package com.jinelei.iotgenius.auth.client.convertor;
 import com.jinelei.iotgenius.auth.dto.permission.PermissionCreateRequest;
 import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.dto.permission.PermissionUpdateRequest;
+
+import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 import com.jinelei.iotgenius.auth.client.domain.PermissionEntity;
 
@@ -15,10 +19,30 @@ import java.util.Map;
 @SuppressWarnings("unused")
 @Mapper(componentModel = "spring")
 public interface PermissionConvertor {
+    @Mappings({
+        @Mapping(target = "id", ignore = true),
+        @Mapping(target = "children", ignore = true),
+        @Mapping(target = "createdTime", ignore = true),
+        @Mapping(target = "createdUserId", ignore = true),
+        @Mapping(target = "updatedTime", ignore = true),
+        @Mapping(target = "updatedUserId", ignore = true),
+    })
     PermissionEntity entityFromCreateRequest(PermissionCreateRequest source);
 
+    @Mappings({
+        @Mapping(target = "children", ignore = true),
+        @Mapping(target = "createdTime", ignore = true),
+        @Mapping(target = "createdUserId", ignore = true),
+        @Mapping(target = "updatedTime", ignore = true),
+        @Mapping(target = "updatedUserId", ignore = true),
+    })
     PermissionEntity entityFromUpdateRequest(PermissionUpdateRequest source);
 
+    @Mappings({
+        @Mapping(target = "deleted", ignore = true),
+        @Mapping(target = "deletedTime", ignore = true),
+        @Mapping(target = "deletedUserId", ignore = true),
+    })
     PermissionResponse entityToResponse(PermissionEntity source);
 
     default List<PermissionEntity> tree(List<PermissionEntity> allPermissions) {

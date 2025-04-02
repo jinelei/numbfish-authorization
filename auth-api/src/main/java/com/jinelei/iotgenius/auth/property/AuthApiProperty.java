@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 @Component
 @ConfigurationProperties(prefix = "iotgenius.auth")
 public class AuthApiProperty {

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 @ApiSupport(order = 3)
 @Tag(name = "用户管理")
 @Validated

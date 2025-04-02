@@ -1,6 +1,6 @@
 package com.jinelei.iotgenius.auth.property;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public class AuthLoginProperty {
     protected String url;
 

@@ -4,7 +4,10 @@ import com.jinelei.iotgenius.auth.client.domain.RoleEntity;
 import com.jinelei.iotgenius.auth.dto.role.RoleCreateRequest;
 import com.jinelei.iotgenius.auth.dto.role.RoleResponse;
 import com.jinelei.iotgenius.auth.dto.role.RoleUpdateRequest;
+import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,10 +17,38 @@ import java.util.Map;
 @SuppressWarnings("unused")
 @Mapper(componentModel = "spring")
 public interface RoleConvertor {
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "children", ignore = true),
+            @Mapping(target = "createdTime", ignore = true),
+            @Mapping(target = "createdUserId", ignore = true),
+            @Mapping(target = "updatedTime", ignore = true),
+            @Mapping(target = "updatedUserId", ignore = true),
+            @Mapping(target = "blackPermissions", ignore = true),
+            @Mapping(target = "whitePermissions", ignore = true),
+    })
     RoleEntity entityFromCreateRequest(RoleCreateRequest source);
 
+    @Mappings({
+            @Mapping(target = "children", ignore = true),
+            @Mapping(target = "createdTime", ignore = true),
+            @Mapping(target = "createdUserId", ignore = true),
+            @Mapping(target = "updatedTime", ignore = true),
+            @Mapping(target = "updatedUserId", ignore = true),
+            @Mapping(target = "blackPermissions", ignore = true),
+            @Mapping(target = "whitePermissions", ignore = true),
+    })
     RoleEntity entityFromUpdateRequest(RoleUpdateRequest source);
 
+    @Mappings({
+            @Mapping(target = "deleted", ignore = true),
+            @Mapping(target = "deletedTime", ignore = true),
+            @Mapping(target = "deletedUserId", ignore = true),
+            @Mapping(target = "blackPermissions", ignore = true),
+            @Mapping(target = "blackPermissionIds", ignore = true),
+            @Mapping(target = "whitePermissions", ignore = true),
+            @Mapping(target = "whitePermissionIds", ignore = true),
+    })
     RoleResponse entityToResponse(RoleEntity source);
 
     default List<RoleEntity> tree(List<RoleEntity> allRoles) {
