@@ -7,6 +7,8 @@ import com.jinelei.iotgenius.auth.client.helper.PageHelper;
 import com.jinelei.iotgenius.auth.dto.permission.*;
 import com.jinelei.iotgenius.auth.dto.user.UserResponse;
 import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
+import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +29,9 @@ import com.jinelei.iotgenius.common.view.PageView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
@@ -105,10 +109,18 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限分页")
     @PostMapping("/page")
     public PageView<PermissionResponse> page(@RequestBody @Valid PageRequest<PermissionQueryRequest> request) {
-        IPage<PermissionEntity> page = permissionService.page(PageHelper.toPage(new PageDTO<>(), request), request.getParams());
-        List<PermissionResponse> collect = page.getRecords().parallelStream().map(entity -> permissionService.convert(entity))
+        IPage<PermissionEntity> page = permissionService.page(PageHelper.toPage(new PageDTO<>(), request),
+                request.getParams());
+        List<PermissionResponse> collect = page.getRecords().parallelStream()
+                .map(entity -> permissionService.convert(entity))
                 .collect(Collectors.toList());
         return new PageView<>(collect, page.getTotal(), page.getPages(), page.getSize());
+    }
+
+    @Override
+    public <T extends PermissionDeclaration> BaseView<Boolean> regist(@Valid List<T> permissions) {
+        Boolean result = permissionService.regist(Optional.ofNullable(permissions).orElse(new ArrayList<>()));
+        return new BaseView<>(result);
     }
 
 }

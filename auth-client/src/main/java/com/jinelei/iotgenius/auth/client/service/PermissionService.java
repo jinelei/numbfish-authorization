@@ -3,6 +3,7 @@ package com.jinelei.iotgenius.auth.client.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinelei.iotgenius.auth.dto.permission.*;
+import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.iotgenius.auth.client.domain.PermissionEntity;
 
 import java.util.List;
@@ -26,5 +27,7 @@ public interface PermissionService extends IService<PermissionEntity> {
     PermissionResponse convert(PermissionEntity entity);
 
     List<PermissionResponse> convertTree(List<PermissionEntity> entity);
+
+    <T extends PermissionDeclaration<?>> Boolean regist(List<T> permissions);
 
 }

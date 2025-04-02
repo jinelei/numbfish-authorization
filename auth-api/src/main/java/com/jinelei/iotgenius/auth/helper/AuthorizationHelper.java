@@ -138,7 +138,7 @@ public class AuthorizationHelper {
                 .orElse(new ArrayList<>())
                 .stream()
                 .noneMatch(r -> r.getCode().equals(permission.getCode()))) {
-            throw new BaseException(500, "无访问权限", new Throwable("缺少权限: " + permission.getDescription()));
+            throw new BaseException(500, "无访问权限", new Throwable("缺少权限: " + permission.getRemark()));
         }
     }
 
@@ -154,7 +154,7 @@ public class AuthorizationHelper {
                 .orElse(new ArrayList<>())
                 .stream()
                 .noneMatch(r -> r.getCode().equals(role.getCode()))) {
-            throw new BaseException(500, "无访问权限", new Throwable("缺少角色: " + role.getDescription()));
+            throw new BaseException(500, "无访问权限", new Throwable("缺少角色: " + role.getRemark()));
         }
     }
 

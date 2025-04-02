@@ -9,6 +9,8 @@ import com.jinelei.iotgenius.auth.client.domain.RoleEntity;
 import com.jinelei.iotgenius.auth.client.helper.PageHelper;
 import com.jinelei.iotgenius.auth.client.service.RoleService;
 import com.jinelei.iotgenius.auth.dto.role.*;
+import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
+import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
 import com.jinelei.iotgenius.common.request.PageRequest;
 import com.jinelei.iotgenius.common.view.BaseView;
 import com.jinelei.iotgenius.common.view.ListView;
@@ -23,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("all")
@@ -106,4 +110,9 @@ public class RoleController implements RoleApi {
         return new PageView<>(collect, page.getTotal(), page.getPages(), page.getSize());
     }
 
+    @Override
+    public <T extends RoleDeclaration> BaseView<Boolean> regist(@Valid List<T> roles) {
+        Boolean result = roleService.regist(Optional.ofNullable(roles).orElse(new ArrayList<>()));
+        return new BaseView<>(result);
+    }
 }

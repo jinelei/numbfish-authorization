@@ -1,6 +1,7 @@
 package com.jinelei.iotgenius.auth.api.role;
 
 import com.jinelei.iotgenius.auth.dto.role.*;
+import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
 import com.jinelei.iotgenius.common.request.PageRequest;
 import com.jinelei.iotgenius.common.view.BaseView;
 import com.jinelei.iotgenius.common.view.ListView;
@@ -66,4 +67,11 @@ public interface RoleApi {
      */
     PageView<RoleResponse> page(@Valid PageRequest<RoleQueryRequest> request);
 
+    /**
+     * 注册角色实例
+     * @param <T> 角色实例
+     * @param roles 角色列表
+     * @return 注册结果
+     */
+    <T extends RoleDeclaration> BaseView<Boolean> regist(@Valid List<T> roles);
 }

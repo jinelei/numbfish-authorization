@@ -1,6 +1,7 @@
 package com.jinelei.iotgenius.auth.api.permission;
 
 import com.jinelei.iotgenius.auth.dto.permission.*;
+import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.iotgenius.common.request.PageRequest;
 import com.jinelei.iotgenius.common.view.BaseView;
 import com.jinelei.iotgenius.common.view.ListView;
@@ -66,4 +67,12 @@ public interface PermissionApi {
      */
     PageView<PermissionResponse> page(@Valid PageRequest<PermissionQueryRequest> request);
 
+    /**
+     * 注册权限实例
+     * 
+     * @param <T>         权限实例
+     * @param permissions 权限列表
+     * @return 注册状态
+     */
+    <T extends PermissionDeclaration> BaseView<Boolean> regist(@Valid List<T> permissions);
 }

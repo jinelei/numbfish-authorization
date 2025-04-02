@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinelei.iotgenius.auth.client.domain.RoleEntity;
 import com.jinelei.iotgenius.auth.dto.role.*;
+import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
 
 import java.util.List;
 
@@ -26,5 +27,7 @@ public interface RoleService extends IService<RoleEntity> {
     RoleResponse convert(RoleEntity entity);
 
     List<RoleResponse> convertTree(List<RoleEntity> entity);
+
+    <T extends RoleDeclaration<?>> Boolean regist(List<T> roles);
 
 }

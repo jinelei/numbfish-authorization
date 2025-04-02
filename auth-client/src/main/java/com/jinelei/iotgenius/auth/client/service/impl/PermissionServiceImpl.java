@@ -1,14 +1,27 @@
 package com.jinelei.iotgenius.auth.client.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jinelei.iotgenius.auth.client.domain.BaseEntity;
 import com.jinelei.iotgenius.auth.dto.permission.*;
+import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
+import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
 import com.jinelei.iotgenius.common.exception.NotExistException;
+import com.jinelei.iotgenius.common.helper.Snowflake;
+
+import org.apache.ibatis.executor.BatchResult;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +35,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinelei.iotgenius.auth.client.convertor.PermissionConvertor;
 import com.jinelei.iotgenius.auth.client.domain.PermissionEntity;
+import com.jinelei.iotgenius.auth.client.domain.RoleEntity;
 import com.jinelei.iotgenius.auth.client.mapper.PermissionMapper;
 import com.jinelei.iotgenius.auth.client.service.PermissionService;
 import com.jinelei.iotgenius.common.exception.InvalidArgsException;
@@ -31,6 +45,7 @@ import com.jinelei.iotgenius.common.exception.InvalidArgsException;
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, PermissionEntity>
         implements PermissionService {
     private static final Logger log = LoggerFactory.getLogger(PermissionServiceImpl.class);
+    protected Snowflake snowflake = Snowflake.DEFAULT;
 
     @Autowired
     protected PermissionConvertor permissionConvertor;
@@ -41,10 +56,13 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("权限信息不合法"));
         Optional.of(entity).map(PermissionEntity::getParentId)
                 .ifPresentOrElse(parentId -> {
-                    Optional.ofNullable(baseMapper.selectById(parentId)).orElseThrow(() -> new NotExistException("父级权限不存在"));
-                    entity.setSortValue(Optional.ofNullable(request.getSortValue()).orElseGet(() -> baseMapper.selectMaxSortValue(parentId) + 1));
+                    Optional.ofNullable(baseMapper.selectById(parentId))
+                            .orElseThrow(() -> new NotExistException("父级权限不存在"));
+                    entity.setSortValue(Optional.ofNullable(request.getSortValue())
+                            .orElseGet(() -> baseMapper.selectMaxSortValue(parentId) + 1));
                 }, () -> {
-                    entity.setSortValue(Optional.ofNullable(request.getSortValue()).orElseGet(() -> baseMapper.selectMaxSortValue() + 1));
+                    entity.setSortValue(Optional.ofNullable(request.getSortValue())
+                            .orElseGet(() -> baseMapper.selectMaxSortValue() + 1));
                 });
         int inserted = baseMapper.insert(entity);
         Assert.state(inserted == 1, "权限创建失败");
@@ -59,7 +77,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             int deleted = baseMapper.deleteByIds(request.getIds());
             Assert.state(deleted == request.getIds().size(), "权限删除失败");
         } else if (Objects.nonNull(request.getParentId())) {
-            List<PermissionEntity> entities = baseMapper.selectList(Wrappers.lambdaQuery(PermissionEntity.class).eq(PermissionEntity::getParentId, request.getParentId()));
+            List<PermissionEntity> entities = baseMapper.selectList(Wrappers.lambdaQuery(PermissionEntity.class)
+                    .eq(PermissionEntity::getParentId, request.getParentId()));
             if (CollectionUtils.isEmpty(entities)) {
                 throw new InvalidArgsException("该权限下没有子权限");
             }
@@ -95,7 +114,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public List<PermissionEntity> tree(PermissionQueryRequest request) {
         List<PermissionEntity> list = this.list(request);
-        List<PermissionEntity> tree = baseMapper.getPermissionTreeByIds(list.parallelStream().map(BaseEntity::getId).toList());
+        List<PermissionEntity> tree = baseMapper
+                .getPermissionTreeByIds(list.parallelStream().map(BaseEntity::getId).toList());
         return tree;
     }
 
@@ -133,6 +153,68 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         List<PermissionEntity> tree = permissionConvertor.tree(entity);
         List<PermissionResponse> response = tree.parallelStream().map(permissionConvertor::entityToResponse).toList();
         return response;
+    }
+
+    @Override
+    public <T extends PermissionDeclaration<?>> Boolean regist(List<T> permissions) {
+        final Map<T, PermissionEntity> entitiesMap = new ConcurrentHashMap<>();
+        final Map<T, Boolean> isCreateEntity = new ConcurrentHashMap<>();
+        final List<T> rootNodes = new CopyOnWriteArrayList<>();
+        permissions.parallelStream()
+                .filter(i -> Objects.isNull(i.getParent()))
+                .forEach(rootNodes::add);
+        final Map<Object, List<T>> byParentMap = permissions.parallelStream()
+                .filter(i -> Objects.nonNull(i.getParent()))
+                .collect(Collectors.groupingBy(i -> i.getParent()));
+        if (rootNodes.isEmpty()) {
+            log.error("权限树错误: 缺失根节点");
+        }
+
+        LambdaQueryWrapper<PermissionEntity> wrapper = Wrappers.lambdaQuery(PermissionEntity.class);
+        wrapper.in(PermissionEntity::getCode, permissions.parallelStream().map(i -> i.getCode()).toList());
+        final List<PermissionEntity> existEntities = baseMapper.selectList(wrapper);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(permissions.size());
+
+        final List<T> workNodes = new CopyOnWriteArrayList<>(rootNodes);
+        while (countDownLatch.getCount() != 0) {
+            final List<T> tempNodes = new CopyOnWriteArrayList<>();
+            workNodes.forEach(node -> {
+                List<PermissionEntity> list = existEntities.parallelStream()
+                        .filter(i -> i.getCode().equals(node.getCode())).toList();
+                if (list.size() > 1) {
+                    log.error("查询权限编码不唯一: {}", node.getCode());
+                }
+                final PermissionEntity entity = fromDeclaration(
+                        list.stream().findFirst().orElse(new PermissionEntity()),
+                        node);
+                Optional.ofNullable(node)
+                        .filter(i -> Objects.nonNull(i.getParent()))
+                        .map(i -> i.getParent())
+                        .map(i -> entitiesMap.get(i))
+                        .map(i -> i.getId())
+                        .ifPresent(i -> entity.setParentId(i));
+                entitiesMap.putIfAbsent(node, entity);
+                isCreateEntity.putIfAbsent(node, list.isEmpty());
+                countDownLatch.countDown();
+                Optional.ofNullable(byParentMap.get(node)).ifPresent(tempNodes::addAll);
+            });
+            workNodes.clear();
+            workNodes.addAll(tempNodes);
+        }
+        List<BatchResult> results = baseMapper.insertOrUpdate(entitiesMap.values());
+        return true;
+    }
+
+    public <T extends PermissionDeclaration<?>> PermissionEntity fromDeclaration(PermissionEntity permission, T node) {
+        permission.setId(Optional.ofNullable(permission).map(i -> i.getId()).orElse(snowflake.next()));
+        permission.setCode(node.getCode());
+        permission.setRemark(node.getRemark());
+        permission.setName(node.getRemark());
+        permission.setSortValue(node.getSortValue());
+        permission.setType(node.getType());
+        permission.setParentId(Optional.ofNullable(permission).map(i -> i.getParentId()).orElse(null));
+        return permission;
     }
 
 }
