@@ -118,7 +118,7 @@ public class PermissionController implements PermissionApi {
     }
 
     @Override
-    public <T extends PermissionDeclaration> BaseView<Boolean> regist(@Valid List<T> permissions) {
+    public <T extends PermissionDeclaration<?>> BaseView<Boolean> regist(@Valid List<T> permissions) {
         Boolean result = permissionService.regist(Optional.ofNullable(permissions).orElse(new ArrayList<>()));
         return new BaseView<>(result);
     }

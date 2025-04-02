@@ -111,7 +111,7 @@ public class RoleController implements RoleApi {
     }
 
     @Override
-    public <T extends RoleDeclaration> BaseView<Boolean> regist(@Valid List<T> roles) {
+    public <T extends RoleDeclaration<?>> BaseView<Boolean> regist(@Valid List<T> roles) {
         Boolean result = roleService.regist(Optional.ofNullable(roles).orElse(new ArrayList<>()));
         return new BaseView<>(result);
     }

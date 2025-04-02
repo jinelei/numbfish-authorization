@@ -74,5 +74,5 @@ public interface PermissionApi {
      * @param permissions 权限列表
      * @return 注册状态
      */
-    <T extends PermissionDeclaration> BaseView<Boolean> regist(@Valid List<T> permissions);
+    <T extends PermissionDeclaration<?>> BaseView<Boolean> regist(@Valid List<T> permissions);
 }

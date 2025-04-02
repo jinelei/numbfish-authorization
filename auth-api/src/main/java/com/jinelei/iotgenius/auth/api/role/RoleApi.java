@@ -73,5 +73,5 @@ public interface RoleApi {
      * @param roles 角色列表
      * @return 注册结果
      */
-    <T extends RoleDeclaration> BaseView<Boolean> regist(@Valid List<T> roles);
+    <T extends RoleDeclaration<?>> BaseView<Boolean> regist(@Valid List<T> roles);
 }
