@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.jinelei.iotgenius.auth.enumeration.RolePermissionType;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @SuppressWarnings("all")
 @TableName("role_permission")
@@ -11,6 +12,16 @@ public class RolePermissionEntity extends BaseEntity<Long> {
     protected Long roleId;
     protected Long permissionId;
     protected RolePermissionType type;
+
+    public boolean isSimilar(RolePermissionEntity other) {
+        return Optional.ofNullable(roleId).equals(Optional.ofNullable(other).map(i -> i.getRoleId()))
+                && Optional.ofNullable(permissionId).equals(Optional.ofNullable(other).map(i -> i.getPermissionId()));
+    }
+    public RolePermissionEntity cover(RolePermissionEntity other) {
+        Optional.ofNullable(other).map(i -> i.getType()).ifPresent(this::setType);
+        Optional.ofNullable(other).map(i -> i.getRemark()).ifPresent(this::setRemark);
+        return this;
+    }
 
     @Override
     public Long getId() {
@@ -48,10 +59,13 @@ public class RolePermissionEntity extends BaseEntity<Long> {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        if (!super.equals(o))
+            return false;
         RolePermissionEntity that = (RolePermissionEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(roleId, that.roleId) && Objects.equals(permissionId, that.permissionId) && type == that.type;
+        return Objects.equals(id, that.id) && Objects.equals(roleId, that.roleId)
+                && Objects.equals(permissionId, that.permissionId) && type == that.type;
     }
 
     @Override

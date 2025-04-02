@@ -244,7 +244,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
     @Override
     public <T extends RoleDeclaration<?>> Boolean regist(List<T> roles) {
         final Map<T, RoleEntity> entitiesMap = new ConcurrentHashMap<>();
-        final Map<T, Boolean> isCreateEntity = new ConcurrentHashMap<>();
         final List<RoleEntity> roleEntities = new CopyOnWriteArrayList<>();
         final List<T> rootNodes = new CopyOnWriteArrayList<>();
         roles.parallelStream()
@@ -317,35 +316,32 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
                             });
                         });
                 roleEntities.add(entity);
-                entitiesMap.putIfAbsent(node, entity);
-                isCreateEntity.putIfAbsent(node, list.isEmpty());
                 countDownLatch.countDown();
                 Optional.ofNullable(byParentMap.get(node)).ifPresent(tempNodes::addAll);
             });
             workNodes.clear();
             workNodes.addAll(tempNodes);
         }
-        List<Long> roleIds = entitiesMap.values().parallelStream().map(i -> i.getId()).toList();
-        final List<RolePermissionEntity> updatEntities = new CopyOnWriteArrayList<>();
+        List<Long> roleIds = roleEntities.parallelStream().map(i -> i.getId()).toList();
         List<RolePermissionEntity> existRolePermissions = rolePermissionService
-                .list(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
-        rolePermissionEntities.parallelStream()
-                .forEach(e -> {
-                    rolePermissionEntities.parallelStream()
-                            .filter(i -> i.getRoleId().equals(e.getRoleId())
-                                    && i.getPermissionId().equals(e.getPermissionId()))
-                            .findAny()
-                            .ifPresentOrElse(ie -> {
-                                ie.setId(e.getId());
-                                ie.setRemark(e.getRemark());
-                                ie.setType(e.getType());
-                                updatEntities.add(ie);
-                            }, () -> {
-                                updatEntities.add(e);
-                            });
-                });
+                .list(Wrappers.lambdaQuery(RolePermissionEntity.class)
+                        .in(!roleIds.isEmpty(), RolePermissionEntity::getRoleId, roleIds)
+                        .eq(roleIds.isEmpty(), RolePermissionEntity::getId, 0L));
+        final List<RolePermissionEntity> updatEntities = rolePermissionEntities
+                .parallelStream()
+                .map(e -> existRolePermissions.parallelStream()
+                        .filter(i -> i.isSimilar(e))
+                        .findAny()
+                        .map(ie -> ie.cover(e))
+                        .orElse(e))
+                .toList();
+        List<Long> deleteRolePermissionIds = existRolePermissions.parallelStream()
+                .filter(i -> updatEntities.parallelStream().noneMatch(j -> j.isSimilar(i)))
+                .map(i -> i.getId())
+                .toList();
         List<BatchResult> results = baseMapper.insertOrUpdate(roleEntities);
-        rolePermissionService.saveBatch(rolePermissionEntities);
+        rolePermissionService.getBaseMapper().insertOrUpdate(updatEntities);
+        rolePermissionService.getBaseMapper().deleteByIds(deleteRolePermissionIds);
         return true;
     }
 
@@ -353,7 +349,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
         role.setId(Optional.ofNullable(role).map(i -> i.getId()).orElse(snowflake.next()));
         role.setCode(node.getCode());
         role.setRemark(node.getRemark());
-        role.setName(node.getRemark());
+        role.setName(node.getName());
         role.setSortValue(node.getSortValue());
         role.setType(node.getType());
         role.setParentId(Optional.ofNullable(role).map(i -> i.getParentId()).orElse(null));
