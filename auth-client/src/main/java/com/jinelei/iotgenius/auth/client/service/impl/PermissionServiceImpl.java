@@ -157,6 +157,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     @Override
     public <T extends PermissionDeclaration<?>> Boolean regist(List<T> permissions) {
+        final List<PermissionEntity> updateEntities = new CopyOnWriteArrayList<>();
         final Map<T, PermissionEntity> entitiesMap = new ConcurrentHashMap<>();
         final Map<T, Boolean> isCreateEntity = new ConcurrentHashMap<>();
         final List<T> rootNodes = new CopyOnWriteArrayList<>();
@@ -195,6 +196,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
                         .map(i -> i.getId())
                         .ifPresent(i -> entity.setParentId(i));
                 entitiesMap.putIfAbsent(node, entity);
+                updateEntities.add(entity);
                 isCreateEntity.putIfAbsent(node, list.isEmpty());
                 countDownLatch.countDown();
                 Optional.ofNullable(byParentMap.get(node)).ifPresent(tempNodes::addAll);
@@ -202,7 +204,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             workNodes.clear();
             workNodes.addAll(tempNodes);
         }
-        List<BatchResult> results = baseMapper.insertOrUpdate(entitiesMap.values());
+        List<BatchResult> results = baseMapper.insertOrUpdate(updateEntities);
         return true;
     }
 

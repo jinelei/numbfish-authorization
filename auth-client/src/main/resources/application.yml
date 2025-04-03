@@ -65,3 +65,4 @@ iotgenius:
       urls: 
         - /webjars
         - /doc.html
+        - /user/login

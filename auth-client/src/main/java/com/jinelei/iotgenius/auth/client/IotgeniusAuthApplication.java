@@ -2,6 +2,7 @@ package com.jinelei.iotgenius.auth.client;
 
 import com.jinelei.iotgenius.auth.client.configuration.permission.instance.PermissionInstance;
 import com.jinelei.iotgenius.auth.client.configuration.permission.instance.RoleInstance;
+import com.jinelei.iotgenius.auth.client.helper.SpringHelper;
 import com.jinelei.iotgenius.auth.client.service.PermissionService;
 import com.jinelei.iotgenius.auth.client.service.RoleService;
 import com.jinelei.iotgenius.auth.property.AuthApiProperty;
@@ -9,6 +10,7 @@ import com.jinelei.iotgenius.auth.property.AuthApiProperty;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -18,12 +20,16 @@ import org.springframework.core.env.Environment;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @EnableConfigurationProperties({ AuthApiProperty.class })
 @SpringBootApplication(scanBasePackageClasses = { IotgeniusAuthApplication.class })
 @MapperScan("com.jinelei.iotgenius.auth.client.mapper")
-public class IotgeniusAuthApplication {
+public class IotgeniusAuthApplication implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(IotgeniusAuthApplication.class);
+    private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) throws UnknownHostException {
         ConfigurableApplicationContext run = SpringApplication.run(IotgeniusAuthApplication.class, args);
@@ -40,9 +46,14 @@ public class IotgeniusAuthApplication {
                 env.getProperty("server.port"),
                 InetAddress.getLocalHost().getHostAddress(),
                 env.getProperty("server.port"));
+    }
 
-        run.getBean(PermissionService.class).regist(List.of(PermissionInstance.class.getEnumConstants()));
-        run.getBean(RoleService.class).regist(List.of(RoleInstance.class.getEnumConstants()));
+    @Override
+    public void run(String... args) throws Exception {
+        executorService.schedule(() -> {
+            SpringHelper.getBean(PermissionService.class).regist(List.of(PermissionInstance.class.getEnumConstants()));
+            SpringHelper.getBean(RoleService.class).regist(List.of(RoleInstance.class.getEnumConstants()));
+        }, 1, TimeUnit.MINUTES);
     }
 
 }

@@ -199,7 +199,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
     @Override
     public List<RoleEntity> tree(RoleQueryRequest request) {
         List<RoleEntity> list = this.list(request);
-        List<RoleEntity> tree = baseMapper.getRoleTreeByIds(list.parallelStream().map(BaseEntity::getId).toList());
+        List<RoleEntity> tree = baseMapper.getRoleTreeByIds1(list.parallelStream().map(BaseEntity::getId).toList());
         return tree;
     }
 
@@ -315,6 +315,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
                                 rolePermissionEntities.add(r);
                             });
                         });
+                entitiesMap.put(node, entity);
                 roleEntities.add(entity);
                 countDownLatch.countDown();
                 Optional.ofNullable(byParentMap.get(node)).ifPresent(tempNodes::addAll);

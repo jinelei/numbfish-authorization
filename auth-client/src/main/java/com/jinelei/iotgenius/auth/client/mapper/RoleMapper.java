@@ -19,4 +19,6 @@ public interface RoleMapper extends BaseMapper<RoleEntity> {
 
     List<RoleEntity> getRoleTreeByIds(@Param("ids") List<Long> ids);
 
+    List<RoleEntity> getRoleTreeByIds1(@Param("ids") List<Long> ids);
+
 }

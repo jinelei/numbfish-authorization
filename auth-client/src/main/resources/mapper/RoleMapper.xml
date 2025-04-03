@@ -102,5 +102,46 @@
         </choose>
     </select>
 
+    <select id="getRoleTreeByIds1" resultType="com.jinelei.iotgenius.auth.client.domain.RoleEntity">
+    WITH RECURSIVE role_tree AS (
+                    SELECT
+                        id,
+                        name,
+                        code,
+                        sort_value,
+                        parent_id,
+                        0 AS level,
+                        CAST(id AS CHAR(1023)) AS ancestor
+                    FROM
+                        role
+                    WHERE
+                        parent_id is null
+                    UNION ALL
+                    SELECT
+                        p.id,
+                        p.name,
+                        p.code,
+                        p.sort_value,
+                        p.parent_id,
+                        pt.level + 1,
+                        CONCAT(pt.ancestor, ',', CAST(p.id AS CHAR(1023)))
+                    FROM
+                        role p
+                    JOIN
+                        role_tree pt ON p.parent_id = pt.id
+                )
+                SELECT
+                    id,
+                    name,
+                    code,
+                    sort_value,
+                    parent_id,
+                    level,
+                    ancestor
+                FROM
+                    role_tree
+                ORDER BY
+                    level, sort_value;
+    </select>
 
 </mapper>
