@@ -54,6 +54,7 @@ spring:
 
 mybatis:
   mapper-locations: classpath*:mapper/*/*Mapper.xml,classpath*:mapper/*Mapper.xml
+  type-handlers-package: com.jinelei.iotgenius.auth.client.configuration.handler.type
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

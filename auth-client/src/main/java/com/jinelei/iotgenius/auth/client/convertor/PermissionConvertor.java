@@ -57,7 +57,7 @@ public interface PermissionConvertor {
         // 构建树形结构
         for (PermissionEntity permission : allPermissions) {
             Long parentId = permission.getParentId();
-            if (parentId == null || parentId == 0) {
+            if (parentId == null || parentId == 0 || !permissionMap.keySet().contains(parentId)) {
                 rootPermissions.add(permission);
             } else {
                 PermissionEntity parent = permissionMap.get(parentId);

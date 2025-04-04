@@ -5,86 +5,80 @@
 <mapper namespace="com.jinelei.iotgenius.auth.client.mapper.PermissionMapper">
 
     <select id="getPermissionTreeByIds" resultType="com.jinelei.iotgenius.auth.client.domain.PermissionEntity">
-        <choose>
-            <when test="ids != null and ids.size() > 0">
-                WITH RECURSIVE permission_tree AS (
+    WITH RECURSIVE permission_tree AS (
                     SELECT
                         id,
                         name,
                         code,
                         sort_value,
                         parent_id,
-                        0 AS level
+                        0 AS level,
+                        CAST(id AS CHAR(1023)) AS ancestor
                     FROM
                         permission
                     WHERE
-                        id IN
-                        <foreach item="id" collection="ids" open="(" separator="," close=")">
-                            #{id}
+                        parent_id is null
+                    UNION ALL
+                    SELECT
+                        p.id,
+                        p.name,
+                        p.code,
+                        p.sort_value,
+                        p.parent_id,
+                        pt.level + 1,
+                        CONCAT(pt.ancestor, ',', CAST(p.id AS CHAR(1023)))
+                    FROM
+                        permission p
+                    JOIN
+                        permission_tree pt ON p.parent_id = pt.id
+                )
+                SELECT
+                    id,
+                    name,
+                    code,
+                    sort_value,
+                    parent_id,
+                    level,
+                    ancestor
+                FROM
+                    permission_tree
+                <if test="ids!= null and ids.size() > 0">
+                WHERE
+                <choose>
+                    <when test="mode == @com.jinelei.iotgenius.auth.enumeration.TreeBuildMode@ALL">
+                        <foreach item="id" collection="ids" separator="or" >
+                    ancestor LIKE CONCAT('%', #{id}, '%')
                         </foreach>
-                    UNION ALL
-                    SELECT
-                        p.id,
-                        p.name,
-                        p.code,
-                        p.sort_value,
-                        p.parent_id,
-                        pt.level + 1
-                    FROM
-                        permission p
-                    JOIN
-                        permission_tree pt ON p.parent_id = pt.id
-                )
-                SELECT
-                    id,
-                    name,
-                    code,
-                    sort_value,
-                    parent_id
-                FROM
-                    permission_tree
+                    </when>
+                    <when test="mode == @com.jinelei.iotgenius.auth.enumeration.TreeBuildMode@PARENT">
+                        <foreach item="id" collection="ids" separator="or" >
+                    ancestor LIKE CONCAT('%', #{id}) AND id != #{id}
+                        </foreach>
+                    </when>
+                    <when test="mode == @com.jinelei.iotgenius.auth.enumeration.TreeBuildMode@PARENT_AND_CURRENT">
+                        <foreach item="id" collection="ids" separator="or" >
+                    ancestor LIKE CONCAT('%', #{id})
+                        </foreach>
+                    </when>
+                    <when test="mode == @com.jinelei.iotgenius.auth.enumeration.TreeBuildMode@CHILD">
+                        <foreach item="id" collection="ids" separator="or" >
+                    ancestor LIKE CONCAT('%', #{id}, ',%')
+                        </foreach>
+                    </when>
+                    <when test="mode == @com.jinelei.iotgenius.auth.enumeration.TreeBuildMode@CHILD_AND_CURRENT">
+                        <foreach item="id" collection="ids" separator="or" >
+                    ancestor LIKE CONCAT('%', #{id}, '%')
+                        </foreach>
+                    </when>
+                    <otherwise>
+                        <foreach item="id" collection="ids" separator="or" >
+                    ancestor LIKE CONCAT('%', #{id}, '%')
+                        </foreach>
+                    </otherwise>
+                </choose>
+                </if>
                 ORDER BY
                     level, sort_value;
-            </when>
-            <otherwise>
-                WITH RECURSIVE permission_tree AS (
-                    SELECT
-                        id,
-                        name,
-                        code,
-                        sort_value,
-                        parent_id,
-                        0 AS level
-                    FROM
-                        permission
-                    WHERE
-                        parent_id IS NULL OR parent_id = 0
-                    UNION ALL
-                    SELECT
-                        p.id,
-                        p.name,
-                        p.code,
-                        p.sort_value,
-                        p.parent_id,
-                        pt.level + 1
-                    FROM
-                        permission p
-                    JOIN
-                        permission_tree pt ON p.parent_id = pt.id
-                )
-                SELECT
-                    id,
-                    name,
-                    code,
-                    sort_value,
-                    parent_id
-                FROM
-                    permission_tree
-                ORDER BY
-                    level, sort_value;
-            </otherwise>
-        </choose>
     </select>
-
 
 </mapper>

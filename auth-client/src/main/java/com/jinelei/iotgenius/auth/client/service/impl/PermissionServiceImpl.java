@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jinelei.iotgenius.auth.client.domain.BaseEntity;
 import com.jinelei.iotgenius.auth.dto.permission.*;
+import com.jinelei.iotgenius.auth.enumeration.TreeBuildMode;
 import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
 import com.jinelei.iotgenius.common.exception.NotExistException;
@@ -115,7 +116,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     public List<PermissionEntity> tree(PermissionQueryRequest request) {
         List<PermissionEntity> list = this.list(request);
         List<PermissionEntity> tree = baseMapper
-                .getPermissionTreeByIds(list.parallelStream().map(BaseEntity::getId).toList());
+                .getPermissionTreeByIds(list.parallelStream().map(BaseEntity::getId).toList(), request.getMode());
         return tree;
     }
 
