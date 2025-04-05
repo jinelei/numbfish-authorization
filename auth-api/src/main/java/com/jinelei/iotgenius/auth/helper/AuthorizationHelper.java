@@ -4,7 +4,7 @@ import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.dto.user.UserResponse;
 import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
-import com.jinelei.iotgenius.auth.property.AuthApiProperty;
+import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
 import com.jinelei.iotgenius.common.exception.BaseException;
 import com.jinelei.iotgenius.common.exception.InternalException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,10 +26,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @SuppressWarnings("all")
 public class AuthorizationHelper {
     private static final Logger log = LoggerFactory.getLogger(AuthorizationHelper.class);
-    private AuthApiProperty authApiProperty;
+    private AuthorizationProperty property;
 
-    public void setAuthApiProperty(AuthApiProperty authApiProperty) {
-        this.authApiProperty = authApiProperty;
+    public void setAuthApiProperty(AuthorizationProperty property) {
+        this.property = property;
     }
 
     /**
@@ -37,15 +37,15 @@ public class AuthorizationHelper {
      *
      * @return 用户信息
      */
-    public static UserResponse currentUser() {
+    public static UserResponse currentUser() throws BaseException {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes instanceof ServletRequestAttributes attributes) {
             HttpServletRequest request = attributes.getRequest();
             UserResponse user = (UserResponse) request.getAttribute("user");
-            log.info("获取当前登陆用户信息成功: {}", user);
+            log.debug("获取当前登陆用户信息成功: {}", user);
             return user;
         }
-        log.error("获取当前登陆用户信息失败: 不支持的RequestAttributes: {}", requestAttributes);
+        log.debug("获取当前登陆用户信息失败: 不支持的RequestAttributes: {}", requestAttributes);
         throw new InternalException("获取当前登陆用户信息失败: 不支持的RequestAttributes", new RuntimeException());
     }
 
@@ -185,10 +185,10 @@ public class AuthorizationHelper {
 
     /**
      * 是否是超级管理员
-     * 
+     *
      * @param user 用户
      */
-    public static Boolean isAdmin(UserResponse user, AuthApiProperty property) {
+    public static Boolean isAdmin(UserResponse user, AuthorizationProperty property) {
         final String username = Optional.ofNullable(property)
                 .map(i -> i.getAdmin())
                 .map(i -> i.getUsername())
@@ -198,29 +198,29 @@ public class AuthorizationHelper {
 
     /**
      * 是否是超级管理员
-     * 
+     *
      * @param user 用户
      */
-    public static Boolean isAdmin(AuthApiProperty property) {
+    public static Boolean isAdmin(AuthorizationProperty property) {
         return isAdmin(currentUser(), property);
     }
 
     /**
      * 是否是超级管理员
-     * 
+     *
      * @param user 用户
      */
     public Boolean isAdmin() {
-        return AuthorizationHelper.isAdmin(currentUser(), authApiProperty);
+        return AuthorizationHelper.isAdmin(currentUser(), property);
     }
 
     /**
      * 是否是超级管理员
-     * 
+     *
      * @param user 用户
      */
     public Boolean isAdmin(UserResponse user) {
-        return AuthorizationHelper.isAdmin(user, authApiProperty);
+        return AuthorizationHelper.isAdmin(user, property);
     }
 
 }

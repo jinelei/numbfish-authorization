@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("all")
-public class AuthIgnoreProperty {
+public class IgnoreProperty {
     private List<String> urls = new ArrayList<>();
 
-    public AuthIgnoreProperty() {
+    public IgnoreProperty() {
     }
 
-    public AuthIgnoreProperty(List<String> urls) {
+    public IgnoreProperty(List<String> urls) {
         this.urls = urls;
     }
 
@@ -26,7 +26,7 @@ public class AuthIgnoreProperty {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        AuthIgnoreProperty that = (AuthIgnoreProperty) o;
+        IgnoreProperty that = (IgnoreProperty) o;
         return Objects.equals(urls, that.urls);
     }
 

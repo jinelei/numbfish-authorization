@@ -5,7 +5,7 @@ import com.jinelei.iotgenius.auth.client.configuration.permission.instance.RoleI
 import com.jinelei.iotgenius.auth.client.helper.SpringHelper;
 import com.jinelei.iotgenius.auth.client.service.PermissionService;
 import com.jinelei.iotgenius.auth.client.service.RoleService;
-import com.jinelei.iotgenius.auth.property.AuthApiProperty;
+import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -22,9 +22,8 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-@EnableConfigurationProperties({ AuthApiProperty.class })
+@EnableConfigurationProperties({ AuthorizationProperty.class })
 @SpringBootApplication(scanBasePackageClasses = { IotgeniusAuthApplication.class })
 @MapperScan("com.jinelei.iotgenius.auth.client.mapper")
 public class IotgeniusAuthApplication implements CommandLineRunner {

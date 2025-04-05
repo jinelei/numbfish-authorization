@@ -1,13 +1,13 @@
 package com.jinelei.iotgenius.auth.property;
 
 @SuppressWarnings("all")
-public class AuthLogoutProperty {
+public class LogoutProperty {
     protected String url;
 
-    public AuthLogoutProperty() {
+    public LogoutProperty() {
     }
 
-    public AuthLogoutProperty(String url) {
+    public LogoutProperty(String url) {
         this.url = url;
     }
 
@@ -35,7 +35,7 @@ public class AuthLogoutProperty {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        AuthLogoutProperty other = (AuthLogoutProperty) obj;
+        LogoutProperty other = (LogoutProperty) obj;
         if (url == null) {
             if (other.url != null)
                 return false;

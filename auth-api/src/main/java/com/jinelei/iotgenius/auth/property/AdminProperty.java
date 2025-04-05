@@ -1,13 +1,13 @@
 package com.jinelei.iotgenius.auth.property;
 
 @SuppressWarnings("all")
-public class AuthAdminProperty {
+public class AdminProperty {
     protected String username;
 
-    public AuthAdminProperty() {
+    public AdminProperty() {
     }
 
-    public AuthAdminProperty(String username) {
+    public AdminProperty(String username) {
         this.username = username;
     }
 
@@ -35,7 +35,7 @@ public class AuthAdminProperty {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        AuthAdminProperty other = (AuthAdminProperty) obj;
+        AdminProperty other = (AdminProperty) obj;
         if (username == null) {
             if (other.username != null)
                 return false;

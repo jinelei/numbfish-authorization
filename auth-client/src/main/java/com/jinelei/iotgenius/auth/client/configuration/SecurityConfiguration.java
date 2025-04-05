@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jinelei.iotgenius.auth.dto.user.UserResponse;
 import com.jinelei.iotgenius.auth.filter.AuthorizeFilter;
 import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
-import com.jinelei.iotgenius.auth.property.AuthApiProperty;
+import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
 import jakarta.servlet.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,18 +28,18 @@ public class SecurityConfiguration {
 
     @Bean
     public FilterRegistrationBean<Filter> loginUserFilter(RedisTemplate<String, UserResponse> redisTemplate,
-            ServerProperties serverProperties, AuthApiProperty authApiProperty, ObjectMapper objectMapper) {
+                                                          ServerProperties serverProperties, AuthorizationProperty property, ObjectMapper objectMapper) {
         FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new AuthorizeFilter(redisTemplate, serverProperties, authApiProperty, objectMapper));
+        registration.setFilter(new AuthorizeFilter(redisTemplate, serverProperties, property, objectMapper));
         registration.addUrlPatterns("/*");
         registration.setOrder(1);
         return registration;
     }
 
     @Bean
-    public AuthorizationHelper authorizationHelper(AuthApiProperty apiProperty) {
+    public AuthorizationHelper authorizationHelper(AuthorizationProperty property) {
         AuthorizationHelper authorizationHelper = new AuthorizationHelper();
-        authorizationHelper.setAuthApiProperty(apiProperty);
+        authorizationHelper.setAuthApiProperty(property);
         return authorizationHelper;
     }
 }

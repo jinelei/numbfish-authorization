@@ -3,14 +3,14 @@ package com.jinelei.iotgenius.auth.property;
 import java.util.Objects;
 
 @SuppressWarnings("all")
-public class AuthHeaderProperty {
+public class HeaderProperty {
     protected String header;
     protected String placeholder;
 
-    public AuthHeaderProperty() {
+    public HeaderProperty() {
     }
 
-    public AuthHeaderProperty(String header, String placeholder) {
+    public HeaderProperty(String header, String placeholder) {
         this.header = header;
         this.placeholder = placeholder;
     }
@@ -34,7 +34,7 @@ public class AuthHeaderProperty {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        AuthHeaderProperty that = (AuthHeaderProperty) o;
+        HeaderProperty that = (HeaderProperty) o;
         return Objects.equals(header, that.header) && Objects.equals(placeholder, that.placeholder);
     }
 
