@@ -15,17 +15,21 @@ import java.util.Optional;
 @Component
 public class AuthMetaObjectHandler implements MetaObjectHandler {
     private static final Logger log = LoggerFactory.getLogger(AuthMetaObjectHandler.class);
+    public static final String CREATED_USER_ID = "createdUserId";
+    public static final String CREATED_TIME = "createdTime";
+    public static final String UPDATED_USER_ID = "updatedUserId";
+    public static final String UPDATED_TIME = "updatedTime";
 
     @Override
     public void insertFill(MetaObject metaObject) {
         try {
             Optional.ofNullable(AuthorizationHelper.currentUser())
                     .map(UserResponse::getId)
-                    .ifPresent(id -> this.strictInsertFill(metaObject, "createdUserId", Long.class, id));
+                    .ifPresent(id -> this.strictInsertFill(metaObject, CREATED_USER_ID, Long.class, id));
         } catch (Exception e) {
-            this.strictInsertFill(metaObject, "createdUserId", Long.class, 0L);
+            this.strictInsertFill(metaObject, CREATED_USER_ID, Long.class, 0L);
         }
-        this.strictInsertFill(metaObject, "createdTime", LocalDateTime.class, LocalDateTime.now());
+        this.strictInsertFill(metaObject, CREATED_TIME, LocalDateTime.class, LocalDateTime.now());
     }
 
     @Override
@@ -33,11 +37,11 @@ public class AuthMetaObjectHandler implements MetaObjectHandler {
         try {
             Optional.ofNullable(AuthorizationHelper.currentUser())
                     .map(UserResponse::getId)
-                    .ifPresent(id -> this.strictInsertFill(metaObject, "updatedUserId", Long.class, id));
+                    .ifPresent(id -> this.strictInsertFill(metaObject, UPDATED_USER_ID, Long.class, id));
         } catch (Exception e) {
-            this.strictInsertFill(metaObject, "updatedUserId", Long.class, 0L);
+            this.strictInsertFill(metaObject, UPDATED_USER_ID, Long.class, 0L);
         }
-        this.strictUpdateFill(metaObject, "updatedTime", LocalDateTime.class, LocalDateTime.now());
+        this.strictUpdateFill(metaObject, UPDATED_TIME, LocalDateTime.class, LocalDateTime.now());
     }
 
 }
