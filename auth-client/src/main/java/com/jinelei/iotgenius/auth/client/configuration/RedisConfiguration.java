@@ -1,5 +1,6 @@
 package com.jinelei.iotgenius.auth.client.configuration;
 
+import com.jinelei.iotgenius.auth.dto.client.ClientResponse;
 import com.jinelei.iotgenius.auth.dto.user.UserResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,26 @@ public class RedisConfiguration {
 
         // 设置值的序列化器
         Jackson2JsonRedisSerializer<UserResponse> jsonSerializer = new Jackson2JsonRedisSerializer<>(UserResponse.class);
+        template.setValueSerializer(jsonSerializer);
+        template.setHashValueSerializer(jsonSerializer);
+
+        // 初始化模板
+        template.afterPropertiesSet();
+        return template;
+    }
+
+    @Bean(name = "clientRedisTemplate")
+    public RedisTemplate<String, ClientResponse> clientRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, ClientResponse> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+
+        // 设置键的序列化器
+        StringRedisSerializer stringSerializer = new StringRedisSerializer();
+        template.setKeySerializer(stringSerializer);
+        template.setHashKeySerializer(stringSerializer);
+
+        // 设置值的序列化器
+        Jackson2JsonRedisSerializer<ClientResponse> jsonSerializer = new Jackson2JsonRedisSerializer<>(ClientResponse.class);
         template.setValueSerializer(jsonSerializer);
         template.setHashValueSerializer(jsonSerializer);
 

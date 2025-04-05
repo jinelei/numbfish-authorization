@@ -6,6 +6,15 @@ import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
 @SuppressWarnings("unused")
 public enum PermissionInstance implements PermissionDeclaration<PermissionInstance> {
     /**
+     * 客户端相关
+     */
+    CLIENT_MANAGE("客户端管理", "user_manage", null, "客户端管理", PermissionType.DIRECTORY, 100),
+    CLIENT_CREATE("创建客户端", "user_create", CLIENT_MANAGE, "创建客户端", PermissionType.ACTION, 101),
+    CLIENT_UPDATE("更新客户端", "user_update", CLIENT_MANAGE, "更新客户端", PermissionType.ACTION, 102),
+    CLIENT_DELETE("删除客户端", "user_delete", CLIENT_MANAGE, "删除客户端", PermissionType.ACTION, 103),
+    CLIENT_SUMMARY("查看客户端概要", "user_summary", CLIENT_MANAGE, "查看客户端概要", PermissionType.ACTION, 104),
+    CLIENT_DETAIL("查看客户端详情", "user_detail", CLIENT_MANAGE, "查看客户端详情", PermissionType.ACTION, 105),
+    /**
      * 用户相关
      */
     USER_MANAGE("用户管理", "user_manage", null, "用户管理", PermissionType.DIRECTORY, 100),
