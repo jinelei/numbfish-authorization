@@ -23,7 +23,7 @@ public class AuthMetaObjectHandler implements MetaObjectHandler {
                     .map(UserResponse::getId)
                     .ifPresent(id -> this.strictInsertFill(metaObject, "createdUserId", Long.class, id));
         } catch (Exception e) {
-            log.error("获取当前用户信息失败", e);
+            this.strictInsertFill(metaObject, "createdUserId", Long.class, 0L);
         }
         this.strictInsertFill(metaObject, "createdTime", LocalDateTime.class, LocalDateTime.now());
     }
@@ -35,7 +35,7 @@ public class AuthMetaObjectHandler implements MetaObjectHandler {
                     .map(UserResponse::getId)
                     .ifPresent(id -> this.strictInsertFill(metaObject, "updatedUserId", Long.class, id));
         } catch (Exception e) {
-            log.error("获取当前用户信息失败", e);
+            this.strictInsertFill(metaObject, "updatedUserId", Long.class, 0L);
         }
         this.strictUpdateFill(metaObject, "updatedTime", LocalDateTime.class, LocalDateTime.now());
     }

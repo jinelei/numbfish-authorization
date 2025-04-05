@@ -50,10 +50,10 @@ public class IotgeniusAuthApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        executorService.schedule(() -> {
+//        executorService.schedule(() -> {
             SpringHelper.getBean(PermissionService.class).regist(List.of(PermissionInstance.class.getEnumConstants()));
             SpringHelper.getBean(RoleService.class).regist(List.of(RoleInstance.class.getEnumConstants()));
-        }, 1, TimeUnit.MINUTES);
+//        }, 1, TimeUnit.MINUTES);
     }
 
 }
