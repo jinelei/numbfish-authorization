@@ -26,8 +26,7 @@ public class AuthMetaObjectHandler implements MetaObjectHandler {
             Optional.ofNullable(AuthorizationHelper.currentUser())
                     .map(UserResponse::getId)
                     .ifPresent(id -> this.strictInsertFill(metaObject, CREATED_USER_ID, Long.class, id));
-        } catch (Exception e) {
-            log.error("获取当前登录用户信息失败: {}", e.getMessage());
+        } catch (Exception ignore) {
         }
         this.strictInsertFill(metaObject, CREATED_TIME, LocalDateTime.class, LocalDateTime.now());
     }
@@ -38,8 +37,7 @@ public class AuthMetaObjectHandler implements MetaObjectHandler {
             Optional.ofNullable(AuthorizationHelper.currentUser())
                     .map(UserResponse::getId)
                     .ifPresent(id -> this.strictInsertFill(metaObject, UPDATED_USER_ID, Long.class, id));
-        } catch (Exception e) {
-            log.error("获取当前登录用户信息失败: {}", e.getMessage());
+        } catch (Exception ignore) {
         }
         this.strictUpdateFill(metaObject, UPDATED_TIME, LocalDateTime.class, LocalDateTime.now());
     }

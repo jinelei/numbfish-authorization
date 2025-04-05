@@ -22,9 +22,10 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-@EnableConfigurationProperties({ AuthorizationProperty.class })
-@SpringBootApplication(scanBasePackageClasses = { IotgeniusAuthApplication.class })
+@EnableConfigurationProperties({AuthorizationProperty.class})
+@SpringBootApplication(scanBasePackageClasses = {IotgeniusAuthApplication.class})
 @MapperScan("com.jinelei.iotgenius.auth.client.mapper")
 public class IotgeniusAuthApplication implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(IotgeniusAuthApplication.class);
@@ -33,12 +34,18 @@ public class IotgeniusAuthApplication implements CommandLineRunner {
     public static void main(String[] args) throws UnknownHostException {
         ConfigurableApplicationContext run = SpringApplication.run(IotgeniusAuthApplication.class, args);
         Environment env = run.getEnvironment();
-        log.info("\n----------------------------------------------------------\n\t" +
-                "Application '{}' is running!\n\t" +
-                "Local: \t\thttp://localhost:{}\n\t" +
-                "External: \thttp://{}:{}\n\t" +
-                "Doc: \t\thttp://{}:{}/doc.html\n" +
-                "----------------------------------------------------------",
+        log.info("""
+                        
+                        ----------------------------------------------------------
+                        \t\
+                        Application '{}' is running!
+                        \t\
+                        Local: \t\thttp://localhost:{}
+                        \t\
+                        External: \thttp://{}:{}
+                        \t\
+                        Doc: \t\thttp://{}:{}/doc.html
+                        ----------------------------------------------------------""",
                 env.getProperty("spring.application.name"),
                 env.getProperty("server.port"),
                 InetAddress.getLocalHost().getHostAddress(),
@@ -48,11 +55,11 @@ public class IotgeniusAuthApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
-//        executorService.schedule(() -> {
+    public void run(String... args) {
+        executorService.schedule(() -> {
             SpringHelper.getBean(PermissionService.class).regist(List.of(PermissionInstance.class.getEnumConstants()));
             SpringHelper.getBean(RoleService.class).regist(List.of(RoleInstance.class.getEnumConstants()));
-//        }, 1, TimeUnit.MINUTES);
+        }, 30, TimeUnit.SECONDS);
     }
 
 }

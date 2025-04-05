@@ -39,14 +39,18 @@ public class AuthorizationHelper {
      */
     public static UserResponse currentUser() throws BaseException {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        if (requestAttributes instanceof ServletRequestAttributes attributes) {
+        if (null == requestAttributes) {
+            log.debug("获取当前登陆用户信息失败: RequestAttributes is null");
+            throw new InternalException("获取当前登陆用户信息失败: RequestAttributes is null", new RuntimeException());
+        } else if (requestAttributes instanceof ServletRequestAttributes attributes) {
             HttpServletRequest request = attributes.getRequest();
-            UserResponse user = (UserResponse) request.getAttribute("user");
+            UserResponse user = (UserResponse) request.getAttribute(AuthorizationProperty.USER);
             log.debug("获取当前登陆用户信息成功: {}", user);
             return user;
+        } else {
+            log.debug("获取当前登陆用户信息失败: 不支持的RequestAttributes: {}", requestAttributes);
+            throw new InternalException("获取当前登陆用户信息失败: 不支持的RequestAttributes", new RuntimeException());
         }
-        log.debug("获取当前登陆用户信息失败: 不支持的RequestAttributes: {}", requestAttributes);
-        throw new InternalException("获取当前登陆用户信息失败: 不支持的RequestAttributes", new RuntimeException());
     }
 
     /**
