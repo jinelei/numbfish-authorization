@@ -1,5 +1,6 @@
 package com.jinelei.iotgenius.auth.enumeration;
 
+@SuppressWarnings("unused")
 public enum TreeBuildMode {
     /**
      * 所有子节点
@@ -21,5 +22,4 @@ public enum TreeBuildMode {
      * 所有子节点和当前节点
      */
     CHILD_AND_CURRENT,
-    ;
 }

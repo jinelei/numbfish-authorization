@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 @Schema(description = "用户创建请求对象")
 public class UserCreateRequest implements Serializable {
     @NotBlank(message = "用户名称不能为空")

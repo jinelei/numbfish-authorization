@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 public class IgnoreProperty {
     private List<String> urls = new ArrayList<>();
 

@@ -1,6 +1,6 @@
 package com.jinelei.iotgenius.auth.property;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 public class LogoutProperty {
     protected String url;
 
@@ -37,11 +37,10 @@ public class LogoutProperty {
             return false;
         LogoutProperty other = (LogoutProperty) obj;
         if (url == null) {
-            if (other.url != null)
-                return false;
-        } else if (!url.equals(other.url))
-            return false;
-        return true;
+            return other.url == null;
+        } else {
+            return url.equals(other.url);
+        }
     }
 
     @Override

@@ -2,9 +2,11 @@ package com.jinelei.iotgenius.auth.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 @Schema(description = "用户登陆请求对象")
 public class UserLoginRequest implements Serializable {
     @NotBlank(message = "用户名称不能为空")

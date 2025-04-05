@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 public interface RoleApi {
     /**
      * 创建角色
@@ -69,7 +69,8 @@ public interface RoleApi {
 
     /**
      * 注册角色实例
-     * @param <T> 角色实例
+     *
+     * @param <T>   角色实例
      * @param roles 角色列表
      * @return 注册结果
      */

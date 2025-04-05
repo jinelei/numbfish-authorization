@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+@SuppressWarnings("unused")
 public class ReReadableHttpServletRequestWrapper extends HttpServletRequestWrapper {
     private final byte[] body;
 
@@ -19,7 +20,7 @@ public class ReReadableHttpServletRequestWrapper extends HttpServletRequestWrapp
     }
 
     @Override
-    public ServletInputStream getInputStream() throws IOException {
+    public ServletInputStream getInputStream() {
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body);
         return new ServletInputStream() {
             @Override
@@ -38,14 +39,14 @@ public class ReReadableHttpServletRequestWrapper extends HttpServletRequestWrapp
             }
 
             @Override
-            public int read() throws IOException {
+            public int read() {
                 return byteArrayInputStream.read();
             }
         };
     }
 
     @Override
-    public BufferedReader getReader() throws IOException {
+    public BufferedReader getReader() {
         return new BufferedReader(new InputStreamReader(getInputStream()));
     }
 }

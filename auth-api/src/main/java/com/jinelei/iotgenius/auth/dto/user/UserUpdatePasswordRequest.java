@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 @Schema(description = "用户更新密码请求对象")
 public class UserUpdatePasswordRequest implements Serializable {
     @NotBlank(message = "用户名称不能为空")

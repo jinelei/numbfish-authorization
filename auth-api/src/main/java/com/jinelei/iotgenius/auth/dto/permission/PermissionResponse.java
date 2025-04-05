@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 @Schema(description = "权限响应对象")
 public class PermissionResponse implements TreeResponse<PermissionResponse>, Serializable {
     @Schema(description = "权限实体的唯一标识")

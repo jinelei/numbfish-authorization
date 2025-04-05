@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 @Mapper
 public interface RoleMapper extends BaseMapper<RoleEntity> {
 

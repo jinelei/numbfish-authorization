@@ -3,6 +3,7 @@ package com.jinelei.iotgenius.auth.client.configuration.permission.instance;
 import com.jinelei.iotgenius.auth.enumeration.PermissionType;
 import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
 
+@SuppressWarnings("unused")
 public enum PermissionInstance implements PermissionDeclaration<PermissionInstance> {
     /**
      * 用户相关
@@ -40,8 +41,8 @@ public enum PermissionInstance implements PermissionDeclaration<PermissionInstan
     private final PermissionType type;
     private final Integer sortValue;
 
-    private PermissionInstance(String name, String code, PermissionInstance parent, String remark, PermissionType type,
-            Integer sortValue) {
+    PermissionInstance(String name, String code, PermissionInstance parent, String remark, PermissionType type,
+                       Integer sortValue) {
         this.name = name;
         this.parent = parent;
         this.code = code;

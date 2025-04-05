@@ -1,5 +1,6 @@
 package com.jinelei.iotgenius.auth.enumeration;
 
+@SuppressWarnings("unused")
 public enum PermissionType {
     DIRECTORY(1, "目录"),
     MENU(2, "菜单"),

@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("unused")
 public class ServletHelper {
     private static final Logger log = LoggerFactory.getLogger(ServletHelper.class);
     private static final List<String> SUPPORTED_CHARSETS = Arrays.asList("UTF-8", "ISO-8859-1");

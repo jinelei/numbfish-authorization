@@ -5,9 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.jinelei.iotgenius.auth.enumeration.RoleType;
 
 import java.util.List;
-import java.util.Objects;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 @TableName("role")
 public class RoleEntity extends BaseEntity<Long> {
     protected String name;
@@ -158,11 +157,10 @@ public class RoleEntity extends BaseEntity<Long> {
         } else if (!whitePermissions.equals(other.whitePermissions))
             return false;
         if (blackPermissions == null) {
-            if (other.blackPermissions != null)
-                return false;
-        } else if (!blackPermissions.equals(other.blackPermissions))
-            return false;
-        return true;
+            return other.blackPermissions == null;
+        } else {
+            return blackPermissions.equals(other.blackPermissions);
+        }
     }
 
     @Override

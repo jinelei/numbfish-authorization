@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 @ApiSupport(order = 3)
 @Tag(name = "用户管理")
 @Validated
@@ -122,5 +122,5 @@ public class UserController implements UserApi {
         userService.updatePassword(request);
         return new BaseView<>("修改成功");
     }
-    
+
 }

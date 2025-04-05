@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 
+@SuppressWarnings("unused")
 public class ReReadableRequestFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

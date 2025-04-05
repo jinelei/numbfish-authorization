@@ -1,5 +1,6 @@
 package com.jinelei.iotgenius.auth.enumeration;
 
+@SuppressWarnings("unused")
 public enum RoleType {
     NORMAL(1, "普通用户"),
     ADMIN(2, "管理员");

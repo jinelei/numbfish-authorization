@@ -7,7 +7,7 @@ import com.jinelei.iotgenius.auth.enumeration.PermissionType;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 @TableName("permission")
 public class PermissionEntity extends BaseEntity<Long> {
     protected String name;

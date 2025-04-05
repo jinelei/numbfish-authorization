@@ -4,7 +4,6 @@ import com.jinelei.iotgenius.auth.client.domain.RoleEntity;
 import com.jinelei.iotgenius.auth.dto.role.RoleCreateRequest;
 import com.jinelei.iotgenius.auth.dto.role.RoleResponse;
 import com.jinelei.iotgenius.auth.dto.role.RoleUpdateRequest;
-import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;

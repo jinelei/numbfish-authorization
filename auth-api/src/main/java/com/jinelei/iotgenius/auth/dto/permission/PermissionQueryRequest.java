@@ -4,9 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
 import java.util.List;
+
 import com.jinelei.iotgenius.auth.enumeration.PermissionType;
 import com.jinelei.iotgenius.auth.enumeration.TreeBuildMode;
 
+@SuppressWarnings("unused")
 @Schema(description = "权限查询请求对象")
 public class PermissionQueryRequest implements Serializable {
     @Schema(description = "id")
@@ -138,8 +140,9 @@ public class PermissionQueryRequest implements Serializable {
                 return false;
         } else if (!remark.equals(other.remark))
             return false;
-        if (mode != other.mode)
+        if (mode != other.mode) {
             return false;
+        }
         return true;
     }
 

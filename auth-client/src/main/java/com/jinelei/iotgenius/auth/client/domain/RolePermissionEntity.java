@@ -6,7 +6,7 @@ import com.jinelei.iotgenius.auth.enumeration.RolePermissionType;
 import java.util.Objects;
 import java.util.Optional;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 @TableName("role_permission")
 public class RolePermissionEntity extends BaseEntity<Long> {
     protected Long roleId;
@@ -14,23 +14,14 @@ public class RolePermissionEntity extends BaseEntity<Long> {
     protected RolePermissionType type;
 
     public boolean isSimilar(RolePermissionEntity other) {
-        return Optional.ofNullable(roleId).equals(Optional.ofNullable(other).map(i -> i.getRoleId()))
-                && Optional.ofNullable(permissionId).equals(Optional.ofNullable(other).map(i -> i.getPermissionId()));
+        return Optional.ofNullable(roleId).equals(Optional.ofNullable(other).map(RolePermissionEntity::getRoleId))
+                && Optional.ofNullable(permissionId).equals(Optional.ofNullable(other).map(RolePermissionEntity::getPermissionId));
     }
+
     public RolePermissionEntity cover(RolePermissionEntity other) {
-        Optional.ofNullable(other).map(i -> i.getType()).ifPresent(this::setType);
-        Optional.ofNullable(other).map(i -> i.getRemark()).ifPresent(this::setRemark);
+        Optional.ofNullable(other).map(RolePermissionEntity::getType).ifPresent(this::setType);
+        Optional.ofNullable(other).map(BaseEntity::getRemark).ifPresent(this::setRemark);
         return this;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Long getRoleId() {

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 @Schema(description = "权限删除请求对象")
 public class PermissionDeleteRequest implements Serializable {
     @Schema(description = "id")

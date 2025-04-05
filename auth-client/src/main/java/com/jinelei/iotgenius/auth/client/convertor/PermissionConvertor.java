@@ -4,7 +4,6 @@ import com.jinelei.iotgenius.auth.dto.permission.PermissionCreateRequest;
 import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.dto.permission.PermissionUpdateRequest;
 
-import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -20,28 +19,28 @@ import java.util.Map;
 @Mapper(componentModel = "spring")
 public interface PermissionConvertor {
     @Mappings({
-        @Mapping(target = "id", ignore = true),
-        @Mapping(target = "children", ignore = true),
-        @Mapping(target = "createdTime", ignore = true),
-        @Mapping(target = "createdUserId", ignore = true),
-        @Mapping(target = "updatedTime", ignore = true),
-        @Mapping(target = "updatedUserId", ignore = true),
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "children", ignore = true),
+            @Mapping(target = "createdTime", ignore = true),
+            @Mapping(target = "createdUserId", ignore = true),
+            @Mapping(target = "updatedTime", ignore = true),
+            @Mapping(target = "updatedUserId", ignore = true),
     })
     PermissionEntity entityFromCreateRequest(PermissionCreateRequest source);
 
     @Mappings({
-        @Mapping(target = "children", ignore = true),
-        @Mapping(target = "createdTime", ignore = true),
-        @Mapping(target = "createdUserId", ignore = true),
-        @Mapping(target = "updatedTime", ignore = true),
-        @Mapping(target = "updatedUserId", ignore = true),
+            @Mapping(target = "children", ignore = true),
+            @Mapping(target = "createdTime", ignore = true),
+            @Mapping(target = "createdUserId", ignore = true),
+            @Mapping(target = "updatedTime", ignore = true),
+            @Mapping(target = "updatedUserId", ignore = true),
     })
     PermissionEntity entityFromUpdateRequest(PermissionUpdateRequest source);
 
     @Mappings({
-        @Mapping(target = "deleted", ignore = true),
-        @Mapping(target = "deletedTime", ignore = true),
-        @Mapping(target = "deletedUserId", ignore = true),
+            @Mapping(target = "deleted", ignore = true),
+            @Mapping(target = "deletedTime", ignore = true),
+            @Mapping(target = "deletedUserId", ignore = true),
     })
     PermissionResponse entityToResponse(PermissionEntity source);
 
@@ -57,7 +56,7 @@ public interface PermissionConvertor {
         // 构建树形结构
         for (PermissionEntity permission : allPermissions) {
             Long parentId = permission.getParentId();
-            if (parentId == null || parentId == 0 || !permissionMap.keySet().contains(parentId)) {
+            if (parentId == null || parentId == 0 || !permissionMap.containsKey(parentId)) {
                 rootPermissions.add(permission);
             } else {
                 PermissionEntity parent = permissionMap.get(parentId);

@@ -71,16 +71,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
                         || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR));
         final UserEntity entity = userConvertor.entityFromCreateRequest(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("角色信息不合法"));
-        Optional.ofNullable(entity).map(UserEntity::getPassword).ifPresentOrElse(password -> {
+        Optional.of(entity).map(UserEntity::getPassword).ifPresentOrElse(password -> {
             if (password.length() < 6) {
                 throw new InvalidArgsException("密码长度不能小于6位");
             }
             entity.setPassword(passwordEncoder.encode(password));
-        }, () -> {
-            entity.setPassword(passwordEncoder.encode(PASSWORD));
-        });
+        }, () -> entity.setPassword(passwordEncoder.encode(PASSWORD)));
         int inserted = baseMapper.insert(entity);
-        log.info("创建用户: {}", inserted);
+        log.debug("创建用户: {}", inserted);
         Optional.ofNullable(request.getRoleIds())
                 .filter(i -> !CollectionUtils.isEmpty(i))
                 .ifPresent(list -> {
@@ -92,7 +90,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
                                 return userRole;
                             }).toList();
                     List<BatchResult> insert = userRoleService.getBaseMapper().insert(userRoleEntities);
-                    log.info("创建用户角色关系: {}", insert.size());
+                    log.debug("创建用户角色关系: {}", insert.size());
                 });
         Assert.state(inserted == 1, "角色创建失败");
     }
@@ -104,19 +102,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
                         || AuthorizationHelper.hasRoles(user, RoleInstance.SUPER_ADMINISTRATOR, RoleInstance.USER_ADMIN));
         if (Objects.nonNull(request.getId())) {
             int deleted = baseMapper.deleteById(request.getId());
-            log.info("删除用户: {}", deleted);
+            log.debug("删除用户: {}", deleted);
             Assert.state(deleted == 1, "角色删除失败");
             LambdaUpdateWrapper<UserRoleEntity> wrapper = Wrappers.lambdaUpdate(UserRoleEntity.class)
                     .eq(UserRoleEntity::getUserId, request.getId());
             int deletedUserRole = userRoleService.getBaseMapper().delete(wrapper);
-            log.info("删除用户角色关系: {}", deletedUserRole);
+            log.debug("删除用户角色关系: {}", deletedUserRole);
         } else if (!CollectionUtils.isEmpty(request.getIds())) {
             int deleted = baseMapper.deleteByIds(request.getIds());
-            log.info("删除用户: {}", deleted);
+            log.debug("删除用户: {}", deleted);
             Assert.state(deleted == request.getIds().size(), "角色删除失败");
             int deletedUserRole = userRoleService.getBaseMapper().delete(
                     Wrappers.lambdaUpdate(UserRoleEntity.class).in(UserRoleEntity::getUserId, request.getIds()));
-            log.info("删除用户角色关系: {}", deletedUserRole);
+            log.debug("删除用户角色关系: {}", deletedUserRole);
         } else {
             throw new InvalidArgsException("不支持的删除方式: " + request);
         }
@@ -124,7 +122,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
 
     @Override
     public void update(@Validated UserUpdateRequest request) {
-        final String username = Optional.ofNullable(request).map(i -> i.getUsername())
+        final String username = Optional.ofNullable(request).map(UserUpdateRequest::getUsername)
                 .orElseThrow(() -> new InvalidArgsException("用户名不能为空"));
         AuthorizationHelper.check(
                 user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_UPDATE)
@@ -138,10 +136,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         wrapper.set(UserEntity::getPhone, request.getPhone());
         wrapper.set(UserEntity::getRemark, request.getRemark());
         int updated = baseMapper.update(wrapper);
-        log.info("更新用户: {}", updated);
+        log.debug("更新用户: {}", updated);
         int deleted = userRoleService.getBaseMapper()
                 .delete(Wrappers.lambdaUpdate(UserRoleEntity.class).eq(UserRoleEntity::getUserId, request.getId()));
-        log.info("删除用户角色关系: {}", deleted);
+        log.debug("删除用户角色关系: {}", deleted);
         Optional.ofNullable(request.getRoleIds())
                 .filter(i -> !CollectionUtils.isEmpty(i))
                 .ifPresent(list -> {
@@ -153,7 +151,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
                                 return userRole;
                             }).toList();
                     List<BatchResult> insert = userRoleService.getBaseMapper().insert(userRoleEntities);
-                    log.info("创建用户角色关系: {}", insert.size());
+                    log.debug("创建用户角色关系: {}", insert.size());
                 });
         Assert.state(updated == 1, "角色更新失败");
     }
@@ -261,7 +259,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
                     .forEach(s -> stringRedisTemplate.opsForSet().add(s, token));
         }
         stringRedisTemplate.expire(keyUserTokenInfo, Duration.ofMinutes(30));
-        log.info("用户登录: {}", userEntity);
+        log.debug("用户登录: {}", userEntity);
         return token;
     }
 
@@ -269,7 +267,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     public void logout() {
         String token = "";
         stringRedisTemplate.delete(GENERATE_TOKEN_INFO.apply(token));
-        log.info("用户登出");
+        log.debug("用户登出");
     }
 
     @Override
@@ -280,7 +278,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
                 user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_UPDATE)
                         || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR)
                         || user.getUsername().equals(username));
-        String password = Optional.ofNullable(request).map(UserUpdatePasswordRequest::getPassword).orElse(PASSWORD);
+        String password = Optional.of(request).map(UserUpdatePasswordRequest::getPassword).orElse(PASSWORD);
         if (password.length() < 6) {
             throw new InvalidArgsException("密码长度不能小于6位");
         }
@@ -288,14 +286,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         wrapper.eq(UserEntity::getUsername, request.getUsername());
         wrapper.set(UserEntity::getPassword, passwordEncoder.encode(password));
         int updated = baseMapper.update(wrapper);
-        log.info("更新用户密码: {}", updated);
+        log.debug("更新用户密码: {}", updated);
         Assert.state(updated == 1, "用户密码更新失败");
     }
 
     @Override
     public UserResponse convert(UserEntity entity) {
-        UserResponse response = userConvertor.entityToResponse(entity);
-        return response;
+        return userConvertor.entityToResponse(entity);
     }
 
 }

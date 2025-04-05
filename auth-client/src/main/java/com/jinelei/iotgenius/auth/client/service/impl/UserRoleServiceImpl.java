@@ -6,7 +6,7 @@ import com.jinelei.iotgenius.auth.client.mapper.UserRoleMapper;
 import com.jinelei.iotgenius.auth.client.service.UserRoleService;
 import org.springframework.stereotype.Service;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 @Service
 public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleEntity>
         implements UserRoleService {

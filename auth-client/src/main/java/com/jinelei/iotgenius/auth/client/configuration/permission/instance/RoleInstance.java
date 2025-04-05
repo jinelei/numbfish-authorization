@@ -6,6 +6,7 @@ import com.jinelei.iotgenius.auth.enumeration.RoleType;
 import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
 
+@SuppressWarnings("unused")
 public enum RoleInstance implements RoleDeclaration<RoleInstance> {
     SUPER_ADMINISTRATOR("超级管理员", "super_administrator", null, "超级管理员", RoleType.ADMIN, 10000, List.of()),
     /**
@@ -34,7 +35,7 @@ public enum RoleInstance implements RoleDeclaration<RoleInstance> {
                     PermissionInstance.PERMISSION_UPDATE,
                     PermissionInstance.PERMISSION_DELETE, PermissionInstance.PERMISSION_SUMMARY,
                     PermissionInstance.PERMISSION_DETAIL)),
-                    ;
+    ;
 
     private final String name;
     private final String code;
@@ -44,8 +45,8 @@ public enum RoleInstance implements RoleDeclaration<RoleInstance> {
     private final Integer sortValue;
     private final List<PermissionDeclaration<?>> permissions;
 
-    private RoleInstance(String name, String code, RoleInstance parent, String remark, RoleType type,
-            Integer sortValue, List<PermissionDeclaration<?>> permissions) {
+    RoleInstance(String name, String code, RoleInstance parent, String remark, RoleType type,
+                 Integer sortValue, List<PermissionDeclaration<?>> permissions) {
         this.name = name;
         this.parent = parent;
         this.code = code;

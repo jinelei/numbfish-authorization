@@ -4,11 +4,13 @@ import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.enumeration.RoleType;
 import com.jinelei.iotgenius.common.response.TreeResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 @Schema(description = "角色响应对象")
 public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
     @Schema(description = "角色实体的唯一标识")

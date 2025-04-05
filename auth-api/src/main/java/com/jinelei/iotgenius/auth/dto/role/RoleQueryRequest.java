@@ -4,9 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
 import java.util.List;
+
 import com.jinelei.iotgenius.auth.enumeration.RoleType;
 import com.jinelei.iotgenius.auth.enumeration.TreeBuildMode;
 
+@SuppressWarnings("unused")
 @Schema(description = "角色查询请求对象")
 public class RoleQueryRequest implements Serializable {
     @Schema(description = "id")
@@ -163,11 +165,10 @@ public class RoleQueryRequest implements Serializable {
         } else if (!remark.equals(other.remark))
             return false;
         if (mode == null) {
-            if (other.mode != null)
-                return false;
-        } else if (!mode.equals(other.mode))
-            return false;
-        return true;
+            return other.mode == null;
+        } else {
+            return mode.equals(other.mode);
+        }
     }
 
     @Override

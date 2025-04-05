@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.util.Objects;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 @TableName("user_role")
 public class UserRoleEntity extends BaseEntity<Long> {
     protected Long userId;

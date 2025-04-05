@@ -4,6 +4,7 @@ import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.dto.user.UserResponse;
 import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
+import com.jinelei.iotgenius.auth.property.AdminProperty;
 import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
 import com.jinelei.iotgenius.common.exception.BaseException;
 import com.jinelei.iotgenius.common.exception.InternalException;
@@ -23,7 +24,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 public class AuthorizationHelper {
     private static final Logger log = LoggerFactory.getLogger(AuthorizationHelper.class);
     private AuthorizationProperty property;
@@ -92,7 +93,7 @@ public class AuthorizationHelper {
      * @param permission 权限
      * @return 是否包含
      */
-    public static Boolean hasPermission(UserResponse user, PermissionDeclaration permission) {
+    public static Boolean hasPermission(UserResponse user, PermissionDeclaration<?> permission) {
         return Optional.ofNullable(user)
                 .map(UserResponse::getPermissions)
                 .orElse(new ArrayList<>())
@@ -107,7 +108,7 @@ public class AuthorizationHelper {
      * @param role 角色
      * @return 是否包含
      */
-    public static Boolean hasRole(UserResponse user, RoleDeclaration role) {
+    public static Boolean hasRole(UserResponse user, RoleDeclaration<?> role) {
         return Optional.ofNullable(user)
                 .map(UserResponse::getRoles)
                 .orElse(new ArrayList<>())
@@ -118,11 +119,11 @@ public class AuthorizationHelper {
     /**
      * 检查当前登录用户是否具有指定权限
      *
-     * @param user 用户信息
-     * @param role 角色
+     * @param user  用户信息
+     * @param roles 角色
      * @return 是否包含
      */
-    public static Boolean hasRoles(UserResponse user, RoleDeclaration... roles) {
+    public static Boolean hasRoles(UserResponse user, RoleDeclaration<?>... roles) {
         return Optional.ofNullable(user)
                 .map(UserResponse::getRoles)
                 .orElse(new ArrayList<>())
@@ -135,7 +136,7 @@ public class AuthorizationHelper {
      *
      * @param permission 权限
      */
-    public static void checkPermission(PermissionDeclaration permission) {
+    public static void checkPermission(PermissionDeclaration<?> permission) {
         UserResponse response = currentUser();
         if (Optional.ofNullable(response)
                 .map(UserResponse::getPermissions)
@@ -151,7 +152,7 @@ public class AuthorizationHelper {
      *
      * @param role 角色
      */
-    public static void checkRole(PermissionDeclaration role) {
+    public static void checkRole(PermissionDeclaration<?> role) {
         UserResponse response = currentUser();
         if (Optional.ofNullable(response)
                 .map(UserResponse::getRoles)
@@ -191,19 +192,21 @@ public class AuthorizationHelper {
      * 是否是超级管理员
      *
      * @param user 用户
+     * @return 是否是超级管理员
      */
     public static Boolean isAdmin(UserResponse user, AuthorizationProperty property) {
         final String username = Optional.ofNullable(property)
-                .map(i -> i.getAdmin())
-                .map(i -> i.getUsername())
+                .map(AuthorizationProperty::getAdmin)
+                .map(AdminProperty::getUsername)
                 .orElseThrow(() -> new BaseException(500, "未找到权限属性配置"));
-        return username.equals(Optional.ofNullable(user).map(i -> i.getUsername()).orElse(""));
+        return username.equals(Optional.ofNullable(user).map(UserResponse::getUsername).orElse(""));
     }
 
     /**
      * 是否是超级管理员
      *
-     * @param user 用户
+     * @param property 权限属性
+     * @return 是否是超级管理员
      */
     public static Boolean isAdmin(AuthorizationProperty property) {
         return isAdmin(currentUser(), property);
@@ -212,7 +215,7 @@ public class AuthorizationHelper {
     /**
      * 是否是超级管理员
      *
-     * @param user 用户
+     * @return 是否是超级管理员
      */
     public Boolean isAdmin() {
         return AuthorizationHelper.isAdmin(currentUser(), property);
@@ -222,6 +225,7 @@ public class AuthorizationHelper {
      * 是否是超级管理员
      *
      * @param user 用户
+     * @return 是否是超级管理员
      */
     public Boolean isAdmin(UserResponse user) {
         return AuthorizationHelper.isAdmin(user, property);

@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("a,l")
+@SuppressWarnings("unused")
 @TableName("user")
 public class UserEntity extends BaseEntity<Long> {
     protected String username;

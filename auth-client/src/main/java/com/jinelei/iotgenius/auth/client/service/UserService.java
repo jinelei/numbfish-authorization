@@ -8,6 +8,7 @@ import com.jinelei.iotgenius.auth.dto.user.*;
 import java.util.List;
 import java.util.function.Function;
 
+@SuppressWarnings("unused")
 public interface UserService extends IService<UserEntity> {
     String PASSWORD = "123456";
     Function<String, String> GENERATE_TOKEN_INFO = s -> "user:token:info:" + s;

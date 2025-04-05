@@ -2,7 +2,7 @@ package com.jinelei.iotgenius.auth.property;
 
 import java.util.Objects;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 public class ContextProperty {
     protected String url;
 

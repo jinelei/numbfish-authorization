@@ -1,6 +1,6 @@
 package com.jinelei.iotgenius.auth.property;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 public class AdminProperty {
     protected String username;
 
@@ -37,11 +37,10 @@ public class AdminProperty {
             return false;
         AdminProperty other = (AdminProperty) obj;
         if (username == null) {
-            if (other.username != null)
-                return false;
-        } else if (!username.equals(other.username))
-            return false;
-        return true;
+            return other.username == null;
+        } else {
+            return username.equals(other.username);
+        }
     }
 
     @Override

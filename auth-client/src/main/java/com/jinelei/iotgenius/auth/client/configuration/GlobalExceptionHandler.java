@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.jinelei.iotgenius.common.exception.BaseException;
 import com.jinelei.iotgenius.common.view.BaseView;
 
+@SuppressWarnings("unused")
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);

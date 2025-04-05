@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 @Schema(description = "用户查询请求对象")
 public class UserQueryRequest implements Serializable {
     @Schema(description = "id")

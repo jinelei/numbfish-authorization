@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpMethod;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
@@ -49,7 +48,6 @@ public class AuthorizeFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
         if (response instanceof HttpServletResponse httpResponse && request instanceof HttpServletRequest httpRequest) {
-            final HttpMethod httpMethod = HttpMethod.valueOf(httpRequest.getMethod());
             final String requestURI = httpRequest.getRequestURI();
             if (!pathMatcher.match(property.getContextUrl(serverProperties), requestURI)) {
                 chain.doFilter(request, response);
@@ -60,14 +58,14 @@ public class AuthorizeFilter implements Filter {
                             .ifPresentOrElse(u -> {
                                 redisTemplate.delete(GENERATE_TOKEN_INFO.apply(token));
                                 log.info("登出成功: {} : {}", token, user);
-                                servletHelper.response(httpRequest, httpResponse, new BaseView<String>(200, "登出成功", ""));
+                                servletHelper.response(httpRequest, httpResponse, new BaseView<>(200, "登出成功", ""));
                             }, () -> {
                                 log.error("登出失败: user不存在");
-                                servletHelper.response(httpRequest, httpResponse, new BaseView<String>(403, "登出失败", "用户未登录"));
+                                servletHelper.response(httpRequest, httpResponse, new BaseView<>(403, "登出失败", "用户未登录"));
                             });
                 }, () -> {
                     log.error("登出失败: token不合法");
-                    servletHelper.response(httpRequest, httpResponse, new BaseView<String>(500, "登出失败", "token不合法"));
+                    servletHelper.response(httpRequest, httpResponse, new BaseView<>(500, "登出失败", "token不合法"));
                 });
             } else if (pathMatcher.match(property.getLoginUrl(serverProperties), requestURI)) {
                 chain.doFilter(request, response);
@@ -85,15 +83,15 @@ public class AuthorizeFilter implements Filter {
                                 try {
                                     chain.doFilter(request, response);
                                 } catch (IOException | ServletException e) {
-                                    servletHelper.response(httpRequest, httpResponse, new BaseView<String>(403, "登陆失败", "内部错误"));
+                                    servletHelper.response(httpRequest, httpResponse, new BaseView<>(403, "登陆失败", "内部错误"));
                                 }
                             }, () -> {
                                 log.error("登陆失败: user不存在");
-                                servletHelper.response(httpRequest, httpResponse, new BaseView<String>(403, "登陆失败", "获取用户信息失败"));
+                                servletHelper.response(httpRequest, httpResponse, new BaseView<>(403, "登陆失败", "获取用户信息失败"));
                             });
                 }, () -> {
                     log.error("登陆失败: token不合法");
-                    servletHelper.response(httpRequest, httpResponse, new BaseView<String>(403, "登陆失败", "token不合法"));
+                    servletHelper.response(httpRequest, httpResponse, new BaseView<>(403, "登陆失败", "token不合法"));
                 });
             }
         }

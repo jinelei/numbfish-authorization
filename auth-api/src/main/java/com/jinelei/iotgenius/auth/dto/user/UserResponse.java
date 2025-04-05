@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 @Schema(description = "用户响应对象")
 public class UserResponse implements Serializable {
     @Schema(description = "用户实体的唯一标识")

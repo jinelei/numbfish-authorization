@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
  * @LastEditTime: 2025-02-28 16:09:00
  * @Description: UserApi
  */
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 public interface UserApi {
     /**
      * 创建用户
@@ -79,10 +79,11 @@ public interface UserApi {
 
     /**
      * 用户修改密码
+     *
      * @param request 用户请求对象
      * @return 用户响应对象
      */
     BaseView<String> updatePassword(@Valid UserUpdatePasswordRequest request);
-    
-    
+
+
 }

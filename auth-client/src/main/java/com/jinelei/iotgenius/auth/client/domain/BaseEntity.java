@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unused"})
 @Schema(description = "基础实体对象")
 public class BaseEntity<T> implements Serializable {
     @TableId
@@ -126,11 +126,10 @@ public class BaseEntity<T> implements Serializable {
         } else if (!updatedUserId.equals(other.updatedUserId))
             return false;
         if (updatedTime == null) {
-            if (other.updatedTime != null)
-                return false;
-        } else if (!updatedTime.equals(other.updatedTime))
-            return false;
-        return true;
+            return other.updatedTime == null;
+        } else {
+            return updatedTime.equals(other.updatedTime);
+        }
     }
 
     @Override

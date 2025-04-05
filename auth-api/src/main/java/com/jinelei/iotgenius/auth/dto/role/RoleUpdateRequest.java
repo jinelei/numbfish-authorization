@@ -10,6 +10,7 @@ import java.util.Objects;
 
 import com.jinelei.iotgenius.auth.enumeration.RoleType;
 
+@SuppressWarnings("unused")
 @Schema(description = "角色修改请求对象")
 public class RoleUpdateRequest implements Serializable {
     @NotNull(message = "角色id不能为空")

@@ -8,6 +8,7 @@ import com.jinelei.iotgenius.auth.client.domain.PermissionEntity;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public interface PermissionService extends IService<PermissionEntity> {
 
     void create(PermissionCreateRequest request);

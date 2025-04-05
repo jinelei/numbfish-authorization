@@ -8,6 +8,7 @@ import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public interface RoleService extends IService<RoleEntity> {
 
     void create(RoleCreateRequest request);

@@ -9,7 +9,6 @@ import com.jinelei.iotgenius.auth.client.domain.RoleEntity;
 import com.jinelei.iotgenius.auth.client.helper.PageHelper;
 import com.jinelei.iotgenius.auth.client.service.RoleService;
 import com.jinelei.iotgenius.auth.dto.role.*;
-import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.iotgenius.auth.permission.declaration.RoleDeclaration;
 import com.jinelei.iotgenius.common.request.PageRequest;
 import com.jinelei.iotgenius.common.view.BaseView;
@@ -30,7 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 @ApiSupport(order = 2)
 @Tag(name = "角色管理")
 @Validated

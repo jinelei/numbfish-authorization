@@ -10,18 +10,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 @Component
 @ConfigurationProperties(prefix = "iotgenius.authorization")
 public class AuthorizationProperty {
     public static final String AUTHORIZATION = "Authorization";
     public static final String USER = "user";
     public static final String S_S = "%s/%s";
-    public static final String SLASH_STIRNG = "/";
+    public static final String SLASH_STRING = "/";
     public static final String EMPTY_STRING = "";
     public static final String ALL_STRING = "**";
-    public static final Function<String, String> REMOVE_SUFFIX = s -> s.endsWith(SLASH_STIRNG) ? s.substring(0, s.length() - 1) : s;
-    public static final Function<String, String> REMOVE_PREFFIX = s -> s.startsWith(SLASH_STIRNG) ? s.substring(1) : s;
+    public static final Function<String, String> REMOVE_SUFFIX = s -> s.endsWith(SLASH_STRING) ? s.substring(0, s.length() - 1) : s;
+    public static final Function<String, String> REMOVE_PREFIX = s -> s.startsWith(SLASH_STRING) ? s.substring(1) : s;
     protected LoginProperty login;
     protected LogoutProperty logout;
     protected AdminProperty admin;
@@ -37,7 +37,7 @@ public class AuthorizationProperty {
                         .orElse(EMPTY_STRING),
                 Optional.ofNullable(this.context)
                         .map(ContextProperty::getUrl)
-                        .map(REMOVE_PREFFIX)
+                        .map(REMOVE_PREFIX)
                         .orElse(ALL_STRING)
         );
     }
@@ -50,7 +50,7 @@ public class AuthorizationProperty {
                         .orElse(EMPTY_STRING),
                 Optional.ofNullable(this.login)
                         .map(LoginProperty::getUrl)
-                        .map(REMOVE_PREFFIX)
+                        .map(REMOVE_PREFIX)
                         .orElse(EMPTY_STRING));
     }
 
@@ -62,7 +62,7 @@ public class AuthorizationProperty {
                         .orElse(EMPTY_STRING),
                 Optional.ofNullable(this.logout)
                         .map(LogoutProperty::getUrl)
-                        .map(REMOVE_PREFFIX)
+                        .map(REMOVE_PREFIX)
                         .orElse(EMPTY_STRING));
     }
 

@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 @Schema(description = "用户修改请求对象")
 public class UserUpdateRequest implements Serializable {
     @NotNull(message = "用户id不能为空")

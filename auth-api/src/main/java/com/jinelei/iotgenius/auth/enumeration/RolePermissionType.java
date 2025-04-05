@@ -1,5 +1,6 @@
 package com.jinelei.iotgenius.auth.enumeration;
 
+@SuppressWarnings("unused")
 public enum RolePermissionType {
     WHITE(1, "白名单"),
     BLACK(2, "黑名单");

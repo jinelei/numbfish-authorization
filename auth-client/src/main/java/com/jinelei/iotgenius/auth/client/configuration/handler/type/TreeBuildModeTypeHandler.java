@@ -11,6 +11,7 @@ import org.apache.ibatis.type.MappedTypes;
 
 import com.jinelei.iotgenius.auth.enumeration.TreeBuildMode;
 
+@SuppressWarnings("unused")
 @MappedTypes(TreeBuildMode.class)
 @MappedJdbcTypes(JdbcType.VARBINARY)
 public class TreeBuildModeTypeHandler extends BaseTypeHandler<TreeBuildMode> {

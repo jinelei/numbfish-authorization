@@ -9,6 +9,7 @@ import java.util.Objects;
 
 import com.jinelei.iotgenius.auth.enumeration.PermissionType;
 
+@SuppressWarnings("unused")
 @Schema(description = "权限修改请求对象")
 public class PermissionUpdateRequest implements Serializable {
     @NotNull(message = "权限id不能为空")
