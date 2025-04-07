@@ -51,7 +51,7 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "创建权限")
     @PostMapping("/create")
     public BaseView<Void> create(@RequestBody @Valid PermissionCreateRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.PERMISSION_CREATE);
+        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_CREATE);
         permissionService.create(request);
         return new BaseView<>("创建成功");
     }
@@ -61,7 +61,7 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "删除权限")
     @PostMapping("/delete")
     public BaseView<Void> delete(@RequestBody @Valid PermissionDeleteRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.PERMISSION_DELETE);
+        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_DELETE);
         permissionService.delete(request);
         return new BaseView<>("删除成功");
     }
@@ -71,7 +71,7 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "更新权限")
     @PostMapping("/update")
     public BaseView<Void> update(@RequestBody @Valid PermissionUpdateRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.PERMISSION_UPDATE);
+        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_UPDATE);
         permissionService.update(request);
         return new BaseView<>("更新成功");
     }
@@ -81,7 +81,7 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限")
     @PostMapping("/get")
     public BaseView<PermissionResponse> get(@RequestBody @Valid PermissionQueryRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.PERMISSION_DETAIL);
+        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_DETAIL);
         PermissionEntity entity = permissionService.get(request);
         PermissionResponse convert = permissionService.convert(entity);
         return new BaseView<>(convert);
@@ -92,7 +92,7 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限树")
     @PostMapping("/tree")
     public BaseView<List<PermissionResponse>> tree(@RequestBody @Valid PermissionQueryRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.PERMISSION_SUMMARY);
+        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_SUMMARY);
         List<PermissionEntity> entities = permissionService.tree(request);
         List<PermissionResponse> convert = permissionService.convertTree(entities);
         return new BaseView<>(convert);
@@ -103,7 +103,7 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限列表")
     @PostMapping("/list")
     public ListView<PermissionResponse> list(@RequestBody @Valid PermissionQueryRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.PERMISSION_SUMMARY);
+        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_SUMMARY);
         UserResponse userResponse = AuthorizationHelper.currentUser();
         List<PermissionEntity> entities = permissionService.list(request);
         List<PermissionResponse> convert = entities.parallelStream().map(entity -> permissionService.convert(entity))
@@ -116,7 +116,7 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限分页")
     @PostMapping("/page")
     public PageView<PermissionResponse> page(@RequestBody @Valid PageRequest<PermissionQueryRequest> request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.PERMISSION_SUMMARY);
+        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_SUMMARY);
         IPage<PermissionEntity> page = permissionService.page(PageHelper.toPage(new PageDTO<>(), request),
                 request.getParams());
         List<PermissionResponse> collect = page.getRecords().parallelStream()

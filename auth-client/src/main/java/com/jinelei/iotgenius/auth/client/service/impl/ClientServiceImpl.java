@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jinelei.iotgenius.auth.client.configuration.permission.instance.PermissionInstance;
-import com.jinelei.iotgenius.auth.client.configuration.permission.instance.RoleInstance;
 import com.jinelei.iotgenius.auth.client.convertor.PermissionConvertor;
 import com.jinelei.iotgenius.auth.client.convertor.RoleConvertor;
 import com.jinelei.iotgenius.auth.client.convertor.ClientConvertor;
@@ -64,9 +63,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
 
     @Override
     public void create(ClientCreateRequest request) {
-        AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_CREATE)
-                        || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR));
+        AuthorizationHelper.hasPermissions(PermissionInstance.CLIENT_CREATE);
         final ClientEntity entity = userConvertor.entityFromCreateRequest(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("角色信息不合法"));
         Optional.of(entity).map(ClientEntity::getSecretKey).ifPresentOrElse(password -> {
@@ -95,9 +92,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
 
     @Override
     public void delete(ClientDeleteRequest request) {
-        AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_DELETE)
-                        || AuthorizationHelper.hasRoles(user, RoleInstance.SUPER_ADMINISTRATOR, RoleInstance.USER_ADMIN));
+        AuthorizationHelper.hasPermissions(PermissionInstance.CLIENT_DELETE);
         if (Objects.nonNull(request.getId())) {
             int deleted = baseMapper.deleteById(request.getId());
             log.debug("删除客户端: {}", deleted);
@@ -120,6 +115,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
 
     @Override
     public void update(@Validated ClientUpdateRequest request) {
+        AuthorizationHelper.hasPermissions(PermissionInstance.CLIENT_UPDATE);
         final String accessKey = Optional.ofNullable(request).map(ClientUpdateRequest::getAccessKey)
                 .orElseThrow(() -> new InvalidArgsException("客户端密钥不能为空"));
         LambdaUpdateWrapper<ClientEntity> wrapper = Wrappers.lambdaUpdate(ClientEntity.class);
@@ -151,9 +147,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
 
     @Override
     public ClientEntity get(ClientQueryRequest request) {
-        AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_DETAIL)
-                        || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR));
+        AuthorizationHelper.hasPermissions(PermissionInstance.CLIENT_DETAIL);
         LambdaQueryWrapper<ClientEntity> wrapper = Wrappers.lambdaQuery(ClientEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), ClientEntity::getId, request.getId());
         wrapper.like(Objects.nonNull(request.getAccessKey()), ClientEntity::getAccessKey, request.getAccessKey());
@@ -165,9 +159,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
 
     @Override
     public List<ClientEntity> list(ClientQueryRequest request) {
-        AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_SUMMARY)
-                        || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR));
+        AuthorizationHelper.hasPermissions(PermissionInstance.CLIENT_SUMMARY);
         LambdaQueryWrapper<ClientEntity> wrapper = Wrappers.lambdaQuery(ClientEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), ClientEntity::getId, request.getId());
         wrapper.like(Objects.nonNull(request.getAccessKey()), ClientEntity::getAccessKey, request.getAccessKey());
@@ -179,9 +171,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
 
     @Override
     public IPage<ClientEntity> page(IPage<ClientEntity> page, ClientQueryRequest request) {
-        AuthorizationHelper.check(
-                user -> AuthorizationHelper.hasPermission(user, PermissionInstance.USER_SUMMARY)
-                        || AuthorizationHelper.hasRole(user, RoleInstance.SUPER_ADMINISTRATOR));
+        AuthorizationHelper.hasPermissions(PermissionInstance.CLIENT_SUMMARY);
         LambdaQueryWrapper<ClientEntity> wrapper = Wrappers.lambdaQuery(ClientEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), ClientEntity::getId, request.getId());
         wrapper.like(Objects.nonNull(request.getAccessKey()), ClientEntity::getAccessKey, request.getAccessKey());
@@ -194,6 +184,34 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
     @Override
     public ClientResponse convert(ClientEntity entity) {
         return userConvertor.entityToResponse(entity);
+    }
+
+    public void checkClientSignature(Map<String, Object> params, String signature) {
+        // 获取params中的AccessKey
+        String accessKey = Optional.ofNullable(params).map(p -> p.get("AccessKey")).map(Object::toString).orElse(null);
+        if (Objects.isNull(accessKey)) {
+            throw new InvalidArgsException("AccessKey不能为空");
+        }
+        // 获取params中的Timestamp
+        String timestamp = Optional.ofNullable(params).map(p -> p.get("Timestamp")).map(Object::toString).orElse(null);
+        if (Objects.isNull(timestamp)) {
+            throw new InvalidArgsException("Timestamp不能为空");
+        }
+        // 获取params中的Signature
+        if (Objects.isNull(signature)) {
+            throw new InvalidArgsException("Signature不能为空");
+        }
+        // 获取AccessKey对应的SecretKey
+        ClientQueryRequest clientQueryRequest = new ClientQueryRequest();
+        clientQueryRequest.setAccessKey(accessKey);
+        ClientEntity clientEntity = this.get(clientQueryRequest);
+        if (Objects.isNull(clientEntity)) {
+            throw new InvalidArgsException("AccessKey不存在");
+        }
+        String secretKey = clientEntity.getSecretKey();
+        // 验证Signature
+        String expectedSignature = authorizationHelper.checkSignature(params, accessKey, secretKey, signature);
+
     }
 
 }

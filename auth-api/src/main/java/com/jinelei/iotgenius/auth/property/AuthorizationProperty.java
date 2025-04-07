@@ -15,7 +15,10 @@ import java.util.function.Function;
 @ConfigurationProperties(prefix = "iotgenius.authorization")
 public class AuthorizationProperty {
     public static final String AUTHORIZATION = "Authorization";
-    public static final String USER = "user";
+    public static final String SIGNATURE = "Signature";
+    public static final String USER = "User";
+    public static final String CLIENT = "Client";
+    public static final String AUTHORIZE_TYPE = "Authorize-Type";
     public static final String S_S = "%s/%s";
     public static final String SLASH_STRING = "/";
     public static final String EMPTY_STRING = "";
@@ -26,7 +29,7 @@ public class AuthorizationProperty {
     protected LogoutProperty logout;
     protected AdminProperty admin;
     protected IgnoreProperty ignore;
-    protected HeaderProperty header;
+    protected PlaceholderProperty placeHolder;
     protected ContextProperty context;
 
     public String getContextUrl(ServerProperties serverProperties) {
@@ -73,15 +76,33 @@ public class AuthorizationProperty {
     }
 
     public String getTokenHeader() {
-        return Optional.ofNullable(this.header)
-                .map(HeaderProperty::getHeader)
+        return Optional.ofNullable(this.placeHolder)
+                .map(PlaceholderProperty::getHeader)
                 .orElse(AUTHORIZATION);
     }
 
-    public String getTokenPlaceholder() {
-        return Optional.ofNullable(this.header)
-                .map(HeaderProperty::getPlaceholder)
+    public String getSignatureHeader() {
+        return Optional.ofNullable(this.placeHolder)
+                .map(PlaceholderProperty::getSignature)
+                .orElse(SIGNATURE);
+    }
+
+    public String getTokenPlaceholderUser() {
+        return Optional.ofNullable(this.placeHolder)
+                .map(PlaceholderProperty::getUser)
                 .orElse(USER);
+    }
+
+    public String getTokenPlaceholderClient() {
+        return Optional.ofNullable(this.placeHolder)
+                .map(PlaceholderProperty::getClient)
+                .orElse(CLIENT);
+    }
+
+    public String getTokenPlaceholderAuthorizeType() {
+        return Optional.ofNullable(this.placeHolder)
+                .map(PlaceholderProperty::getAuthorizeType)
+                .orElse(AUTHORIZE_TYPE);
     }
 
     public LoginProperty getLogin() {
@@ -116,12 +137,12 @@ public class AuthorizationProperty {
         this.ignore = ignore;
     }
 
-    public HeaderProperty getHeader() {
-        return header;
+    public PlaceholderProperty getPlaceHolder() {
+        return placeHolder;
     }
 
-    public void setHeader(HeaderProperty header) {
-        this.header = header;
+    public void setPlaceHolder(PlaceholderProperty placeHolder) {
+        this.placeHolder = placeHolder;
     }
 
     public ContextProperty getContext() {
@@ -136,12 +157,12 @@ public class AuthorizationProperty {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         AuthorizationProperty that = (AuthorizationProperty) o;
-        return Objects.equals(login, that.login) && Objects.equals(logout, that.logout) && Objects.equals(admin, that.admin) && Objects.equals(ignore, that.ignore) && Objects.equals(header, that.header) && Objects.equals(context, that.context);
+        return Objects.equals(login, that.login) && Objects.equals(logout, that.logout) && Objects.equals(admin, that.admin) && Objects.equals(ignore, that.ignore) && Objects.equals(placeHolder, that.placeHolder) && Objects.equals(context, that.context);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(login, logout, admin, ignore, header, context);
+        return Objects.hash(login, logout, admin, ignore, placeHolder, context);
     }
 
     @Override
@@ -151,7 +172,7 @@ public class AuthorizationProperty {
                 ", logout=" + logout +
                 ", admin=" + admin +
                 ", ignore=" + ignore +
-                ", header=" + header +
+                ", header=" + placeHolder +
                 ", context=" + context +
                 '}';
     }

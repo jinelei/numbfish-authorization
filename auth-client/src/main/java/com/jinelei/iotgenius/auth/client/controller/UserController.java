@@ -44,7 +44,7 @@ public class UserController implements UserApi {
     @Operation(summary = "创建用户")
     @PostMapping("/create")
     public BaseView<Void> create(@RequestBody @Valid UserCreateRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.USER_CREATE);
+        AuthorizationHelper.hasPermissions(PermissionInstance.USER_CREATE);
         userService.create(request);
         return new BaseView<>("创建成功");
     }
@@ -54,7 +54,7 @@ public class UserController implements UserApi {
     @Operation(summary = "删除用户")
     @PostMapping("/delete")
     public BaseView<Void> delete(@RequestBody @Valid UserDeleteRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.USER_DELETE);
+        AuthorizationHelper.hasPermissions(PermissionInstance.USER_DELETE);
         userService.delete(request);
         return new BaseView<>("删除成功");
     }
@@ -64,7 +64,7 @@ public class UserController implements UserApi {
     @Operation(summary = "更新用户")
     @PostMapping("/update")
     public BaseView<Void> update(@RequestBody @Valid UserUpdateRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.USER_UPDATE);
+        AuthorizationHelper.hasPermissions(PermissionInstance.USER_UPDATE);
         userService.update(request);
         return new BaseView<>("更新成功");
     }
@@ -74,7 +74,7 @@ public class UserController implements UserApi {
     @Operation(summary = "获取用户")
     @PostMapping("/get")
     public BaseView<UserResponse> get(@RequestBody @Valid UserQueryRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.USER_DETAIL);
+        AuthorizationHelper.hasPermissions(PermissionInstance.USER_DETAIL);
         UserEntity entity = userService.get(request);
         UserResponse convert = userService.convert(entity);
         return new BaseView<>(convert);
@@ -85,7 +85,7 @@ public class UserController implements UserApi {
     @Operation(summary = "获取用户列表")
     @PostMapping("/list")
     public ListView<UserResponse> list(@RequestBody @Valid UserQueryRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.USER_SUMMARY);
+        AuthorizationHelper.hasPermissions(PermissionInstance.USER_SUMMARY);
         List<UserEntity> entities = userService.list(request);
         List<UserResponse> convert = entities.parallelStream().map(entity -> userService.convert(entity))
                 .collect(Collectors.toList());
@@ -97,7 +97,7 @@ public class UserController implements UserApi {
     @Operation(summary = "获取用户分页")
     @PostMapping("/page")
     public PageView<UserResponse> page(@RequestBody @Valid PageRequest<UserQueryRequest> request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.USER_SUMMARY);
+        AuthorizationHelper.hasPermissions(PermissionInstance.USER_SUMMARY);
         IPage<UserEntity> page = userService.page(PageHelper.toPage(new PageDTO<>(), request), request.getParams());
         List<UserResponse> collect = page.getRecords().parallelStream().map(entity -> userService.convert(entity))
                 .collect(Collectors.toList());
@@ -127,7 +127,7 @@ public class UserController implements UserApi {
     @Operation(summary = "用户修改密码")
     @PostMapping("/updatePassword")
     public BaseView<String> updatePassword(UserUpdatePasswordRequest request) {
-        AuthorizationHelper.checkPermission(PermissionInstance.USER_UPDATE);
+        AuthorizationHelper.hasPermissions(PermissionInstance.USER_UPDATE);
         userService.updatePassword(request);
         return new BaseView<>("修改成功");
     }
