@@ -1,24 +1,15 @@
 package com.jinelei.iotgenius.auth.client.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.iotgenius.auth.client.configuration.permission.instance.PermissionInstance;
-import com.jinelei.iotgenius.auth.client.convertor.PermissionConvertor;
-import com.jinelei.iotgenius.auth.client.convertor.RoleConvertor;
-import com.jinelei.iotgenius.auth.client.convertor.UserConvertor;
-import com.jinelei.iotgenius.auth.client.domain.*;
-import com.jinelei.iotgenius.auth.client.mapper.UserMapper;
-import com.jinelei.iotgenius.auth.client.service.*;
-import com.jinelei.iotgenius.auth.dto.user.*;
-import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
-import com.jinelei.iotgenius.common.exception.InvalidArgsException;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.ibatis.executor.BatchResult;
-import org.apache.ibatis.javassist.Loader.Simple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +27,36 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
-import java.time.Duration;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jinelei.iotgenius.auth.client.configuration.authentication.permission.instance.PermissionInstance;
+import com.jinelei.iotgenius.auth.client.convertor.PermissionConvertor;
+import com.jinelei.iotgenius.auth.client.convertor.RoleConvertor;
+import com.jinelei.iotgenius.auth.client.convertor.UserConvertor;
+import com.jinelei.iotgenius.auth.client.domain.PermissionEntity;
+import com.jinelei.iotgenius.auth.client.domain.RoleEntity;
+import com.jinelei.iotgenius.auth.client.domain.RolePermissionEntity;
+import com.jinelei.iotgenius.auth.client.domain.UserEntity;
+import com.jinelei.iotgenius.auth.client.domain.UserRoleEntity;
+import com.jinelei.iotgenius.auth.client.mapper.UserMapper;
+import com.jinelei.iotgenius.auth.client.service.PermissionService;
+import com.jinelei.iotgenius.auth.client.service.RolePermissionService;
+import com.jinelei.iotgenius.auth.client.service.RoleService;
+import com.jinelei.iotgenius.auth.client.service.UserRoleService;
+import com.jinelei.iotgenius.auth.client.service.UserService;
+import com.jinelei.iotgenius.auth.dto.user.UserCreateRequest;
+import com.jinelei.iotgenius.auth.dto.user.UserDeleteRequest;
+import com.jinelei.iotgenius.auth.dto.user.UserLoginRequest;
+import com.jinelei.iotgenius.auth.dto.user.UserQueryRequest;
+import com.jinelei.iotgenius.auth.dto.user.UserResponse;
+import com.jinelei.iotgenius.auth.dto.user.UserUpdatePasswordRequest;
+import com.jinelei.iotgenius.auth.dto.user.UserUpdateRequest;
+import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
+import com.jinelei.iotgenius.common.exception.InvalidArgsException;
 
 @SuppressWarnings("unused")
 @Service

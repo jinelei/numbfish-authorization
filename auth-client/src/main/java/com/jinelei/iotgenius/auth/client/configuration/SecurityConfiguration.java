@@ -1,36 +1,35 @@
 package com.jinelei.iotgenius.auth.client.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.iotgenius.auth.authentication.ClientAuthenticationFilter;
-import com.jinelei.iotgenius.auth.authentication.ClientAuthenticationProvider;
-import com.jinelei.iotgenius.auth.authentication.ClientDetailService;
-import com.jinelei.iotgenius.auth.dto.user.UserResponse;
-import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
-import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
-import jakarta.servlet.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jinelei.iotgenius.auth.authentication.ClientAuthenticationFilter;
+import com.jinelei.iotgenius.auth.authentication.ClientAuthenticationProvider;
+import com.jinelei.iotgenius.auth.authentication.ClientDetailService;
+import com.jinelei.iotgenius.auth.client.configuration.authentication.BaseAuthenticationEntryPoint;
+import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
+import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
 
 @SuppressWarnings("unused")
 @Configuration
-@Import({ AuthorizationHelper.class })
+@Import({AuthorizationHelper.class})
 public class SecurityConfiguration {
+
     private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     @Bean
@@ -39,17 +38,16 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public ClientAuthenticationProvider clientAuthenticationProvider() {
-        return new ClientAuthenticationProvider();
+    public ClientAuthenticationProvider clientAuthenticationProvider(AuthorizationProperty property) {
+        return new ClientAuthenticationProvider(property);
     }
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http, UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder)
-            throws Exception {
+            PasswordEncoder passwordEncoder, ClientAuthenticationProvider clientAuthenticationProvider) throws Exception {
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
         builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
-        builder.authenticationProvider(clientAuthenticationProvider());
+        builder.authenticationProvider(clientAuthenticationProvider);
         return builder.build();
     }
 
@@ -58,25 +56,30 @@ public class SecurityConfiguration {
             ObjectMapper objectMapper,
             ServerProperties serverProperties,
             ClientDetailService clientDetailService,
-            AuthenticationManager authorizationManager) {
-        final ClientAuthenticationFilter filter = new ClientAuthenticationFilter();
-        filter.setProperty(property);
-        filter.setObjectMapper(objectMapper);
-        filter.setClientDetailService(clientDetailService);
-        filter.setAuthenticationManager(authorizationManager);
-        return filter;
+            AuthenticationManager authenticationManager) {
+        return new ClientAuthenticationFilter(property, objectMapper, clientDetailService, authenticationManager);
+    }
+
+    @Bean
+    public BaseAuthenticationEntryPoint baseAuthenticationEntryPoint(ObjectMapper objectMapper) {
+        return new BaseAuthenticationEntryPoint(objectMapper);
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthorizationProperty property,
-            ClientAuthenticationFilter clientAuthenticationFilter) throws Exception {
+            ClientAuthenticationFilter clientAuthenticationFilter,
+            AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(property.getIgnoreUrls().toArray(String[]::new)).permitAll()
-                .requestMatchers(property.getLoginUrl()).permitAll()
+                .requestMatchers(property.getIgnoreUrls().stream().map(AntPathRequestMatcher::new).toArray(AntPathRequestMatcher[]::new)).permitAll()
+                .requestMatchers(new AntPathRequestMatcher(property.getLoginUrl())).permitAll()
                 .anyRequest().authenticated())
                 .addFilterAfter(clientAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors(c -> c.disable())
-                .httpBasic(c -> c.disable());
+                .httpBasic(c -> c.disable())
+                .csrf(c -> c.disable())
+                .formLogin(c -> c.disable())
+                .exceptionHandling(c -> c.authenticationEntryPoint(authenticationEntryPoint));
+
         return http.build();
     }
 
