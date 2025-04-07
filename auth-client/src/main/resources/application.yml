@@ -62,8 +62,9 @@ iotgenius:
   authorization:
     admin:
       username: administrator
+    login:
+      url: /user/login
     ignore:
       urls:
         - /webjars
         - /doc.html
-        - /user/login

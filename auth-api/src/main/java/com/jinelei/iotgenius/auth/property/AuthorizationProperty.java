@@ -19,11 +19,14 @@ public class AuthorizationProperty {
     public static final String USER = "User";
     public static final String CLIENT = "Client";
     public static final String AUTHORIZE_TYPE = "Authorize-Type";
-    public static final String S_S = "%s/%s";
     public static final String SLASH_STRING = "/";
+    public static final String USER_LOGIN_URL_STRING = "/user/login";
+    public static final String USER_LOGOUT_URL_STRING = "/user/logout";
     public static final String EMPTY_STRING = "";
     public static final String ALL_STRING = "**";
-    public static final Function<String, String> REMOVE_SUFFIX = s -> s.endsWith(SLASH_STRING) ? s.substring(0, s.length() - 1) : s;
+    public static final Function<String, String> REMOVE_SUFFIX = s -> s.endsWith(SLASH_STRING)
+            ? s.substring(0, s.length() - 1)
+            : s;
     public static final Function<String, String> REMOVE_PREFIX = s -> s.startsWith(SLASH_STRING) ? s.substring(1) : s;
     protected LoginProperty login;
     protected LogoutProperty logout;
@@ -32,41 +35,25 @@ public class AuthorizationProperty {
     protected PlaceholderProperty placeHolder;
     protected ContextProperty context;
 
-    public String getContextUrl(ServerProperties serverProperties) {
-        return S_S.formatted(Optional.ofNullable(serverProperties)
-                        .map(ServerProperties::getServlet)
-                        .map(ServerProperties.Servlet::getContextPath)
-                        .map(REMOVE_SUFFIX)
-                        .orElse(EMPTY_STRING),
-                Optional.ofNullable(this.context)
-                        .map(ContextProperty::getUrl)
-                        .map(REMOVE_PREFIX)
-                        .orElse(ALL_STRING)
-        );
+    public String getContextUrl() {
+        return Optional.ofNullable(this.context)
+                .map(ContextProperty::getUrl)
+                .map(REMOVE_PREFIX)
+                .orElse(ALL_STRING);
     }
 
-    public String getLoginUrl(ServerProperties serverProperties) {
-        return S_S.formatted(Optional.ofNullable(serverProperties)
-                        .map(ServerProperties::getServlet)
-                        .map(ServerProperties.Servlet::getContextPath)
-                        .map(REMOVE_SUFFIX)
-                        .orElse(EMPTY_STRING),
-                Optional.ofNullable(this.login)
-                        .map(LoginProperty::getUrl)
-                        .map(REMOVE_PREFIX)
-                        .orElse(EMPTY_STRING));
+    public String getLoginUrl() {
+        return Optional.ofNullable(this.login)
+                .map(LoginProperty::getUrl)
+                .map(REMOVE_PREFIX)
+                .orElse(USER_LOGIN_URL_STRING);
     }
 
-    public String getLogoutUrl(ServerProperties serverProperties) {
-        return S_S.formatted(Optional.ofNullable(serverProperties)
-                        .map(ServerProperties::getServlet)
-                        .map(ServerProperties.Servlet::getContextPath)
-                        .map(REMOVE_SUFFIX)
-                        .orElse(EMPTY_STRING),
-                Optional.ofNullable(this.logout)
-                        .map(LogoutProperty::getUrl)
-                        .map(REMOVE_PREFIX)
-                        .orElse(EMPTY_STRING));
+    public String getLogoutUrl() {
+        return Optional.ofNullable(this.logout)
+                .map(LogoutProperty::getUrl)
+                .map(REMOVE_PREFIX)
+                .orElse(USER_LOGOUT_URL_STRING);
     }
 
     public List<String> getIgnoreUrls() {
@@ -155,9 +142,12 @@ public class AuthorizationProperty {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass())
+            return false;
         AuthorizationProperty that = (AuthorizationProperty) o;
-        return Objects.equals(login, that.login) && Objects.equals(logout, that.logout) && Objects.equals(admin, that.admin) && Objects.equals(ignore, that.ignore) && Objects.equals(placeHolder, that.placeHolder) && Objects.equals(context, that.context);
+        return Objects.equals(login, that.login) && Objects.equals(logout, that.logout)
+                && Objects.equals(admin, that.admin) && Objects.equals(ignore, that.ignore)
+                && Objects.equals(placeHolder, that.placeHolder) && Objects.equals(context, that.context);
     }
 
     @Override

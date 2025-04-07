@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jinelei.iotgenius.auth.authentication.ClientDetailService;
 import com.jinelei.iotgenius.auth.client.configuration.permission.instance.PermissionInstance;
 import com.jinelei.iotgenius.auth.client.convertor.PermissionConvertor;
 import com.jinelei.iotgenius.auth.client.convertor.RoleConvertor;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -33,7 +35,7 @@ import java.util.*;
 @SuppressWarnings("unused")
 @Service
 public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
-        implements ClientService {
+        implements ClientService, ClientDetailService {
     private static final Logger log = LoggerFactory.getLogger(ClientServiceImpl.class);
 
     @Autowired
@@ -106,7 +108,8 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
             log.debug("删除客户端: {}", deleted);
             Assert.state(deleted == request.getIds().size(), "角色删除失败");
             int deletedClientPermission = userRoleService.getBaseMapper().delete(
-                    Wrappers.lambdaUpdate(ClientPermissionEntity.class).in(ClientPermissionEntity::getClientId, request.getIds()));
+                    Wrappers.lambdaUpdate(ClientPermissionEntity.class).in(ClientPermissionEntity::getClientId,
+                            request.getIds()));
             log.debug("删除客户端角色关系: {}", deletedClientPermission);
         } else {
             throw new InvalidArgsException("不支持的删除方式: " + request);
@@ -127,7 +130,8 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
         int updated = baseMapper.update(wrapper);
         log.debug("更新客户端: {}", updated);
         int deleted = userRoleService.getBaseMapper()
-                .delete(Wrappers.lambdaUpdate(ClientPermissionEntity.class).eq(ClientPermissionEntity::getClientId, request.getId()));
+                .delete(Wrappers.lambdaUpdate(ClientPermissionEntity.class).eq(ClientPermissionEntity::getClientId,
+                        request.getId()));
         log.debug("删除客户端角色关系: {}", deleted);
         Optional.ofNullable(request.getPermissionIds())
                 .filter(i -> !CollectionUtils.isEmpty(i))
@@ -186,32 +190,14 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
         return userConvertor.entityToResponse(entity);
     }
 
-    public void checkClientSignature(Map<String, Object> params, String signature) {
-        // 获取params中的AccessKey
-        String accessKey = Optional.ofNullable(params).map(p -> p.get("AccessKey")).map(Object::toString).orElse(null);
-        if (Objects.isNull(accessKey)) {
-            throw new InvalidArgsException("AccessKey不能为空");
-        }
-        // 获取params中的Timestamp
-        String timestamp = Optional.ofNullable(params).map(p -> p.get("Timestamp")).map(Object::toString).orElse(null);
-        if (Objects.isNull(timestamp)) {
-            throw new InvalidArgsException("Timestamp不能为空");
-        }
-        // 获取params中的Signature
-        if (Objects.isNull(signature)) {
-            throw new InvalidArgsException("Signature不能为空");
-        }
-        // 获取AccessKey对应的SecretKey
+    @Override
+    public ClientResponse loadClientByAccessKey(String accessKey) {
+        Optional.ofNullable(accessKey).orElseThrow(() -> new UsernameNotFoundException("AccessKey不能为空"));
         ClientQueryRequest clientQueryRequest = new ClientQueryRequest();
         clientQueryRequest.setAccessKey(accessKey);
         ClientEntity clientEntity = this.get(clientQueryRequest);
-        if (Objects.isNull(clientEntity)) {
-            throw new InvalidArgsException("AccessKey不存在");
-        }
-        String secretKey = clientEntity.getSecretKey();
-        // 验证Signature
-        String expectedSignature = authorizationHelper.checkSignature(params, accessKey, secretKey, signature);
-
+        Optional.ofNullable(clientEntity).orElseThrow(() -> new UsernameNotFoundException("AccessKey不存在"));
+        return convert(clientEntity);
     }
 
 }

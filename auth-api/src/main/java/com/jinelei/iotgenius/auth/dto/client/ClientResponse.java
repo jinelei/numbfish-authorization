@@ -15,6 +15,8 @@ public class ClientResponse implements Serializable {
     protected Long id;
     @Schema(description = "访问主键")
     private String accessKey;
+    @Schema(description = "访问密钥")
+    private String secretKey;
     @Schema(description = "过期时间")
     private LocalDateTime expiredAt;
     @Schema(description = "备注")
@@ -36,6 +38,14 @@ public class ClientResponse implements Serializable {
 
     public void setAccessKey(String accessKey) {
         this.accessKey = accessKey;
+    }
+
+    public String getSecretKey() {
+        return secretKey; 
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey; 
     }
 
     public LocalDateTime getExpiredAt() {
@@ -64,9 +74,12 @@ public class ClientResponse implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass())
+            return false;
         ClientResponse that = (ClientResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(accessKey, that.accessKey) && Objects.equals(expiredAt, that.expiredAt) && Objects.equals(remark, that.remark) && Objects.equals(permissions, that.permissions);
+        return Objects.equals(id, that.id) && Objects.equals(accessKey, that.accessKey)
+                && Objects.equals(expiredAt, that.expiredAt) && Objects.equals(remark, that.remark)
+                && Objects.equals(permissions, that.permissions);
     }
 
     @Override

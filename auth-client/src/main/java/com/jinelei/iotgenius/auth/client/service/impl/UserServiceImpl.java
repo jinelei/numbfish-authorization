@@ -18,11 +18,18 @@ import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
 import com.jinelei.iotgenius.common.exception.InvalidArgsException;
 
 import org.apache.ibatis.executor.BatchResult;
+import org.apache.ibatis.javassist.Loader.Simple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -31,11 +38,12 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressWarnings("unused")
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
-        implements UserService {
+        implements UserService, UserDetailsService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
@@ -276,6 +284,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     @Override
     public UserResponse convert(UserEntity entity) {
         return userConvertor.entityToResponse(entity);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
+        wrapper.eq(UserEntity::getUsername, username);
+        UserEntity userEntity = baseMapper.selectOne(wrapper);
+        Optional.ofNullable(userEntity).orElseThrow(() -> new UsernameNotFoundException("用户不存在"));
+        final List<Long> roleIds = new CopyOnWriteArrayList<>();
+        final List<Long> permissionIds = new CopyOnWriteArrayList<>();
+        final Collection<GrantedAuthority> authorities = new ArrayList<>();
+        // 查询用户关联的所有的角色
+        final List<UserRoleEntity> userRoleEntities = userRoleService
+                .list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, userEntity.getId()));
+        userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).forEach(roleIds::add);
+        if (!roleIds.isEmpty()) {
+            final List<RoleEntity> roleEntities = roleService
+                    .list(Wrappers.lambdaQuery(RoleEntity.class).in(RoleEntity::getId, roleIds));
+            roleEntities.parallelStream().map(RoleEntity::getCode).map(i -> "ROLE_" + i)
+                    .map(SimpleGrantedAuthority::new).forEach(authorities::add);
+            final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(
+                    Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
+            rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId)
+                    .forEach(permissionIds::add);
+            if (!permissionIds.isEmpty()) {
+                final List<PermissionEntity> permissionEntities = permissionService
+                        .list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getId, permissionIds));
+                permissionEntities.parallelStream().map(PermissionEntity::getCode)
+                        .map(SimpleGrantedAuthority::new).forEach(authorities::add);
+            }
+        }
+        return new User(userEntity.getUsername(), userEntity.getPassword(), authorities);
     }
 
 }
