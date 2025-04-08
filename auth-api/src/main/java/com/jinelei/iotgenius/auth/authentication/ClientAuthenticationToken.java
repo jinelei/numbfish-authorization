@@ -1,7 +1,9 @@
 package com.jinelei.iotgenius.auth.authentication;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +18,7 @@ public class ClientAuthenticationToken implements Authentication {
     private final String signature;
     private final Map<String, String> params;
     private boolean authenticated;
-    private Collection<? extends GrantedAuthority> authorities;
+    private final Collection<GrantedAuthority> authorities;
 
     public ClientAuthenticationToken(String accessKey, String secretKey, String signature, Map<String, String> params,
             Collection<? extends GrantedAuthority> authorities) {
@@ -25,7 +27,8 @@ public class ClientAuthenticationToken implements Authentication {
         this.signature = signature;
         this.params = params;
         this.authenticated = false;
-        this.authorities = authorities;
+        this.authorities = new ArrayList<>();
+        authorities.forEach(a -> this.authorities.add(a));
     }
 
     @Override
@@ -33,8 +36,8 @@ public class ClientAuthenticationToken implements Authentication {
         return authorities;
     }
 
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        this.authorities = authorities;
+    public void appendAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        this.authorities.addAll(authorities);
     }
 
     @Override

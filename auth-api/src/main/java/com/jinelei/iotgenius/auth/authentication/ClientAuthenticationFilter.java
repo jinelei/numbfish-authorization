@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jinelei.iotgenius.auth.dto.client.ClientResponse;
+import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
 import com.jinelei.iotgenius.common.wrapper.RepeatRequestWrapper;
 
@@ -36,34 +38,17 @@ import java.util.stream.Collectors;
 @Component
 public class ClientAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(ClientAuthenticationFilter.class);
-    private AuthorizationProperty property;
-    private ObjectMapper objectMapper;
-    private AuthenticationManager authenticationManager;
-    private ClientDetailService clientDetailService;
+    private final AuthorizationProperty property;
+    private final ObjectMapper objectMapper;
+    private final AuthenticationManager authenticationManager;
+    private final ClientDetailService clientDetailService;
 
-    public void setProperty(AuthorizationProperty property) {
+    public ClientAuthenticationFilter(AuthorizationProperty property, ObjectMapper objectMapper,
+            AuthenticationManager authenticationManager, ClientDetailService clientDetailService) {
         this.property = property;
-    }
-
-    public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-    }
-
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
-    }
-
-    public void setClientDetailService(ClientDetailService clientService) {
-        this.clientDetailService = clientService;
-    }
-
-    protected String obtainSignature(HttpServletRequest request) {
-        Optional.ofNullable(property)
-                .map(i -> i.getSignatureHeader())
-                .map(header -> request.getHeader(header))
-                .filter(s -> Objects.nonNull(s) && !s.isEmpty())
-                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("未找到签名"));
-        return "";
+        this.clientDetailService = clientDetailService;
     }
 
     protected Map<String, String> obtainParams(HttpServletRequest request) {
@@ -92,49 +77,66 @@ public class ClientAuthenticationFilter extends OncePerRequestFilter {
         return new HashMap<>();
     }
 
-    protected String obtainAccessKey(HttpServletRequest request) {
-        return "";
+    protected Optional<String> obtainSignature(HttpServletRequest request) {
+        return Optional.ofNullable(property)
+                .map(i -> i.getSignatureHeader())
+                .map(header -> request.getHeader(header))
+                .filter(s -> Objects.nonNull(s) && !s.isEmpty());
     }
 
-    protected String obtainSecretKey(HttpServletRequest request) {
-        return "";
+    protected Optional<String> obtainTimestamp(HttpServletRequest request) {
+        return Optional.empty();
+    }
+
+    protected Optional<String> obtainAccessKey(HttpServletRequest request) {
+        return Optional.empty();
+    }
+
+    protected Optional<String> obtainSecretKey(HttpServletRequest request) {
+        return Optional.empty();
+    }
+
+    protected ClientResponse obtainClient(String accessKey) throws AuthenticationCredentialsNotFoundException {
+        final Optional.ofNullable(accessKey)
+                .map(c -> clientDetailService.loadClientByAccessKey(c))
+                .filter(Objects::nonNull)
+                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("客户端不存在"));
+    }
+
+    protected String obtainSecretKey(ClientResponse client) throws AuthenticationCredentialsNotFoundException {
+        return Optional.ofNullable(client)
+                .map(i -> i.getSecretKey())
+                .map(String::trim)
+                .filter(StringUtils::hasText)
+                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("未找到SecretKey"));
+    }
+
+    protected List<? extends GrantedAuthority> obtainAuthorities(ClientResponse client) {
+        return client.getPermissions()
+                .stream()
+                .map(PermissionResponse::getCode)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     @SuppressWarnings("all")
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        final String accessKey = Optional.ofNullable(obtainAccessKey(request))
-                .map(String::trim)
-                .filter(StringUtils::hasText)
-                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("未找到AccessKey"));
-        final ClientResponse result = Optional.ofNullable(clientDetailService)
-                .map(s -> s.loadClientByAccessKey(accessKey))
-                .filter(Objects::nonNull)
-                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("AccessKey不存在"));
-        final String secretKey = Optional.ofNullable(result)
-                .map(i -> i.getSecretKey())
-                .map(String::trim)
-                .filter(StringUtils::hasText)
-                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("未找到SecretKey"));
-        // 获取请求中的所有参数
-        final Map<String, String> params = obtainParams(request);
-        // 获取请求中的签名
-        final String signature = obtainSignature(request);
-        // 获取请求中的权限
-        final List<SimpleGrantedAuthority> authorities = Optional.ofNullable(result)
-                .map(i -> i.getPermissions())
-                .stream()
-                .flatMap(Collection::stream)
-                .map(c -> c.getCode())
-                .map(c -> new SimpleGrantedAuthority(c))
-                .collect(Collectors.toList());
-        if (accessKey != null && secretKey != null) {
-            ClientAuthenticationToken authenticationToken = new ClientAuthenticationToken(accessKey, secretKey,
-                    signature, params, authorities);
-            Authentication authentication = authenticationManager.authenticate(authenticationToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        final Optional<String> accessKey = obtainAccessKey(request);
+        final Optional<String> timestamp = obtainTimestamp(request);
+        final Optional<String> signature = obtainSignature(request);
+        if (accessKey.isEmpty() || timestamp.isEmpty() || signature.isEmpty()) {
+            filterChain.doFilter(request, response);
+            return;
         }
+        final ClientResponse result = obtainClient(accessKey.get());
+        final Map<String, String> params = new HashMap<>();
+        params.putAll(obtainParams(request));
+        ClientAuthenticationToken authenticationToken = new ClientAuthenticationToken(accessKey.get(),
+                obtainSecretKey(result), signature.get(), params, obtainAuthorities(result));
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
     }
 }
