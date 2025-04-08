@@ -20,6 +20,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -100,10 +101,11 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("token无效"));
         final String username = Optional.ofNullable(result).map(UserResponse::getUsername)
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("用户名无效"));
+        UserDetails user = userDetailsService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                username, "", obtainAuthorities(result));
-        // Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                user.getUsername(), user.getPassword(), user.getAuthorities());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         return authenticationToken;
     }
 }
