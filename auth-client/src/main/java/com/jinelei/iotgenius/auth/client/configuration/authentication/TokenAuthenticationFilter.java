@@ -72,8 +72,10 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
     }
 
     protected List<? extends GrantedAuthority> obtainAuthorities(UserResponse user) {
-        return user.getPermissions()
+        return Optional.ofNullable(user)
+                .map(UserResponse::getPermissions)
                 .stream()
+                .flatMap(List::stream)
                 .map(PermissionResponse::getCode)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
