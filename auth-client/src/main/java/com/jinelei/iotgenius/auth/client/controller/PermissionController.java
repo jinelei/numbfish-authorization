@@ -95,7 +95,7 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限树")
     @PostMapping("/tree")
     public BaseView<List<PermissionResponse>> tree(@RequestBody @Valid PermissionQueryRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_SUMMARY);
+        // AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_SUMMARY);
         List<PermissionEntity> entities = permissionService.tree(request);
         List<PermissionResponse> convert = permissionService.convertTree(entities);
         return new BaseView<>(convert);
@@ -106,7 +106,7 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限列表")
     @PostMapping("/list")
     public ListView<PermissionResponse> list(@RequestBody @Valid PermissionQueryRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_SUMMARY);
+        // AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_SUMMARY);
         UserResponse userResponse = AuthorizationHelper.currentUser();
         List<PermissionEntity> entities = permissionService.list(request);
         List<PermissionResponse> convert = entities.parallelStream().map(entity -> permissionService.convert(entity))

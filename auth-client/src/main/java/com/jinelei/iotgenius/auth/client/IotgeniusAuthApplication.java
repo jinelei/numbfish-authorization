@@ -59,7 +59,7 @@ public class IotgeniusAuthApplication implements CommandLineRunner {
         executorService.schedule(() -> {
             SpringHelper.getBean(PermissionService.class).regist(List.of(PermissionInstance.class.getEnumConstants()));
             SpringHelper.getBean(RoleService.class).regist(List.of(RoleInstance.class.getEnumConstants()));
-        }, 30, TimeUnit.SECONDS);
+        }, 3, TimeUnit.MINUTES);
     }
 
 }
