@@ -1,22 +1,26 @@
 package com.jinelei.iotgenius.auth.helper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.iotgenius.common.utils.ThrowableStackTraceUtils;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jinelei.iotgenius.common.utils.ThrowableStackTraceUtils;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("unused")
 public class ServletHelper {
+
     private static final Logger log = LoggerFactory.getLogger(ServletHelper.class);
     private static final List<String> SUPPORTED_CHARSETS = Arrays.asList("UTF-8", "ISO-8859-1");
 
@@ -39,10 +43,10 @@ public class ServletHelper {
         Optional.ofNullable(acceptCharsetHeader)
                 .map(s -> s.split(","))
                 .map(arr -> Arrays.stream(arr)
-                        .map(String::trim)
-                        .map(s -> s.split(";")[0])
-                        .filter(SUPPORTED_CHARSETS::contains)
-                        .findFirst())
+                .map(String::trim)
+                .map(s -> s.split(";")[0])
+                .filter(SUPPORTED_CHARSETS::contains)
+                .findFirst())
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .ifPresentOrElse(response::setCharacterEncoding,
@@ -50,7 +54,7 @@ public class ServletHelper {
         response.setContentType(mediaType.toString());
         try {
             response.getWriter().write(objectMapper.writeValueAsString(object));
-        } catch (Throwable throwable) {
+        } catch (IOException throwable) {
             log.error("响应序列化失败：{}", ThrowableStackTraceUtils.getStackTraceAsString(throwable));
         }
         response.setStatus(httpStatus.value());

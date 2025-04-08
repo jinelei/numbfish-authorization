@@ -1,21 +1,23 @@
 package com.jinelei.iotgenius.auth.property;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
 @SuppressWarnings("unused")
 @Component
 @ConfigurationProperties(prefix = "iotgenius.authorization")
 public class AuthorizationProperty {
+
     public static final String AUTHORIZATION = "Authorization";
     public static final String SIGNATURE = "Signature";
+    public static final String TIMESTAMP = "Timestamp";
+    public static final String ACCESS_KEY = "AccessKey";
     public static final String USER = "User";
     public static final String CLIENT = "Client";
     public static final String AUTHORIZE_TYPE = "Authorize-Type";
@@ -74,6 +76,18 @@ public class AuthorizationProperty {
                 .orElse(SIGNATURE);
     }
 
+    public String getTimestampHeader() {
+        return Optional.ofNullable(this.placeHolder)
+                .map(PlaceholderProperty::getTimestamp)
+                .orElse(TIMESTAMP);
+    }
+
+    public String getAccessKeyHeader() {
+        return Optional.ofNullable(this.placeHolder)
+                .map(PlaceholderProperty::getAccessKey)
+                .orElse(ACCESS_KEY);
+    }
+
     public String getTokenPlaceholderUser() {
         return Optional.ofNullable(this.placeHolder)
                 .map(PlaceholderProperty::getUser)
@@ -88,7 +102,7 @@ public class AuthorizationProperty {
 
     public String getTokenPlaceholderAuthorizeType() {
         return Optional.ofNullable(this.placeHolder)
-                .map(PlaceholderProperty::getAuthorizeType)
+                .map(PlaceholderProperty::getAccessKey)
                 .orElse(AUTHORIZE_TYPE);
     }
 
@@ -142,8 +156,9 @@ public class AuthorizationProperty {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass())
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         AuthorizationProperty that = (AuthorizationProperty) o;
         return Objects.equals(login, that.login) && Objects.equals(logout, that.logout)
                 && Objects.equals(admin, that.admin) && Objects.equals(ignore, that.ignore)
@@ -157,13 +172,13 @@ public class AuthorizationProperty {
 
     @Override
     public String toString() {
-        return "AuthorizationProperty{" +
-                "login=" + login +
-                ", logout=" + logout +
-                ", admin=" + admin +
-                ", ignore=" + ignore +
-                ", header=" + placeHolder +
-                ", context=" + context +
-                '}';
+        return "AuthorizationProperty{"
+                + "login=" + login
+                + ", logout=" + logout
+                + ", admin=" + admin
+                + ", ignore=" + ignore
+                + ", header=" + placeHolder
+                + ", context=" + context
+                + '}';
     }
 }

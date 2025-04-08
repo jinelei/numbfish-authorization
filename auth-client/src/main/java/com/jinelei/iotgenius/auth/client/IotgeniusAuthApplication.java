@@ -1,11 +1,11 @@
 package com.jinelei.iotgenius.auth.client;
 
-import com.jinelei.iotgenius.auth.client.configuration.permission.instance.PermissionInstance;
-import com.jinelei.iotgenius.auth.client.configuration.permission.instance.RoleInstance;
-import com.jinelei.iotgenius.auth.client.helper.SpringHelper;
-import com.jinelei.iotgenius.auth.client.service.PermissionService;
-import com.jinelei.iotgenius.auth.client.service.RoleService;
-import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -17,12 +17,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import com.jinelei.iotgenius.auth.client.configuration.authentication.permission.instance.PermissionInstance;
+import com.jinelei.iotgenius.auth.client.configuration.authentication.permission.instance.RoleInstance;
+import com.jinelei.iotgenius.auth.client.helper.SpringHelper;
+import com.jinelei.iotgenius.auth.client.service.PermissionService;
+import com.jinelei.iotgenius.auth.client.service.RoleService;
+import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
 
 @EnableConfigurationProperties({AuthorizationProperty.class})
 @SpringBootApplication(scanBasePackageClasses = {IotgeniusAuthApplication.class})

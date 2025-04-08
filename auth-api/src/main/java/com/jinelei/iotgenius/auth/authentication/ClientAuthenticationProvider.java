@@ -1,9 +1,9 @@
 package com.jinelei.iotgenius.auth.authentication;
 
+import java.security.InvalidKeyException;
 import java.security.Key;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,11 +15,17 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
 
 @SuppressWarnings("unused")
 public class ClientAuthenticationProvider implements AuthenticationProvider {
+
+    private final AuthorizationProperty property;
+
+    public ClientAuthenticationProvider(AuthorizationProperty property) {
+        this.property = property;
+    }
 
     private void checkSignature(String accessKey, String secretKey, String signature, Map<String, String> params) {
         Optional.ofNullable(accessKey).orElseThrow(() -> new BadCredentialsException("AccessKey不存在"));
@@ -27,11 +33,11 @@ public class ClientAuthenticationProvider implements AuthenticationProvider {
         Optional.ofNullable(signature).orElseThrow(() -> new BadCredentialsException("Signature不存在"));
         Optional.ofNullable(params).orElseThrow(() -> new BadCredentialsException("参数不存在"));
         // 对参数进行排序并拼接
-        params.entrySet().stream()
+        final String string = params.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .filter(i -> !i.getKey().equals("signature"))
-                .filter(i -> !i.getKey().equals("accessKey"))
-                .filter(i -> !i.getKey().equals("secretKey"))
+                .filter(i -> !i.getKey().equals(property.getSignatureHeader()))
+                .filter(i -> !i.getKey().equals(property.getTimestampHeader()))
+                .filter(i -> !i.getKey().equals(property.getAccessKeyHeader()))
                 .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.joining("&"));
         // 对参数进行签名，使用HMAC-SHA256算法
@@ -40,8 +46,10 @@ public class ClientAuthenticationProvider implements AuthenticationProvider {
             final Mac mac = Mac.getInstance("HmacSHA256");
             final Key key = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
             mac.init(key);
-            sign = mac.doFinal(params.toString().getBytes()).toString();
-        } catch (Exception e) {
+            byte[] bytes = mac.doFinal(string.getBytes());
+            HexFormat hexFormat = HexFormat.of().withUpperCase();
+            sign = hexFormat.formatHex(bytes);
+        } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException e) {
             throw new BadCredentialsException("签名失败");
         }
         // 比较签名是否一致

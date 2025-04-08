@@ -1,16 +1,10 @@
 package com.jinelei.iotgenius.auth.client.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
-import com.jinelei.iotgenius.auth.client.configuration.permission.instance.PermissionInstance;
-import com.jinelei.iotgenius.auth.client.domain.PermissionEntity;
-import com.jinelei.iotgenius.auth.client.helper.PageHelper;
-import com.jinelei.iotgenius.auth.dto.permission.*;
-import com.jinelei.iotgenius.auth.dto.user.UserResponse;
-import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
-import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,10 +12,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.iotgenius.auth.api.permission.PermissionApi;
+import com.jinelei.iotgenius.auth.client.configuration.authentication.permission.instance.PermissionInstance;
+import com.jinelei.iotgenius.auth.client.domain.PermissionEntity;
+import com.jinelei.iotgenius.auth.client.helper.PageHelper;
 import com.jinelei.iotgenius.auth.client.service.PermissionService;
+import com.jinelei.iotgenius.auth.dto.permission.PermissionCreateRequest;
+import com.jinelei.iotgenius.auth.dto.permission.PermissionDeleteRequest;
+import com.jinelei.iotgenius.auth.dto.permission.PermissionQueryRequest;
+import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
+import com.jinelei.iotgenius.auth.dto.permission.PermissionUpdateRequest;
+import com.jinelei.iotgenius.auth.dto.user.UserResponse;
+import com.jinelei.iotgenius.auth.helper.AuthorizationHelper;
+import com.jinelei.iotgenius.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.iotgenius.common.request.PageRequest;
 import com.jinelei.iotgenius.common.view.BaseView;
 import com.jinelei.iotgenius.common.view.ListView;
@@ -29,11 +36,7 @@ import com.jinelei.iotgenius.common.view.PageView;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import jakarta.validation.Valid;
 
 @SuppressWarnings("unused")
 @ApiSupport(order = 1)
