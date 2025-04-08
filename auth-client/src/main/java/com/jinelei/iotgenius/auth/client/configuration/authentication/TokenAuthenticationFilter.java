@@ -102,8 +102,8 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("用户名无效"));
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 username, "", obtainAuthorities(result));
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return authentication;
+        // Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        return authenticationToken;
     }
 }
