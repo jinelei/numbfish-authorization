@@ -1,6 +1,7 @@
 package com.jinelei.iotgenius.auth.authentication;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -27,7 +29,6 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jinelei.iotgenius.auth.dto.client.ClientResponse;
@@ -42,8 +43,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class ClientAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     private static final Logger log = LoggerFactory.getLogger(ClientAuthenticationFilter.class);
-    private final static Function<List<String>, RequestMatcher> REQUEST_MATCHER_FUCTION = (ignoreUrls) -> {
-        List<RequestMatcher> list = ignoreUrls.stream().map(AntPathRequestMatcher::new).collect(Collectors.toList());
+    private final static Function<AuthorizationProperty, RequestMatcher> REQUEST_MATCHER_FUCTION = property -> {
+        List<RequestMatcher> list = new ArrayList<>();
+        property.getIgnoreUrls().stream().map(AntPathRequestMatcher::new).forEach(list::add);
+        Optional.ofNullable(property.getLoginUrl()).map(AntPathRequestMatcher::new).ifPresent(list::add);
         OrRequestMatcher or = new OrRequestMatcher(list);
         return new NegatedRequestMatcher(or);
     };
@@ -54,7 +57,7 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
 
     public ClientAuthenticationFilter(AuthorizationProperty property, ObjectMapper objectMapper,
             ClientDetailService clientDetailService, AuthenticationManager authenticationManager) {
-        super(REQUEST_MATCHER_FUCTION.apply(property.getIgnoreUrls()), authenticationManager);
+        super(REQUEST_MATCHER_FUCTION.apply(property), authenticationManager);
         this.property = property;
         this.objectMapper = objectMapper;
         this.authenticationManager = authenticationManager;
@@ -137,11 +140,16 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
+        Optional<Authentication> optional = Optional.ofNullable(SecurityContextHolder.getContext())
+                .map(SecurityContext::getAuthentication);
+        if (optional.isPresent()) {
+            return optional.get();
+        }
         final Optional<String> accessKey = obtainAccessKey(request);
         final Optional<String> timestamp = obtainTimestamp(request);
         final Optional<String> signature = obtainSignature(request);
         if (accessKey.isEmpty() || timestamp.isEmpty() || signature.isEmpty()) {
-            return null;
+            throw new AuthenticationCredentialsNotFoundException("accessKey、timestamp、signature不能为空");
         }
         final ClientResponse result = obtainClient(accessKey.get());
         final Map<String, String> params = new HashMap<>();

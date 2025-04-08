@@ -47,14 +47,12 @@ public class AuthorizationProperty {
     public String getLoginUrl() {
         return Optional.ofNullable(this.login)
                 .map(LoginProperty::getUrl)
-                .map(REMOVE_PREFIX)
                 .orElse(USER_LOGIN_URL_STRING);
     }
 
     public String getLogoutUrl() {
         return Optional.ofNullable(this.logout)
                 .map(LogoutProperty::getUrl)
-                .map(REMOVE_PREFIX)
                 .orElse(USER_LOGOUT_URL_STRING);
     }
 
