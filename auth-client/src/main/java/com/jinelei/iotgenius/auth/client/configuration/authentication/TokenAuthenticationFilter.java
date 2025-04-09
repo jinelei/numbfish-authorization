@@ -23,6 +23,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -33,6 +35,8 @@ import com.jinelei.iotgenius.auth.client.service.UserService;
 import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.dto.user.UserResponse;
 import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
+
+import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,6 +51,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         OrRequestMatcher or = new OrRequestMatcher(list);
         return new NegatedRequestMatcher(or);
     };
+    private final RequestCache requestCache;
     private final AuthorizationProperty property;
     private final ObjectMapper objectMapper;
     private final AuthenticationManager authenticationManager;
@@ -62,6 +67,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.redisTemplate = redisTemplate;
+        this.requestCache = new HttpSessionRequestCache();
     }
 
     protected Optional<String> obtainToken(HttpServletRequest request) {
@@ -104,8 +110,17 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         UserDetails user = userDetailsService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 user.getUsername(), user.getPassword(), user.getAuthorities());
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // Authentication authentication =
+        // authenticationManager.authenticate(authenticationToken);
+        // SecurityContextHolder.getContext().setAuthentication(authentication);
+        // return authenticationToken;
         return authenticationToken;
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+            Authentication authResult) throws IOException, ServletException {
+        SecurityContextHolder.getContext().setAuthentication(authResult);
+        chain.doFilter(request, response);
     }
 }
