@@ -24,7 +24,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.iotgenius.auth.authentication.ClientDetailService;
+import com.jinelei.iotgenius.auth.client.configuration.authentication.ClientDetailService;
 import com.jinelei.iotgenius.auth.client.configuration.authentication.permission.instance.PermissionInstance;
 import com.jinelei.iotgenius.auth.client.convertor.ClientConvertor;
 import com.jinelei.iotgenius.auth.client.convertor.PermissionConvertor;

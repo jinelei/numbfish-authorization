@@ -1,11 +1,10 @@
-package com.jinelei.iotgenius.auth.authentication;
+package com.jinelei.iotgenius.auth.client.configuration.authentication;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,14 +35,13 @@ import com.jinelei.iotgenius.auth.dto.permission.PermissionResponse;
 import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
 import com.jinelei.iotgenius.common.wrapper.RepeatRequestWrapper;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@Component
+@SuppressWarnings("unused")
 public class ClientAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     private static final Logger log = LoggerFactory.getLogger(ClientAuthenticationFilter.class);
-    private final static Function<AuthorizationProperty, RequestMatcher> REQUEST_MATCHER_FUCTION = property -> {
+    private final static Function<AuthorizationProperty, RequestMatcher> REQUEST_MATCHER_FUNCTION = property -> {
         List<RequestMatcher> list = new ArrayList<>();
         property.getIgnoreUrls().stream().map(AntPathRequestMatcher::new).forEach(list::add);
         Optional.ofNullable(property.getLoginUrl()).map(AntPathRequestMatcher::new).ifPresent(list::add);
@@ -56,8 +54,8 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
     private final ClientDetailService clientDetailService;
 
     public ClientAuthenticationFilter(AuthorizationProperty property, ObjectMapper objectMapper,
-            ClientDetailService clientDetailService, AuthenticationManager authenticationManager) {
-        super(REQUEST_MATCHER_FUCTION.apply(property), authenticationManager);
+                                      ClientDetailService clientDetailService, AuthenticationManager authenticationManager) {
+        super(REQUEST_MATCHER_FUNCTION.apply(property), authenticationManager);
         this.property = property;
         this.objectMapper = objectMapper;
         this.authenticationManager = authenticationManager;
@@ -68,28 +66,25 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
         final HttpMethod method = HttpMethod.valueOf(request.getMethod());
         final MediaType contentType = MediaType.parseMediaType(request.getContentType());
         final Map<String, String> params = new HashMap<>();
-        if (request instanceof HttpServletRequest httpRequest) {
-            // 当请求方法是POST时，检查Content-Type是否为application/json，检查是否具有body参数
-            if (HttpMethod.POST.equals(method) && MediaType.APPLICATION_JSON.equals(contentType)) {
-                if (request instanceof RepeatRequestWrapper wrapper) {
-                    try {
-                        Map<String, String> map = objectMapper.readValue(wrapper.getBody(),
-                                new TypeReference<Map<String, String>>() {
-                                });
-                        params.putAll(map);
-                    } catch (IOException e) {
-                        log.error("登陆失败: body参数不合法");
-                    }
+        if (HttpMethod.POST.equals(method) && MediaType.APPLICATION_JSON.equals(contentType)) {
+            if (request instanceof RepeatRequestWrapper wrapper) {
+                try {
+                    Map<String, String> map = objectMapper.readValue(wrapper.getBody(),
+                            new TypeReference<>() {
+                            });
+                    params.putAll(map);
+                } catch (IOException e) {
+                    log.error("登陆失败: body参数不合法");
                 }
             }
-            // 当请求方法是GET时，检查是否具有query参数
-            if (HttpMethod.GET.equals(method)) {
-                httpRequest.getParameterMap().forEach((key, value) -> {
-                    if (value.length == 0) {
-                        params.put(key, value[0]);
-                    }
-                });
-            }
+        }
+        // 当请求方法是GET时，检查是否具有query参数
+        if (HttpMethod.GET.equals(method)) {
+            request.getParameterMap().forEach((key, value) -> {
+                if (value.length != 0) {
+                    params.put(key, value[0]);
+                }
+            });
         }
         obtainSignature(request).ifPresent(c -> params.putIfAbsent(property.getSignatureHeader(), c));
         obtainTimestamp(request).ifPresent(c -> params.putIfAbsent(property.getTimestampHeader(), c));
@@ -98,28 +93,28 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
 
     protected Optional<String> obtainSignature(HttpServletRequest request) {
         return Optional.ofNullable(property)
-                .map(i -> i.getSignatureHeader())
-                .map(header -> request.getHeader(header))
-                .filter(s -> Objects.nonNull(s) && !s.isEmpty());
+                .map(AuthorizationProperty::getSignatureHeader)
+                .map(request::getHeader)
+                .filter(s -> !s.isEmpty());
     }
 
     protected Optional<String> obtainTimestamp(HttpServletRequest request) {
         return Optional.ofNullable(property)
-                .map(i -> i.getTimestampHeader())
-                .map(header -> request.getHeader(header))
-                .filter(s -> Objects.nonNull(s) && !s.isEmpty());
+                .map(AuthorizationProperty::getTimestampHeader)
+                .map(request::getHeader)
+                .filter(s -> !s.isEmpty());
     }
 
     protected Optional<String> obtainAccessKey(HttpServletRequest request) {
         return Optional.ofNullable(property)
-                .map(i -> i.getAccessKeyHeader())
-                .map(header -> request.getHeader(header))
-                .filter(s -> Objects.nonNull(s) && !s.isEmpty());
+                .map(AuthorizationProperty::getAccessKeyHeader)
+                .map(request::getHeader)
+                .filter(s -> !s.isEmpty());
     }
 
     protected String obtainSecretKey(ClientResponse client) throws AuthenticationCredentialsNotFoundException {
         return Optional.ofNullable(client)
-                .map(i -> i.getSecretKey())
+                .map(ClientResponse::getSecretKey)
                 .map(String::trim)
                 .filter(StringUtils::hasText)
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("未找到SecretKey"));
@@ -139,7 +134,7 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException, IOException, ServletException {
+            throws AuthenticationException {
         Optional<Authentication> optional = Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication);
         if (optional.isPresent()) {
@@ -152,8 +147,7 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
             throw new AuthenticationCredentialsNotFoundException("accessKey、timestamp、signature不能为空");
         }
         final ClientResponse result = obtainClient(accessKey.get());
-        final Map<String, String> params = new HashMap<>();
-        params.putAll(obtainParams(request));
+        final Map<String, String> params = new HashMap<>(obtainParams(request));
         ClientAuthenticationToken authenticationToken = new ClientAuthenticationToken(accessKey.get(),
                 obtainSecretKey(result), signature.get(), params, obtainAuthorities(result));
         Authentication authentication = authenticationManager.authenticate(authenticationToken);

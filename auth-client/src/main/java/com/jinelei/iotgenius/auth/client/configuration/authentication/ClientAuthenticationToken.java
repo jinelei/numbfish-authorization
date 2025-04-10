@@ -1,9 +1,8 @@
-package com.jinelei.iotgenius.auth.authentication;
+package com.jinelei.iotgenius.auth.client.configuration.authentication;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

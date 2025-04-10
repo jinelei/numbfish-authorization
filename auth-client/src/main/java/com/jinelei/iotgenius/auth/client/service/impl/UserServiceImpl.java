@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.jinelei.iotgenius.auth.property.AdminProperty;
+import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
 import org.apache.ibatis.executor.BatchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,7 @@ import com.jinelei.iotgenius.common.exception.InvalidArgsException;
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         implements UserService, UserDetailsService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final AuthorizationProperty property;
 
     @Autowired
     protected UserConvertor userConvertor;
@@ -83,11 +85,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     @Autowired
     protected StringRedisTemplate stringRedisTemplate;
     @Autowired
-    protected RedisTemplate<String, UserResponse> userRedisTemplate;
+    protected StringRedisTemplate redisTemplate;
     @Autowired
     protected ObjectMapper objectMapper;
     @Autowired
     protected AuthorizationHelper authorizationHelper;
+
+    public UserServiceImpl(AuthorizationProperty property) {
+        this.property = property;
+    }
 
     @Override
     public void create(UserCreateRequest request) {
@@ -218,58 +224,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         if (!passwordEncoder.matches(request.getPassword(), userEntity.getPassword())) {
             throw new InvalidArgsException("密码错误");
         }
-        userEntity.setPassword(null);
-        userEntity.setRoles(new ArrayList<>());
-        userEntity.setPermissions(new ArrayList<>());
-        final UserResponse userResponse = userConvertor.entityToResponse(userEntity);
-        // 查询用户关联的所有的角色
-        final List<UserRoleEntity> userRoleEntities = userRoleService
-                .list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, userEntity.getId()));
-        final List<Long> roleIds = userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).toList();
-        if (!roleIds.isEmpty()) {
-            final List<RoleEntity> roleEntities = roleService
-                    .list(Wrappers.lambdaQuery(RoleEntity.class).in(RoleEntity::getId, roleIds));
-            userResponse.getRoleIds().addAll(roleIds);
-            roleEntities.stream().map(roleConvertor::entityToResponse).forEach(userResponse.getRoles()::add);
-            final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(
-                    Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
-            final List<Long> permissionIds = rolePermissionEntities.parallelStream()
-                    .map(RolePermissionEntity::getPermissionId).toList();
-            if (!permissionIds.isEmpty()) {
-                final List<PermissionEntity> permissionEntities = permissionService
-                        .list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getId, permissionIds));
-                // userResponse.getPermissions().addAll(permissionIds);
-                permissionEntities.stream().map(permissionConvertor::entityToResponse)
-                        .forEach(userResponse.getPermissions()::add);
-            }
-        }
-        if (authorizationHelper.isAdmin(userResponse)) {
-            final List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class));
-            if (!roleEntities.isEmpty()) {
-                userResponse.getRoleIds().addAll(roleIds);
-                roleEntities.stream().map(roleConvertor::entityToResponse).forEach(userResponse.getRoles()::add);
-            }
-            final List<PermissionEntity> permissionEntities = permissionService
-                    .list(Wrappers.lambdaQuery(PermissionEntity.class));
-            if (!permissionEntities.isEmpty()) {
-                // userResponse.getPermissionIds().addAll(permissionIds);
-                permissionEntities.stream().map(permissionConvertor::entityToResponse)
-                        .forEach(userResponse.getPermissions()::add);
-            }
-        }
         final String token = UUID.randomUUID().toString();
         final String keyUserTokenInfo = GENERATE_TOKEN_INFO.apply(token);
-        userRedisTemplate.opsForValue().set(keyUserTokenInfo, userResponse);
-        if (!userEntity.getRoles().isEmpty()) {
-            userEntity.getRoles().parallelStream().map(String::valueOf)
-                    .map(CACHED_ROLE_ID_TOKEN)
-                    .forEach(s -> stringRedisTemplate.opsForSet().add(s, token));
-        }
-        if (!userEntity.getPermissions().isEmpty()) {
-            userEntity.getPermissions().parallelStream().map(String::valueOf)
-                    .map(CACHED_PERMISSION_ID_TOKEN)
-                    .forEach(s -> stringRedisTemplate.opsForSet().add(s, token));
-        }
+        redisTemplate.opsForValue().set(keyUserTokenInfo, userEntity.getUsername());
         stringRedisTemplate.expire(keyUserTokenInfo, Duration.ofMinutes(30));
         log.debug("用户登录: {}", userEntity);
         return token;
@@ -310,27 +267,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         wrapper.eq(UserEntity::getUsername, username);
         UserEntity userEntity = baseMapper.selectOne(wrapper);
         Optional.ofNullable(userEntity).orElseThrow(() -> new UsernameNotFoundException("用户不存在"));
-        final List<Long> roleIds = new CopyOnWriteArrayList<>();
-        final List<Long> permissionIds = new CopyOnWriteArrayList<>();
         final Collection<GrantedAuthority> authorities = new ArrayList<>();
-        // 查询用户关联的所有的角色
-        final List<UserRoleEntity> userRoleEntities = userRoleService
-                .list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, userEntity.getId()));
-        userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).forEach(roleIds::add);
-        if (!roleIds.isEmpty()) {
-            final List<RoleEntity> roleEntities = roleService
-                    .list(Wrappers.lambdaQuery(RoleEntity.class).in(RoleEntity::getId, roleIds));
-            roleEntities.parallelStream().map(RoleEntity::getCode).map(i -> "ROLE_" + i)
-                    .map(SimpleGrantedAuthority::new).forEach(authorities::add);
-            final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(
-                    Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
-            rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId)
-                    .forEach(permissionIds::add);
-            if (!permissionIds.isEmpty()) {
-                final List<PermissionEntity> permissionEntities = permissionService
-                        .list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getId, permissionIds));
-                permissionEntities.parallelStream().map(PermissionEntity::getCode)
-                        .map(SimpleGrantedAuthority::new).forEach(authorities::add);
+        if (Optional.ofNullable(property).map(AuthorizationProperty::getAdmin).map(AdminProperty::getUsername).map(username::equals).orElse(false)) {
+            final List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class));
+            if (!roleEntities.isEmpty()) {
+                roleEntities.parallelStream().map(RoleEntity::getCode).map(i -> "ROLE_" + i).map(SimpleGrantedAuthority::new).forEach(authorities::add);
+            }
+            final List<PermissionEntity> permissionEntities = permissionService.list(Wrappers.lambdaQuery(PermissionEntity.class));
+            if (!permissionEntities.isEmpty()) {
+                permissionEntities.parallelStream().map(PermissionEntity::getCode).map(SimpleGrantedAuthority::new).forEach(authorities::add);
+            }
+        } else {
+            // 查询用户关联的所有的角色
+            final List<UserRoleEntity> userRoleEntities = userRoleService.list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, userEntity.getId()));
+            final List<Long> roleIds = userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).toList();
+            if (!roleIds.isEmpty()) {
+                final List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class).in(RoleEntity::getId, roleIds));
+                roleEntities.parallelStream().map(RoleEntity::getCode).map(i -> "ROLE_" + i).map(SimpleGrantedAuthority::new).forEach(authorities::add);
+                final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
+                final List<Long> permissionIds = rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId).toList();
+                if (!permissionIds.isEmpty()) {
+                    final List<PermissionEntity> permissionEntities = permissionService.list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getId, permissionIds));
+                    permissionEntities.parallelStream().map(PermissionEntity::getCode).map(SimpleGrantedAuthority::new).forEach(authorities::add);
+                }
             }
         }
         return new User(userEntity.getUsername(), userEntity.getPassword(), authorities);
