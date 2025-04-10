@@ -40,7 +40,7 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
+    @Bean
     public ClientAuthenticationProvider clientAuthenticationProvider(AuthorizationProperty property) {
         return new ClientAuthenticationProvider(property);
     }
@@ -62,7 +62,7 @@ public class SecurityConfiguration {
         return builder.build();
     }
 
-//    @Bean
+    @Bean
     public ClientAuthenticationFilter clientAuthenticationFilter(AuthorizationProperty property,
                                                                  ObjectMapper objectMapper,
                                                                  ServerProperties serverProperties,

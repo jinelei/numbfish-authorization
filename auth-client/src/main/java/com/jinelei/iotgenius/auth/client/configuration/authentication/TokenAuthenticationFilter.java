@@ -8,22 +8,12 @@ import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.iotgenius.auth.dto.user.UserResponse;
+import org.springframework.security.web.util.matcher.*;
 import com.jinelei.iotgenius.auth.property.AuthorizationProperty;
 
 import jakarta.servlet.FilterChain;
@@ -39,7 +29,9 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         property.getIgnoreUrls().stream().map(AntPathRequestMatcher::new).forEach(list::add);
         Optional.ofNullable(property.getLoginUrl()).map(AntPathRequestMatcher::new).ifPresent(list::add);
         OrRequestMatcher or = new OrRequestMatcher(list);
-        return new NegatedRequestMatcher(or);
+        NegatedRequestMatcher not = new NegatedRequestMatcher(or);
+        RequestHeaderRequestMatcher header = new RequestHeaderRequestMatcher(property.getTokenHeader());
+        return new AndRequestMatcher(not, header);
     };
 
     public TokenAuthenticationFilter(AuthorizationProperty property, AuthenticationManager authenticationManager) {
