@@ -52,7 +52,7 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
     private final ClientDetailService clientDetailService;
 
     public ClientAuthenticationFilter(AuthorizationProperty property, ObjectMapper objectMapper,
-                                      ClientDetailService clientDetailService, AuthenticationManager authenticationManager) {
+            ClientDetailService clientDetailService, AuthenticationManager authenticationManager) {
         super(REQUEST_MATCHER_FUNCTION.apply(property), authenticationManager);
         this.property = property;
         this.objectMapper = objectMapper;
@@ -84,30 +84,33 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
                 }
             });
         }
-        obtainSignature(request).ifPresent(c -> params.putIfAbsent(property.getSignatureHeader(), c));
-        obtainTimestamp(request).ifPresent(c -> params.putIfAbsent(property.getTimestampHeader(), c));
+        params.putIfAbsent(property.getSignatureHeader(), obtainSignature(request));
+        params.putIfAbsent(property.getTimestampHeader(), obtainTimestamp(request));
         return params;
     }
 
-    protected Optional<String> obtainSignature(HttpServletRequest request) {
+    protected String obtainSignature(HttpServletRequest request) {
         return Optional.ofNullable(property)
                 .map(AuthorizationProperty::getSignatureHeader)
                 .map(request::getHeader)
-                .filter(s -> !s.isEmpty());
+                .filter(s -> !s.isEmpty())
+                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("signature不能为空"));
     }
 
-    protected Optional<String> obtainTimestamp(HttpServletRequest request) {
+    protected String obtainTimestamp(HttpServletRequest request) {
         return Optional.ofNullable(property)
                 .map(AuthorizationProperty::getTimestampHeader)
                 .map(request::getHeader)
-                .filter(s -> !s.isEmpty());
+                .filter(s -> !s.isEmpty())
+                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("timestamp不能为空"));
     }
 
-    protected Optional<String> obtainAccessKey(HttpServletRequest request) {
+    protected String obtainAccessKey(HttpServletRequest request) {
         return Optional.ofNullable(property)
                 .map(AuthorizationProperty::getAccessKeyHeader)
                 .map(request::getHeader)
-                .filter(s -> !s.isEmpty());
+                .filter(s -> !s.isEmpty())
+                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("accessKey不能为空"));
     }
 
     protected String obtainSecretKey(ClientResponse client) throws AuthenticationCredentialsNotFoundException {
@@ -133,21 +136,12 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        Optional<Authentication> optional = Optional.ofNullable(SecurityContextHolder.getContext())
-                .map(SecurityContext::getAuthentication);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-        final Optional<String> accessKey = obtainAccessKey(request);
-        final Optional<String> timestamp = obtainTimestamp(request);
-        final Optional<String> signature = obtainSignature(request);
-        if (accessKey.isEmpty() || timestamp.isEmpty() || signature.isEmpty()) {
-            throw new AuthenticationCredentialsNotFoundException("accessKey、timestamp、signature不能为空");
-        }
-        final ClientResponse result = obtainClient(accessKey.get());
-        final Map<String, String> params = new HashMap<>(obtainParams(request));
-        ClientAuthenticationToken authenticationToken = new ClientAuthenticationToken(accessKey.get(),
-                obtainSecretKey(result), signature.get(), params, obtainAuthorities(result));
+        final String accessKey = obtainAccessKey(request);
+        final ClientResponse result = obtainClient(accessKey);
+        ClientAuthenticationToken authenticationToken = new ClientAuthenticationToken(accessKey,
+                obtainSecretKey(result), obtainSignature(request),
+                obtainTimestamp(request), obtainParams(request),
+                obtainAuthorities(result));
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;

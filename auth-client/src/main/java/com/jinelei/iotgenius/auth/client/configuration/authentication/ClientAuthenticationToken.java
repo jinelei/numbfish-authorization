@@ -15,15 +15,18 @@ public class ClientAuthenticationToken implements Authentication {
     private final String accessKey;
     private final String secretKey;
     private final String signature;
+    private final String timestamp;
     private final Map<String, String> params;
     private boolean authenticated;
     private final Collection<GrantedAuthority> authorities;
 
-    public ClientAuthenticationToken(String accessKey, String secretKey, String signature, Map<String, String> params,
+    public ClientAuthenticationToken(String accessKey, String secretKey, String signature, String timestamp,
+            Map<String, String> params,
             Collection<? extends GrantedAuthority> authorities) {
         this.accessKey = accessKey;
         this.secretKey = secretKey;
         this.signature = signature;
+        this.timestamp = timestamp;
         this.params = params;
         this.authenticated = false;
         this.authorities = new ArrayList<>();
@@ -83,6 +86,10 @@ public class ClientAuthenticationToken implements Authentication {
 
     public String getSignature() {
         return signature;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
     }
 
     public Map<String, String> getParams() {

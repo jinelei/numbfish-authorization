@@ -30,7 +30,7 @@ import java.util.Optional;
 
 @SuppressWarnings("unused")
 @Configuration
-@Import({AuthorizationHelper.class})
+@Import({ AuthorizationHelper.class })
 public class SecurityConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
@@ -46,34 +46,36 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public TokenAuthenticationProvider tokenAuthenticationProvider(StringRedisTemplate redisTemplate, UserDetailsService userDetailsService) {
+    public TokenAuthenticationProvider tokenAuthenticationProvider(StringRedisTemplate redisTemplate,
+            UserDetailsService userDetailsService) {
         return new TokenAuthenticationProvider(redisTemplate, userDetailsService);
     }
 
     @Bean
+    public ClientAuthenticationFilter clientAuthenticationFilter(AuthorizationProperty property,
+            ObjectMapper objectMapper,
+            ServerProperties serverProperties,
+            ClientDetailService clientDetailService,
+            AuthenticationManager authenticationManager) {
+        return new ClientAuthenticationFilter(property, objectMapper, clientDetailService, authenticationManager);
+    }
+
+    @Bean
+    public TokenAuthenticationFilter tokenAuthenticationFilter(AuthorizationProperty property,
+            AuthenticationManager authenticationManager) {
+        return new TokenAuthenticationFilter(property, authenticationManager);
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http, UserDetailsService userDetailsService,
-                                                       PasswordEncoder passwordEncoder,
-                                                       Optional<ClientAuthenticationProvider> clientAuthenticationProvider,
-                                                       Optional<TokenAuthenticationProvider> tokenAuthenticationProvider) throws Exception {
+            PasswordEncoder passwordEncoder,
+            Optional<ClientAuthenticationProvider> clientAuthenticationProvider,
+            Optional<TokenAuthenticationProvider> tokenAuthenticationProvider) throws Exception {
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
         builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
         clientAuthenticationProvider.ifPresent(builder::authenticationProvider);
         tokenAuthenticationProvider.ifPresent(builder::authenticationProvider);
         return builder.build();
-    }
-
-    @Bean
-    public ClientAuthenticationFilter clientAuthenticationFilter(AuthorizationProperty property,
-                                                                 ObjectMapper objectMapper,
-                                                                 ServerProperties serverProperties,
-                                                                 ClientDetailService clientDetailService,
-                                                                 AuthenticationManager authenticationManager) {
-        return new ClientAuthenticationFilter(property, objectMapper, clientDetailService, authenticationManager);
-    }
-
-    @Bean
-    public TokenAuthenticationFilter tokenAuthenticationFilter(AuthorizationProperty property, AuthenticationManager authenticationManager) {
-        return new TokenAuthenticationFilter(property, authenticationManager);
     }
 
     @Bean
@@ -88,17 +90,17 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthorizationProperty property,
-                                                   Optional<ClientAuthenticationFilter> clientAuthenticationFilter,
-                                                   Optional<TokenAuthenticationFilter> tokenAuthenticationFilter,
-                                                   BaseAuthenticationFailureHandler baseAuthenticationFailureHandler,
-                                                   AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
+            Optional<ClientAuthenticationFilter> clientAuthenticationFilter,
+            Optional<TokenAuthenticationFilter> tokenAuthenticationFilter,
+            BaseAuthenticationFailureHandler baseAuthenticationFailureHandler,
+            AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(property.getIgnoreUrls().stream().map(AntPathRequestMatcher::new)
-                                .toArray(AntPathRequestMatcher[]::new))
-                        .permitAll()
-                        .requestMatchers(new AntPathRequestMatcher(property.getLoginUrl(), HttpMethod.POST.name()))
-                        .permitAll()
-                        .anyRequest().authenticated())
+                .requestMatchers(property.getIgnoreUrls().stream().map(AntPathRequestMatcher::new)
+                        .toArray(AntPathRequestMatcher[]::new))
+                .permitAll()
+                .requestMatchers(new AntPathRequestMatcher(property.getLoginUrl(), HttpMethod.POST.name()))
+                .permitAll()
+                .anyRequest().authenticated())
                 .exceptionHandling(c -> c.authenticationEntryPoint(authenticationEntryPoint))
                 .requestCache(c -> c.requestCache(new HttpSessionRequestCache()))
                 .csrf(AbstractHttpConfigurer::disable);

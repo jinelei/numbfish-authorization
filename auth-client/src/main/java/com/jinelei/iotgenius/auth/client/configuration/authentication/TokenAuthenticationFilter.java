@@ -9,6 +9,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,30 +34,32 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         RequestHeaderRequestMatcher header = new RequestHeaderRequestMatcher(property.getTokenHeader());
         return new AndRequestMatcher(not, header);
     };
+    private final static Function<String, String> REMOVE_BEARER = token -> {
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+        return token;
+    };
+    private final AuthorizationProperty property;
 
     public TokenAuthenticationFilter(AuthorizationProperty property, AuthenticationManager authenticationManager) {
         super(REQUEST_MATCHER_FUNCTION.apply(property), authenticationManager);
+        this.property = property;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        log.info("attemptAuthentication: {}", request.getRequestURI());
-        String token = request.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        }
+        final String token = Optional.ofNullable(request.getHeader(property.getTokenHeader())).map(REMOVE_BEARER)
+                .orElseThrow(() -> new BadCredentialsException("Token is missing"));
         TokenAuthenticationToken authRequest = new TokenAuthenticationToken(token, null);
         return getAuthenticationManager().authenticate(authRequest);
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-                                            Authentication authResult) throws IOException, ServletException {
-        log.info("Setting authentication to SecurityContextHolder: {}", request.getRequestURI());
+            Authentication authResult) throws IOException, ServletException {
         SecurityContextHolder.getContext().setAuthentication(authResult);
-        log.info("After setting authentication, before chain.doFilter: {}", request.getRequestURI());
         chain.doFilter(request, response);
-        log.info("After chain.doFilter: {}", request.getRequestURI());
     }
 }

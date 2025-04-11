@@ -46,7 +46,7 @@ public class ClientAuthenticationProvider implements AuthenticationProvider {
             final Mac mac = Mac.getInstance("HmacSHA256");
             final Key key = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
             mac.init(key);
-            byte[] bytes = mac.doFinal(string.getBytes());
+            byte[] bytes = mac.doFinal(String.format("%s&AccessKey=%s", sign, accessKey).getBytes());
             HexFormat hexFormat = HexFormat.of().withUpperCase();
             sign = hexFormat.formatHex(bytes);
         } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException e) {
