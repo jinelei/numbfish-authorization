@@ -1,4 +1,4 @@
-package com.jinelei.iotgenius.helper;
+package com.jinelei.numbfish.helper;
 
 import org.springframework.util.ObjectUtils;
 

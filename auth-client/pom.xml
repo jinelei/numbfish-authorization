@@ -5,16 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.jinelei.iotgenius</groupId>
+        <groupId>com.jinelei.numbfish</groupId>
         <artifactId>auth</artifactId>
         <version>0.0.1</version>
     </parent>
 
-    <groupId>com.jinelei.iotgenius</groupId>
+    <groupId>com.jinelei.numbfish</groupId>
     <artifactId>auth-client</artifactId>
     <version>0.0.1</version>
-    <description>iotgenius auth client module</description>
-    <url>https://jinelei.com/iotgenius-auth</url>
+    <description>numbfish auth client module</description>
+    <url>https://jinelei.com/numbfish-auth</url>
 
     <licenses>
         <license>
@@ -36,10 +36,10 @@
     </developers>
 
     <scm>
-        <connection>https://github.com/jinelei/iotgenius-auth.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:jinelei/iotgenius-auth.git
+        <connection>https://github.com/jinelei/numbfish-auth.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:jinelei/numbfish-auth.git
         </developerConnection>
-        <url>https://github.com/jinelei/iotgenius-auth</url>
+        <url>https://github.com/jinelei/numbfish-auth</url>
     </scm>
 
     <properties>
@@ -52,14 +52,14 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.jinelei.iotgenius</groupId>
+            <groupId>com.jinelei.numbfish</groupId>
             <artifactId>common</artifactId>
-            <version>${iotgenius-common.version}</version>
+            <version>${numbfish-common.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.jinelei.iotgenius</groupId>
+            <groupId>com.jinelei.numbfish</groupId>
             <artifactId>auth-api</artifactId>
-            <version>${iotgenius-auth-api.version}</version>
+            <version>${numbfish-auth-api.version}</version>
         </dependency>
 
         <dependency>

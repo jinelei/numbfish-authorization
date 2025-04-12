@@ -1,4 +1,4 @@
-package com.jinelei.iotgenius.helper;
+package com.jinelei.numbfish.helper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

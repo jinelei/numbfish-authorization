@@ -1,8 +1,8 @@
-package com.jinelei.iotgenius.configuration.exception;
+package com.jinelei.numbfish.configuration.exception;
 
-import com.jinelei.iotgenius.exception.CoreException;
-import com.jinelei.iotgenius.exception.UnknownException;
-import com.jinelei.iotgenius.view.BaseView;
+import com.jinelei.numbfish.exception.CoreException;
+import com.jinelei.numbfish.exception.UnknownException;
+import com.jinelei.numbfish.view.BaseView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

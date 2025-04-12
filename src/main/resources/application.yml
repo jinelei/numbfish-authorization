@@ -14,7 +14,7 @@ nacos:
     server-addr: 127.0.0.1:8848
     data-id: app
     group: DEFAULT_GROUP
-    namespace: iotgenius-cloud-${spring.profiles.active}
+    namespace: numbfish-cloud-${spring.profiles.active}
     type: yaml
     max-retry: 10
     auto-refresh: true

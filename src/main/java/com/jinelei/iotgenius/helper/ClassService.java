@@ -1,7 +1,7 @@
-package com.jinelei.iotgenius.helper;
+package com.jinelei.numbfish.helper;
 
 
-import com.jinelei.iotgenius.exception.InternalException;
+import com.jinelei.numbfish.exception.InternalException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;

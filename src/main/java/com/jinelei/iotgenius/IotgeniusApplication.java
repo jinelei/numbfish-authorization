@@ -1,4 +1,4 @@
-package com.jinelei.iotgenius;
+package com.jinelei.numbfish;
 
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
 import org.springframework.boot.SpringApplication;

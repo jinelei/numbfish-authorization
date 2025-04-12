@@ -1,4 +1,4 @@
-package com.jinelei.iotgenius.helper;
+package com.jinelei.numbfish.helper;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

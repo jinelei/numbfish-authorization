@@ -10,13 +10,13 @@
         <relativePath />
     </parent>
 
-    <groupId>com.jinelei.iotgenius</groupId>
+    <groupId>com.jinelei.numbfish</groupId>
     <artifactId>auth</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1</version>
-    <name>iotgenius-auth</name>
-    <description>iotgenius authorization center</description>
-    <url>https://jinelei.com/iotgenius-auth</url>
+    <name>numbfish-auth</name>
+    <description>numbfish authorization center</description>
+    <url>https://jinelei.com/numbfish-auth</url>
 
     <licenses>
         <license>
@@ -38,10 +38,10 @@
     </developers>
 
     <scm>
-        <connection>https://github.com/jinelei/iotgenius-auth.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:jinelei/iotgenius-auth.git
+        <connection>https://github.com/jinelei/numbfish-auth.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:jinelei/numbfish-auth.git
         </developerConnection>
-        <url>https://github.com/jinelei/iotgenius-auth</url>
+        <url>https://github.com/jinelei/numbfish-auth</url>
     </scm>
 
     <properties>
@@ -52,8 +52,8 @@
         <nacos-config-spring-boot.version>0.2.12</nacos-config-spring-boot.version>
         <spring-boot.version>3.4.3</spring-boot.version>
         <springfox-swagger2.version>3.0.0</springfox-swagger2.version>
-        <iotgenius-common.version>0.0.1</iotgenius-common.version>
-        <iotgenius-auth-api.version>0.0.1</iotgenius-auth-api.version>
+        <numbfish-common.version>0.0.1</numbfish-common.version>
+        <numbfish-auth-api.version>0.0.1</numbfish-auth-api.version>
         <springboot-maven-plugin.version>3.4.3</springboot-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>

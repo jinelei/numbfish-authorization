@@ -1,7 +1,7 @@
-package com.jinelei.iotgenius.helper;
+package com.jinelei.numbfish.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.iotgenius.view.BaseView;
+import com.jinelei.numbfish.view.BaseView;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 

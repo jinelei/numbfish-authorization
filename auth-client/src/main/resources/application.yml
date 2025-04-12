@@ -8,7 +8,7 @@ springdoc:
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
-      packages-to-scan: com.jinelei.iotgenius.auth.client.controller
+      packages-to-scan: com.jinelei.numbfish.auth.client.controller
 
 # knife4j的增强配置，不需要增强可以不配
 knife4j:
@@ -19,9 +19,9 @@ knife4j:
   basic:
     enable: true
     # Basic认证用户名
-    username: iotgenius
+    username: numbfish
     # Basic认证密码
-    password: iotgenius
+    password: numbfish
 
 # Logger Config
 logging:
@@ -31,7 +31,7 @@ logging:
 
 spring:
   application:
-    name: iotgenius-auth-service
+    name: numbfish-auth-service
   banner:
     location: banner.txt
   datasource:
@@ -54,11 +54,11 @@ spring:
 
 mybatis:
   mapper-locations: classpath*:mapper/*/*Mapper.xml,classpath*:mapper/*Mapper.xml
-  type-handlers-package: com.jinelei.iotgenius.auth.client.configuration.handler.type
+  type-handlers-package: com.jinelei.numbfish.auth.client.configuration.handler.type
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-iotgenius:
+numbfish:
   authorization:
     admin:
       username: admin

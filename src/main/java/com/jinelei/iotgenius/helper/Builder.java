@@ -1,7 +1,7 @@
-package com.jinelei.iotgenius.helper;
+package com.jinelei.numbfish.helper;
 
 
-import com.jinelei.iotgenius.exception.InvalidArgsException;
+import com.jinelei.numbfish.exception.InvalidArgsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

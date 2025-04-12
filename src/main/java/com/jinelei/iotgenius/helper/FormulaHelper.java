@@ -1,10 +1,10 @@
-package com.jinelei.iotgenius.helper;
+package com.jinelei.numbfish.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.jinelei.iotgenius.exception.InternalException;
-import com.jinelei.iotgenius.exception.InvalidArgsException;
+import com.jinelei.numbfish.exception.InternalException;
+import com.jinelei.numbfish.exception.InvalidArgsException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

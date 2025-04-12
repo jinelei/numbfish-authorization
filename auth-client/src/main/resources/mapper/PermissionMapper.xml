@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jinelei.iotgenius.auth.client.mapper.PermissionMapper">
+<mapper namespace="com.jinelei.numbfish.auth.client.mapper.PermissionMapper">
 
-    <select id="getPermissionTreeByIds" resultType="com.jinelei.iotgenius.auth.client.domain.PermissionEntity">
+    <select id="getPermissionTreeByIds" resultType="com.jinelei.numbfish.auth.client.domain.PermissionEntity">
     WITH RECURSIVE permission_tree AS (
                     SELECT
                         id,
@@ -45,27 +45,27 @@
                 <if test="ids!= null and ids.size() > 0">
                 WHERE
                 <choose>
-                    <when test="mode == @com.jinelei.iotgenius.auth.enumeration.TreeBuildMode@ALL">
+                    <when test="mode == @com.jinelei.numbfish.auth.enumeration.TreeBuildMode@ALL">
                         <foreach item="id" collection="ids" separator="or" >
                     ancestor LIKE CONCAT('%', #{id}, '%')
                         </foreach>
                     </when>
-                    <when test="mode == @com.jinelei.iotgenius.auth.enumeration.TreeBuildMode@PARENT">
+                    <when test="mode == @com.jinelei.numbfish.auth.enumeration.TreeBuildMode@PARENT">
                         <foreach item="id" collection="ids" separator="or" >
                     ancestor LIKE CONCAT('%', #{id}) AND id != #{id}
                         </foreach>
                     </when>
-                    <when test="mode == @com.jinelei.iotgenius.auth.enumeration.TreeBuildMode@PARENT_AND_CURRENT">
+                    <when test="mode == @com.jinelei.numbfish.auth.enumeration.TreeBuildMode@PARENT_AND_CURRENT">
                         <foreach item="id" collection="ids" separator="or" >
                     ancestor LIKE CONCAT('%', #{id})
                         </foreach>
                     </when>
-                    <when test="mode == @com.jinelei.iotgenius.auth.enumeration.TreeBuildMode@CHILD">
+                    <when test="mode == @com.jinelei.numbfish.auth.enumeration.TreeBuildMode@CHILD">
                         <foreach item="id" collection="ids" separator="or" >
                     ancestor LIKE CONCAT('%', #{id}, ',%')
                         </foreach>
                     </when>
-                    <when test="mode == @com.jinelei.iotgenius.auth.enumeration.TreeBuildMode@CHILD_AND_CURRENT">
+                    <when test="mode == @com.jinelei.numbfish.auth.enumeration.TreeBuildMode@CHILD_AND_CURRENT">
                         <foreach item="id" collection="ids" separator="or" >
                     ancestor LIKE CONCAT('%', #{id}, '%')
                         </foreach>
