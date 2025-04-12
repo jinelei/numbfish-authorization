@@ -43,8 +43,10 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
         Optional.ofNullable(property.getLoginUrl()).map(AntPathRequestMatcher::new).ifPresent(list::add);
         OrRequestMatcher or = new OrRequestMatcher(list);
         NegatedRequestMatcher not = new NegatedRequestMatcher(or);
-        RequestHeaderRequestMatcher header = new RequestHeaderRequestMatcher(property.getAccessKeyHeader());
-        return new AndRequestMatcher(not, header);
+        RequestHeaderRequestMatcher headerAccessKey = new RequestHeaderRequestMatcher(property.getAccessKeyHeader());
+        RequestHeaderRequestMatcher headerTimestamp = new RequestHeaderRequestMatcher(property.getTimestampHeader());
+        RequestHeaderRequestMatcher headerSignature = new RequestHeaderRequestMatcher(property.getSignatureHeader());
+        return new AndRequestMatcher(not, headerAccessKey, headerTimestamp, headerSignature);
     };
     private final AuthorizationProperty property;
     private final ObjectMapper objectMapper;
