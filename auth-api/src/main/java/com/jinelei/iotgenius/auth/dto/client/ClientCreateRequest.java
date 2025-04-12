@@ -2,6 +2,7 @@ package com.jinelei.iotgenius.auth.dto.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ public class ClientCreateRequest implements Serializable {
     @NotBlank(message = "访问密钥不能为空")
     @Schema(description = "访问密钥")
     private String secretKey;
-    @NotBlank(message = "过期时间不能为空")
+    @NotNull(message = "过期时间不能为空")
     @Schema(description = "过期时间")
     private LocalDateTime expiredAt;
     @Schema(description = "备注")
