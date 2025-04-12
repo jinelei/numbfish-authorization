@@ -14,7 +14,7 @@ public class OpenApiConfig {
     public OpenAPI springOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("IoTGenius api docs")
+                        .title("Numbfish api docs")
                         .description("采集精灵接口文档")
                         .version("1.0.0"));
     }
