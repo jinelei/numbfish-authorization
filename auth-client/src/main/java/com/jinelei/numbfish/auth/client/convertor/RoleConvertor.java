@@ -25,6 +25,8 @@ public interface RoleConvertor {
             @Mapping(target = "updatedUserId", ignore = true),
             @Mapping(target = "blackPermissions", ignore = true),
             @Mapping(target = "whitePermissions", ignore = true),
+            @Mapping(target = "level", ignore = true),
+            @Mapping(target = "ancestor", ignore = true),
     })
     RoleEntity entityFromCreateRequest(RoleCreateRequest source);
 
@@ -36,6 +38,8 @@ public interface RoleConvertor {
             @Mapping(target = "updatedUserId", ignore = true),
             @Mapping(target = "blackPermissions", ignore = true),
             @Mapping(target = "whitePermissions", ignore = true),
+            @Mapping(target = "level", ignore = true),
+            @Mapping(target = "ancestor", ignore = true),
     })
     RoleEntity entityFromUpdateRequest(RoleUpdateRequest source);
 
