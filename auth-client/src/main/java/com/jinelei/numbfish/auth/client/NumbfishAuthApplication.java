@@ -7,6 +7,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.jinelei.numbfish.auth.api.permission.PermissionApi;
+import com.jinelei.numbfish.auth.api.role.RoleApi;
 import com.jinelei.numbfish.auth.configuration.SecurityAutoConfiguration;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -21,8 +23,6 @@ import org.springframework.core.env.Environment;
 import com.jinelei.numbfish.auth.client.configuration.authentication.instance.PermissionInstance;
 import com.jinelei.numbfish.auth.client.configuration.authentication.instance.RoleInstance;
 import com.jinelei.numbfish.auth.client.helper.SpringHelper;
-import com.jinelei.numbfish.auth.client.service.PermissionService;
-import com.jinelei.numbfish.auth.client.service.RoleService;
 
 @SpringBootApplication(scanBasePackageClasses = {NumbfishAuthApplication.class})
 @MapperScan("com.jinelei.numbfish.auth.client.mapper")
@@ -57,9 +57,9 @@ public class NumbfishAuthApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         executorService.schedule(() -> {
-            SpringHelper.getBean(PermissionService.class).regist(List.of(PermissionInstance.class.getEnumConstants()));
-            SpringHelper.getBean(RoleService.class).regist(List.of(RoleInstance.class.getEnumConstants()));
-        }, 3, TimeUnit.MINUTES);
+            SpringHelper.getBean(PermissionApi.class).regist(List.of(PermissionInstance.class.getEnumConstants()));
+            SpringHelper.getBean(RoleApi.class).regist(List.of(RoleInstance.class.getEnumConstants()));
+        }, 1, TimeUnit.MINUTES);
     }
 
 }
