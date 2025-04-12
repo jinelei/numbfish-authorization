@@ -9,7 +9,6 @@
         <version>0.0.1</version>
     </parent>
 
-    <groupId>com.jinelei.numbfish</groupId>
     <artifactId>auth-api</artifactId>
     <version>0.0.1</version>
     <description>numbfish auth api module</description>
@@ -149,7 +148,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <additionalparam>${javadoc.opts}</additionalparam>
                     <charset>UTF-8</charset>
                     <locale>zh_CN</locale>
                     <additionalOptions>-Xdoclint:none</additionalOptions>
@@ -218,7 +216,6 @@
                             <publishingServerId>OSSRH</publishingServerId>
                             <checksums>required</checksums>
                             <autoPublish>false</autoPublish>
-                            <tokenAuth>true</tokenAuth>
                             <deploymentName>
                                 ${project.groupId}:${project.artifactId}:${project.version}</deploymentName>
                         </configuration>
