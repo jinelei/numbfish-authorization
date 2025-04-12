@@ -1,4 +1,4 @@
-package com.jinelei.numbfish.auth.client.configuration.authentication.permission.instance;
+package com.jinelei.numbfish.auth.client.configuration.authentication.instance;
 
 import java.util.List;
 

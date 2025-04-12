@@ -1,4 +1,4 @@
-package com.jinelei.numbfish.auth.client.configuration.authentication;
+package com.jinelei.numbfish.auth.configuration.authentication;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;

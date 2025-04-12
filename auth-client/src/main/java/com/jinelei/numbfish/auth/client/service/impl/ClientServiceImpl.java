@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -24,7 +23,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.numbfish.auth.client.configuration.authentication.ClientDetailService;
+import com.jinelei.numbfish.auth.configuration.authentication.ClientDetailService;
 import com.jinelei.numbfish.auth.client.convertor.ClientConvertor;
 import com.jinelei.numbfish.auth.client.convertor.PermissionConvertor;
 import com.jinelei.numbfish.auth.client.convertor.RoleConvertor;
@@ -41,7 +40,6 @@ import com.jinelei.numbfish.auth.dto.client.ClientDeleteRequest;
 import com.jinelei.numbfish.auth.dto.client.ClientQueryRequest;
 import com.jinelei.numbfish.auth.dto.client.ClientResponse;
 import com.jinelei.numbfish.auth.dto.client.ClientUpdateRequest;
-import com.jinelei.numbfish.auth.helper.AuthorizationHelper;
 import com.jinelei.numbfish.common.exception.InvalidArgsException;
 
 @SuppressWarnings("unused")
@@ -59,8 +57,6 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
     @Autowired
     protected ClientPermissionService clientPermissionService;
     @Autowired
-    protected PasswordEncoder passwordEncoder;
-    @Autowired
     protected RoleService roleService;
     @Autowired
     protected RolePermissionService rolePermissionService;
@@ -72,8 +68,6 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, ClientEntity>
     protected RedisTemplate<String, ClientResponse> clientRedisTemplate;
     @Autowired
     protected ObjectMapper objectMapper;
-    @Autowired
-    protected AuthorizationHelper authorizationHelper;
 
     @Override
     public void create(ClientCreateRequest request) {

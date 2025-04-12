@@ -1,4 +1,4 @@
-package com.jinelei.numbfish.auth.client.configuration.authentication;
+package com.jinelei.numbfish.auth.configuration.authentication;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -154,7 +154,9 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
             throws AuthenticationException {
         final String accessKey = obtainAccessKey(request);
         final ClientResponse result = obtainClient(accessKey);
-        ClientAuthenticationToken authenticationToken = new ClientAuthenticationToken(accessKey,
+        ClientAuthenticationToken authenticationToken = new ClientAuthenticationToken(
+                result.getId(),
+                accessKey,
                 obtainSecretKey(result),
                 obtainTimestamp(request),
                 obtainSignature(request),

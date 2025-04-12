@@ -11,9 +11,6 @@ import java.util.function.Function;
 @SuppressWarnings("unused")
 public interface UserService extends IService<UserEntity> {
     String PASSWORD = "123456";
-    Function<String, String> GENERATE_TOKEN_INFO = s -> "user:token:info:" + s;
-    Function<String, String> CACHED_ROLE_ID_TOKEN = s -> "user:role:id:" + s;
-    Function<String, String> CACHED_PERMISSION_ID_TOKEN = s -> "user:permissions:id:" + s;
 
     void create(UserCreateRequest request);
 

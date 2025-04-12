@@ -1,10 +1,8 @@
-package com.jinelei.numbfish.auth.client.configuration.authentication;
+package com.jinelei.numbfish.auth.configuration.authentication;
 
-import com.jinelei.numbfish.auth.client.service.UserService;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,26 +17,29 @@ import java.util.Optional;
 public class TokenAuthenticationProvider implements AuthenticationProvider {
     private final StringRedisTemplate redisTemplate;
     private final UserDetailsService userDetailsService;
+    private final TokenCacheKeyGenerator cacheKeyGenerator;
 
-    public TokenAuthenticationProvider(StringRedisTemplate redisTemplate, UserDetailsService userDetailsService) {
+    public TokenAuthenticationProvider(StringRedisTemplate redisTemplate, UserDetailsService userDetailsService, TokenCacheKeyGenerator cacheKeyGenerator) {
         this.redisTemplate = redisTemplate;
         this.userDetailsService = userDetailsService;
+        this.cacheKeyGenerator = cacheKeyGenerator;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         TokenAuthenticationToken authToken = (TokenAuthenticationToken) authentication;
         String token = (String) authToken.getPrincipal();
-
-        final String key = UserService.GENERATE_TOKEN_INFO.apply(token);
-        Optional.ofNullable(key).orElseThrow(() -> new BadCredentialsException("Invalid token key"));
-        final String username = redisTemplate.opsForValue().get(key);
-
+        final String keyUserTokenInfo = cacheKeyGenerator.apply(token);
+        Optional.ofNullable(keyUserTokenInfo).orElseThrow(() -> new BadCredentialsException("Invalid token keyUserTokenInfo"));
+        final String username = Optional.ofNullable(redisTemplate.opsForHash().get(keyUserTokenInfo, "username"))
+                .map(Object::toString).orElseThrow(() -> new BadCredentialsException("Invalid token username"));
+        final Long id = Optional.ofNullable(redisTemplate.opsForHash().get(keyUserTokenInfo, "id"))
+                .map(Object::toString).map(Long::parseLong).orElseThrow(() -> new BadCredentialsException("Invalid token id"));
         Collection<? extends GrantedAuthority> authorities = Optional.ofNullable(username)
                 .map(userDetailsService::loadUserByUsername)
                 .map(UserDetails::getAuthorities)
                 .orElse(new ArrayList<>());
-        return new UsernamePasswordAuthenticationToken(username, null, authorities);
+        return new TokenAuthenticationToken(id, username, authorities);
     }
 
     @Override

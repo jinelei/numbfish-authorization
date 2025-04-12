@@ -1,11 +1,13 @@
 package com.jinelei.numbfish.auth.client.mapper;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
-import com.jinelei.numbfish.auth.dto.user.UserResponse;
-import com.jinelei.numbfish.auth.helper.AuthorizationHelper;
+import com.jinelei.numbfish.auth.configuration.authentication.ClientAuthenticationToken;
+import com.jinelei.numbfish.auth.configuration.authentication.TokenAuthenticationToken;
 import org.apache.ibatis.reflection.MetaObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -23,10 +25,18 @@ public class AuthMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         try {
-            Optional.ofNullable(AuthorizationHelper.currentUser())
-                    .map(UserResponse::getId)
-                    .ifPresent(id -> this.strictInsertFill(metaObject, CREATED_USER_ID, Long.class, id));
-        } catch (Exception ignore) {
+            Optional.ofNullable(SecurityContextHolder.getContext())
+                    .map(SecurityContext::getAuthentication)
+                    .ifPresent(a -> {
+                        if (a instanceof ClientAuthenticationToken token) {
+                            this.strictInsertFill(metaObject, CREATED_USER_ID, Long.class, token.getClientId());
+                        }
+                        if (a instanceof TokenAuthenticationToken token) {
+                            this.strictInsertFill(metaObject, CREATED_USER_ID, Long.class, token.getUserId());
+                        }
+                    });
+        } catch (Exception e) {
+            log.error("获取当前登录用户失败: {}", e.getMessage());
         }
         this.strictInsertFill(metaObject, CREATED_TIME, LocalDateTime.class, LocalDateTime.now());
     }
@@ -34,10 +44,18 @@ public class AuthMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         try {
-            Optional.ofNullable(AuthorizationHelper.currentUser())
-                    .map(UserResponse::getId)
-                    .ifPresent(id -> this.strictInsertFill(metaObject, UPDATED_USER_ID, Long.class, id));
-        } catch (Exception ignore) {
+            Optional.ofNullable(SecurityContextHolder.getContext())
+                    .map(SecurityContext::getAuthentication)
+                    .ifPresent(a -> {
+                        if (a instanceof ClientAuthenticationToken token) {
+                            this.strictInsertFill(metaObject, CREATED_USER_ID, Long.class, token.getClientId());
+                        }
+                        if (a instanceof TokenAuthenticationToken token) {
+                            this.strictInsertFill(metaObject, CREATED_USER_ID, Long.class, token.getUserId());
+                        }
+                    });
+        } catch (Exception e) {
+            log.error("获取当前登录用户失败: {}", e.getMessage());
         }
         this.strictUpdateFill(metaObject, UPDATED_TIME, LocalDateTime.class, LocalDateTime.now());
     }

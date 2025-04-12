@@ -1,4 +1,4 @@
-package com.jinelei.numbfish.auth.client.configuration.authentication;
+package com.jinelei.numbfish.auth.configuration.authentication;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 @SuppressWarnings("unused")
 public class ClientAuthenticationToken implements Authentication {
     private static final Logger log = LoggerFactory.getLogger(ClientAuthenticationToken.class);
+    private final Long clientId;
     private final String accessKey;
     private final String secretKey;
     private final String signature;
@@ -20,7 +21,8 @@ public class ClientAuthenticationToken implements Authentication {
     private boolean authenticated;
     private final Collection<GrantedAuthority> authorities;
 
-    public ClientAuthenticationToken(String accessKey, String secretKey, String timestamp, String signature, Map<String, String> params, Collection<? extends GrantedAuthority> authorities) {
+    public ClientAuthenticationToken(Long clientId, String accessKey, String secretKey, String timestamp, String signature, Map<String, String> params, Collection<? extends GrantedAuthority> authorities) {
+        this.clientId = clientId;
         this.accessKey = accessKey;
         this.secretKey = secretKey;
         this.signature = signature;
@@ -37,6 +39,10 @@ public class ClientAuthenticationToken implements Authentication {
 
     public void appendAuthorities(Collection<? extends GrantedAuthority> authorities) {
         this.authorities.addAll(authorities);
+    }
+
+    public Long getClientId() {
+        return clientId;
     }
 
     @Override

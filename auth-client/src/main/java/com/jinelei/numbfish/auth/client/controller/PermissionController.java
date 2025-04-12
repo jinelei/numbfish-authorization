@@ -17,7 +17,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.numbfish.auth.api.permission.PermissionApi;
-import com.jinelei.numbfish.auth.client.configuration.authentication.permission.instance.PermissionInstance;
 import com.jinelei.numbfish.auth.client.domain.PermissionEntity;
 import com.jinelei.numbfish.auth.client.helper.PageHelper;
 import com.jinelei.numbfish.auth.client.service.PermissionService;
@@ -26,8 +25,6 @@ import com.jinelei.numbfish.auth.dto.permission.PermissionDeleteRequest;
 import com.jinelei.numbfish.auth.dto.permission.PermissionQueryRequest;
 import com.jinelei.numbfish.auth.dto.permission.PermissionResponse;
 import com.jinelei.numbfish.auth.dto.permission.PermissionUpdateRequest;
-import com.jinelei.numbfish.auth.dto.user.UserResponse;
-import com.jinelei.numbfish.auth.helper.AuthorizationHelper;
 import com.jinelei.numbfish.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.numbfish.common.request.PageRequest;
 import com.jinelei.numbfish.common.view.BaseView;
@@ -54,7 +51,6 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "创建权限")
     @PostMapping("/create")
     public BaseView<Void> create(@RequestBody @Valid PermissionCreateRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_CREATE);
         permissionService.create(request);
         return new BaseView<>("创建成功");
     }
@@ -64,7 +60,6 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "删除权限")
     @PostMapping("/delete")
     public BaseView<Void> delete(@RequestBody @Valid PermissionDeleteRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_DELETE);
         permissionService.delete(request);
         return new BaseView<>("删除成功");
     }
@@ -74,7 +69,6 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "更新权限")
     @PostMapping("/update")
     public BaseView<Void> update(@RequestBody @Valid PermissionUpdateRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_UPDATE);
         permissionService.update(request);
         return new BaseView<>("更新成功");
     }
@@ -84,7 +78,6 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限")
     @PostMapping("/get")
     public BaseView<PermissionResponse> get(@RequestBody @Valid PermissionQueryRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_DETAIL);
         PermissionEntity entity = permissionService.get(request);
         PermissionResponse convert = permissionService.convert(entity);
         return new BaseView<>(convert);
@@ -106,8 +99,6 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限列表")
     @PostMapping("/list")
     public ListView<PermissionResponse> list(@RequestBody @Valid PermissionQueryRequest request) {
-        // AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_SUMMARY);
-        UserResponse userResponse = AuthorizationHelper.currentUser();
         List<PermissionEntity> entities = permissionService.list(request);
         List<PermissionResponse> convert = entities.parallelStream().map(entity -> permissionService.convert(entity))
                 .collect(Collectors.toList());
@@ -119,7 +110,6 @@ public class PermissionController implements PermissionApi {
     @Operation(summary = "获取权限分页")
     @PostMapping("/page")
     public PageView<PermissionResponse> page(@RequestBody @Valid PageRequest<PermissionQueryRequest> request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_SUMMARY);
         IPage<PermissionEntity> page = permissionService.page(PageHelper.toPage(new PageDTO<>(), request),
                 request.getParams());
         List<PermissionResponse> collect = page.getRecords().parallelStream()

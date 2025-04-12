@@ -1,24 +1,28 @@
-package com.jinelei.numbfish.auth.client.configuration.authentication;
+package com.jinelei.numbfish.auth.configuration.authentication;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
 @SuppressWarnings("unused")
-public class TokenAuthenticationToken extends AbstractAuthenticationToken {
+public class TokenAuthenticationToken extends UsernamePasswordAuthenticationToken {
     private static final Logger log = LoggerFactory.getLogger(TokenAuthenticationToken.class);
+    private final Long userId;
     private final String token;
     private boolean authenticated;
-    private final Collection<GrantedAuthority> authorities;
 
-    public TokenAuthenticationToken(String token, Collection<GrantedAuthority> authorities) {
-        super(authorities);
+    public TokenAuthenticationToken(Long userId, String token, Collection<? extends GrantedAuthority> authorities) {
+        super(authorities,null, authorities);
+        this.userId = userId;
         this.token = token;
-        this.authorities = authorities;
         this.authenticated = true;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 
     @Override
@@ -36,10 +40,6 @@ public class TokenAuthenticationToken extends AbstractAuthenticationToken {
         return authenticated;
     }
 
-    @Override
-    public Collection<GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
 
     @Override
     public void setAuthenticated(boolean isAuthenticated) {
@@ -53,6 +53,5 @@ public class TokenAuthenticationToken extends AbstractAuthenticationToken {
     @Override
     public void eraseCredentials() {
         super.eraseCredentials();
-        this.authorities.clear();
     }
 }

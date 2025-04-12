@@ -1,4 +1,4 @@
-package com.jinelei.numbfish.auth.client.configuration.authentication;
+package com.jinelei.numbfish.auth.configuration.authentication;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,13 +52,13 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
             throws AuthenticationException {
         final String token = Optional.ofNullable(request.getHeader(property.getTokenHeader())).map(REMOVE_BEARER)
                 .orElseThrow(() -> new BadCredentialsException("Token is missing"));
-        TokenAuthenticationToken authRequest = new TokenAuthenticationToken(token, null);
+        TokenAuthenticationToken authRequest = new TokenAuthenticationToken(null, token, null);
         return getAuthenticationManager().authenticate(authRequest);
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-            Authentication authResult) throws IOException, ServletException {
+                                            Authentication authResult) throws IOException, ServletException {
         SecurityContextHolder.getContext().setAuthentication(authResult);
         chain.doFilter(request, response);
     }

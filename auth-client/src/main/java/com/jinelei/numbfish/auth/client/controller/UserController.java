@@ -15,7 +15,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.numbfish.auth.api.user.UserApi;
-import com.jinelei.numbfish.auth.client.configuration.authentication.permission.instance.PermissionInstance;
+import com.jinelei.numbfish.auth.client.configuration.authentication.instance.PermissionInstance;
 import com.jinelei.numbfish.auth.client.domain.UserEntity;
 import com.jinelei.numbfish.auth.client.helper.PageHelper;
 import com.jinelei.numbfish.auth.client.service.UserService;
@@ -26,7 +26,6 @@ import com.jinelei.numbfish.auth.dto.user.UserQueryRequest;
 import com.jinelei.numbfish.auth.dto.user.UserResponse;
 import com.jinelei.numbfish.auth.dto.user.UserUpdatePasswordRequest;
 import com.jinelei.numbfish.auth.dto.user.UserUpdateRequest;
-import com.jinelei.numbfish.auth.helper.AuthorizationHelper;
 import com.jinelei.numbfish.common.request.PageRequest;
 import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;
@@ -52,7 +51,6 @@ public class UserController implements UserApi {
     @Operation(summary = "创建用户")
     @PostMapping("/create")
     public BaseView<Void> create(@RequestBody @Valid UserCreateRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_CREATE);
         userService.create(request);
         return new BaseView<>("创建成功");
     }
@@ -62,7 +60,6 @@ public class UserController implements UserApi {
     @Operation(summary = "删除用户")
     @PostMapping("/delete")
     public BaseView<Void> delete(@RequestBody @Valid UserDeleteRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_DELETE);
         userService.delete(request);
         return new BaseView<>("删除成功");
     }
@@ -72,7 +69,6 @@ public class UserController implements UserApi {
     @Operation(summary = "更新用户")
     @PostMapping("/update")
     public BaseView<Void> update(@RequestBody @Valid UserUpdateRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_UPDATE);
         userService.update(request);
         return new BaseView<>("更新成功");
     }
@@ -82,7 +78,6 @@ public class UserController implements UserApi {
     @Operation(summary = "获取用户")
     @PostMapping("/get")
     public BaseView<UserResponse> get(@RequestBody @Valid UserQueryRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_DETAIL);
         UserEntity entity = userService.get(request);
         UserResponse convert = userService.convert(entity);
         return new BaseView<>(convert);
@@ -93,7 +88,6 @@ public class UserController implements UserApi {
     @Operation(summary = "获取用户列表")
     @PostMapping("/list")
     public ListView<UserResponse> list(@RequestBody @Valid UserQueryRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_SUMMARY);
         List<UserEntity> entities = userService.list(request);
         List<UserResponse> convert = entities.parallelStream().map(entity -> userService.convert(entity))
                 .collect(Collectors.toList());
@@ -105,7 +99,6 @@ public class UserController implements UserApi {
     @Operation(summary = "获取用户分页")
     @PostMapping("/page")
     public PageView<UserResponse> page(@RequestBody @Valid PageRequest<UserQueryRequest> request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_SUMMARY);
         IPage<UserEntity> page = userService.page(PageHelper.toPage(new PageDTO<>(), request), request.getParams());
         List<UserResponse> collect = page.getRecords().parallelStream().map(entity -> userService.convert(entity))
                 .collect(Collectors.toList());
@@ -135,7 +128,6 @@ public class UserController implements UserApi {
     @Operation(summary = "用户修改密码")
     @PostMapping("/updatePassword")
     public BaseView<String> updatePassword(UserUpdatePasswordRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_UPDATE);
         userService.updatePassword(request);
         return new BaseView<>("修改成功");
     }

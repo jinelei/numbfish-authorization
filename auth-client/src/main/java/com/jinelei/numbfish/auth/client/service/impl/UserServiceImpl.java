@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.jinelei.numbfish.auth.configuration.authentication.TokenCacheKeyGenerator;
 import com.jinelei.numbfish.auth.property.AdminProperty;
 import com.jinelei.numbfish.auth.property.AuthorizationProperty;
 import org.apache.ibatis.executor.BatchResult;
@@ -33,7 +34,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.numbfish.auth.client.configuration.authentication.permission.instance.PermissionInstance;
+import com.jinelei.numbfish.auth.client.configuration.authentication.instance.PermissionInstance;
 import com.jinelei.numbfish.auth.client.convertor.PermissionConvertor;
 import com.jinelei.numbfish.auth.client.convertor.RoleConvertor;
 import com.jinelei.numbfish.auth.client.convertor.UserConvertor;
@@ -55,7 +56,6 @@ import com.jinelei.numbfish.auth.dto.user.UserQueryRequest;
 import com.jinelei.numbfish.auth.dto.user.UserResponse;
 import com.jinelei.numbfish.auth.dto.user.UserUpdatePasswordRequest;
 import com.jinelei.numbfish.auth.dto.user.UserUpdateRequest;
-import com.jinelei.numbfish.auth.helper.AuthorizationHelper;
 import com.jinelei.numbfish.common.exception.InvalidArgsException;
 
 @SuppressWarnings("unused")
@@ -64,6 +64,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         implements UserService, UserDetailsService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final AuthorizationProperty property;
+    private final TokenCacheKeyGenerator cacheKeyGenerator = TokenCacheKeyGenerator.defaultGenerator();
 
     @Autowired
     protected UserConvertor userConvertor;
@@ -87,8 +88,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     protected StringRedisTemplate redisTemplate;
     @Autowired
     protected ObjectMapper objectMapper;
-    @Autowired
-    protected AuthorizationHelper authorizationHelper;
 
     public UserServiceImpl(AuthorizationProperty property) {
         this.property = property;
@@ -96,7 +95,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
 
     @Override
     public void create(UserCreateRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_CREATE);
         final UserEntity entity = userConvertor.entityFromCreateRequest(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("角色信息不合法"));
         Optional.of(entity).map(UserEntity::getPassword).ifPresentOrElse(password -> {
@@ -125,7 +123,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
 
     @Override
     public void delete(UserDeleteRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_DELETE);
         if (Objects.nonNull(request.getId())) {
             int deleted = baseMapper.deleteById(request.getId());
             log.debug("删除用户: {}", deleted);
@@ -148,7 +145,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
 
     @Override
     public void update(@Validated UserUpdateRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_UPDATE);
         final String username = Optional.ofNullable(request).map(UserUpdateRequest::getUsername)
                 .orElseThrow(() -> new InvalidArgsException("用户名不能为空"));
         LambdaUpdateWrapper<UserEntity> wrapper = Wrappers.lambdaUpdate(UserEntity.class);
@@ -181,7 +177,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
 
     @Override
     public UserEntity get(UserQueryRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_DETAIL);
         LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), UserEntity::getId, request.getId());
         wrapper.like(Objects.nonNull(request.getUsername()), UserEntity::getUsername, request.getUsername());
@@ -192,7 +187,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
 
     @Override
     public List<UserEntity> list(UserQueryRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_SUMMARY);
         LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), UserEntity::getId, request.getId());
         wrapper.like(Objects.nonNull(request.getUsername()), UserEntity::getUsername, request.getUsername());
@@ -203,7 +197,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
 
     @Override
     public IPage<UserEntity> page(IPage<UserEntity> page, UserQueryRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_SUMMARY);
         LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), UserEntity::getId, request.getId());
         wrapper.like(Objects.nonNull(request.getUsername()), UserEntity::getUsername, request.getUsername());
@@ -224,8 +217,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
             throw new InvalidArgsException("密码错误");
         }
         final String token = UUID.randomUUID().toString();
-        final String keyUserTokenInfo = GENERATE_TOKEN_INFO.apply(token);
-        redisTemplate.opsForValue().set(keyUserTokenInfo, userEntity.getUsername());
+        final String keyUserTokenInfo = cacheKeyGenerator.apply(token);
+        redisTemplate.opsForHash().put(keyUserTokenInfo, "username", userEntity.getUsername());
+        redisTemplate.opsForHash().put(keyUserTokenInfo, "id", userEntity.getId().toString());
         stringRedisTemplate.expire(keyUserTokenInfo, Duration.ofMinutes(30));
         log.debug("用户登录: {}", userEntity);
         return token;
@@ -234,13 +228,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     @Override
     public void logout() {
         String token = "";
-        stringRedisTemplate.delete(GENERATE_TOKEN_INFO.apply(token));
+        stringRedisTemplate.delete(cacheKeyGenerator.apply(token));
         log.debug("用户登出");
     }
 
     @Override
     public void updatePassword(UserUpdatePasswordRequest request) {
-        AuthorizationHelper.hasPermissions(PermissionInstance.USER_UPDATE);
         final String username = Optional.ofNullable(request).map(UserUpdatePasswordRequest::getUsername)
                 .orElseThrow(() -> new InvalidArgsException("用户名不能为空"));
         String password = Optional.of(request).map(UserUpdatePasswordRequest::getPassword).orElse(PASSWORD);
