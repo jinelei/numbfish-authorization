@@ -61,12 +61,10 @@ public class ClientAuthenticationProvider implements AuthenticationProvider {
             mac.init(key);
             byte[] bytes = mac.doFinal(buffer.toString().getBytes(StandardCharsets.UTF_8));
             sign = HexFormat.of().formatHex(bytes);
-            log.info("原始参数:{}, 签名结果:{}", buffer, sign);
         } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException e) {
             throw new BadCredentialsException("签名失败");
         }
         // 比较签名是否一致
-        log.info("原始签名:{}, 传入签名:{}", sign, signature);
         if (!signature.equalsIgnoreCase(sign)) {
             throw new BadCredentialsException("签名不匹配");
         }
