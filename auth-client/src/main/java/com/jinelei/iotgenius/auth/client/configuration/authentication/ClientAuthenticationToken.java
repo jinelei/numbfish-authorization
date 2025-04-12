@@ -20,17 +20,14 @@ public class ClientAuthenticationToken implements Authentication {
     private boolean authenticated;
     private final Collection<GrantedAuthority> authorities;
 
-    public ClientAuthenticationToken(String accessKey, String secretKey, String signature, String timestamp,
-            Map<String, String> params,
-            Collection<? extends GrantedAuthority> authorities) {
+    public ClientAuthenticationToken(String accessKey, String secretKey, String timestamp, String signature, Map<String, String> params, Collection<? extends GrantedAuthority> authorities) {
         this.accessKey = accessKey;
         this.secretKey = secretKey;
         this.signature = signature;
         this.timestamp = timestamp;
         this.params = params;
         this.authenticated = false;
-        this.authorities = new ArrayList<>();
-        authorities.forEach(a -> this.authorities.add(a));
+        this.authorities = new ArrayList<>(authorities);
     }
 
     @Override

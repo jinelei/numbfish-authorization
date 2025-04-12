@@ -9,6 +9,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -19,7 +22,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.*;
@@ -54,7 +56,7 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
     private final ClientDetailService clientDetailService;
 
     public ClientAuthenticationFilter(AuthorizationProperty property, ObjectMapper objectMapper,
-            ClientDetailService clientDetailService, AuthenticationManager authenticationManager) {
+                                      ClientDetailService clientDetailService, AuthenticationManager authenticationManager) {
         super(REQUEST_MATCHER_FUNCTION.apply(property), authenticationManager);
         this.property = property;
         this.objectMapper = objectMapper;
@@ -62,21 +64,31 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
         this.clientDetailService = clientDetailService;
     }
 
+    private RepeatRequestWrapper fetchServletRequest(HttpServletRequest request) {
+        Object currentRequest = request;
+        while (currentRequest instanceof ServletRequestWrapper r) {
+            if (r.getClass().equals(RepeatRequestWrapper.class)) {
+                return (RepeatRequestWrapper) r;
+            }
+            currentRequest = r.getRequest();
+        }
+        return null;
+    }
+
     protected Map<String, String> obtainParams(HttpServletRequest request) {
         final HttpMethod method = HttpMethod.valueOf(request.getMethod());
         final MediaType contentType = MediaType.parseMediaType(request.getContentType());
         final Map<String, String> params = new HashMap<>();
         if (HttpMethod.POST.equals(method) && MediaType.APPLICATION_JSON.equals(contentType)) {
-            if (request instanceof RepeatRequestWrapper wrapper) {
-                try {
-                    Map<String, String> map = objectMapper.readValue(wrapper.getBody(),
-                            new TypeReference<>() {
-                            });
-                    params.putAll(map);
-                } catch (IOException e) {
-                    log.error("登陆失败: body参数不合法");
-                }
-            }
+            Optional.ofNullable(fetchServletRequest(request)).map(RepeatRequestWrapper::getBody)
+                    .filter(c -> c.length != 0).ifPresent(bytes -> {
+                        try {
+                            params.putAll(objectMapper.readValue(bytes, new TypeReference<Map<String, String>>() {
+                            }));
+                        } catch (IOException e) {
+                            log.error("登陆失败: body参数不合法");
+                        }
+                    });
         }
         // 当请求方法是GET时，检查是否具有query参数
         if (HttpMethod.GET.equals(method)) {
@@ -128,8 +140,10 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
     }
 
     protected List<? extends GrantedAuthority> obtainAuthorities(ClientResponse client) {
-        return client.getPermissions()
+        return Optional.ofNullable(client)
+                .map(ClientResponse::getPermissions)
                 .stream()
+                .flatMap(List::stream)
                 .map(PermissionResponse::getCode)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
@@ -141,11 +155,18 @@ public class ClientAuthenticationFilter extends AbstractAuthenticationProcessing
         final String accessKey = obtainAccessKey(request);
         final ClientResponse result = obtainClient(accessKey);
         ClientAuthenticationToken authenticationToken = new ClientAuthenticationToken(accessKey,
-                obtainSecretKey(result), obtainSignature(request),
-                obtainTimestamp(request), obtainParams(request),
+                obtainSecretKey(result),
+                obtainTimestamp(request),
+                obtainSignature(request),
+                obtainParams(request),
                 obtainAuthorities(result));
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return authentication;
+        return authenticationManager.authenticate(authenticationToken);
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+                                            Authentication authResult) throws IOException, ServletException {
+        SecurityContextHolder.getContext().setAuthentication(authResult);
+        chain.doFilter(request, response);
     }
 }
