@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +48,7 @@ public class ClientController implements ClientApi {
     @ApiOperationSupport(order = 1)
     @Operation(summary = "创建客户端")
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('CLIENT_CREATE')")
     public BaseView<Void> create(@RequestBody @Valid ClientCreateRequest request) {
         clientService.create(request);
         return new BaseView<>("创建成功");
@@ -56,6 +58,7 @@ public class ClientController implements ClientApi {
     @ApiOperationSupport(order = 2)
     @Operation(summary = "删除客户端")
     @PostMapping("/delete")
+    @PreAuthorize("hasAuthority('CLIENT_DELETE')")
     public BaseView<Void> delete(@RequestBody @Valid ClientDeleteRequest request) {
         clientService.delete(request);
         return new BaseView<>("删除成功");
@@ -65,6 +68,7 @@ public class ClientController implements ClientApi {
     @ApiOperationSupport(order = 3)
     @Operation(summary = "更新客户端")
     @PostMapping("/update")
+    @PreAuthorize("hasAuthority('CLIENT_UPDATE')")
     public BaseView<Void> update(@RequestBody @Valid ClientUpdateRequest request) {
         clientService.update(request);
         return new BaseView<>("更新成功");
@@ -74,6 +78,7 @@ public class ClientController implements ClientApi {
     @ApiOperationSupport(order = 4)
     @Operation(summary = "获取客户端")
     @PostMapping("/get")
+    @PreAuthorize("hasAuthority('CLIENT_DETAIL')")
     public BaseView<ClientResponse> get(@RequestBody @Valid ClientQueryRequest request) {
         ClientEntity entity = clientService.get(request);
         ClientResponse convert = clientService.convert(entity);
@@ -84,6 +89,7 @@ public class ClientController implements ClientApi {
     @ApiOperationSupport(order = 5)
     @Operation(summary = "获取客户端列表")
     @PostMapping("/list")
+    @PreAuthorize("hasAuthority('CLIENT_SUMMARY')")
     public ListView<ClientResponse> list(@RequestBody @Valid ClientQueryRequest request) {
         List<ClientEntity> entities = clientService.list(request);
         List<ClientResponse> convert = entities.parallelStream().map(entity -> clientService.convert(entity))
@@ -95,6 +101,7 @@ public class ClientController implements ClientApi {
     @ApiOperationSupport(order = 6)
     @Operation(summary = "获取客户端分页")
     @PostMapping("/page")
+    @PreAuthorize("hasAuthority('CLIENT_SUMMARY')")
     public PageView<ClientResponse> page(@RequestBody @Valid PageRequest<ClientQueryRequest> request) {
         IPage<ClientEntity> page = clientService.page(PageHelper.toPage(new PageDTO<>(), request), request.getParams());
         List<ClientResponse> collect = page.getRecords().parallelStream().map(entity -> clientService.convert(entity))

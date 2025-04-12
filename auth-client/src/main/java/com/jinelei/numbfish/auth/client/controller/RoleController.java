@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +52,7 @@ public class RoleController implements RoleApi {
     @ApiOperationSupport(order = 1)
     @Operation(summary = "创建角色")
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_CREATE')")
     public BaseView<Void> create(@RequestBody @Valid RoleCreateRequest request) {
         roleService.create(request);
         return new BaseView<>("创建成功");
@@ -60,6 +62,7 @@ public class RoleController implements RoleApi {
     @ApiOperationSupport(order = 2)
     @Operation(summary = "删除角色")
     @PostMapping("/delete")
+    @PreAuthorize("hasAuthority('ROLE_DELETE')")
     public BaseView<Void> delete(@RequestBody @Valid RoleDeleteRequest request) {
         roleService.delete(request);
         return new BaseView<>("删除成功");
@@ -69,6 +72,7 @@ public class RoleController implements RoleApi {
     @ApiOperationSupport(order = 3)
     @Operation(summary = "更新角色")
     @PostMapping("/update")
+    @PreAuthorize("hasAuthority('ROLE_UPDATE')")
     public BaseView<Void> update(@RequestBody @Valid RoleUpdateRequest request) {
         roleService.update(request);
         return new BaseView<>("更新成功");
@@ -78,6 +82,7 @@ public class RoleController implements RoleApi {
     @ApiOperationSupport(order = 4)
     @Operation(summary = "获取角色")
     @PostMapping("/get")
+    @PreAuthorize("hasAuthority('ROLE_DETAIL')")
     public BaseView<RoleResponse> get(@RequestBody @Valid RoleQueryRequest request) {
         RoleEntity entity = roleService.get(request);
         RoleResponse convert = roleService.convert(entity);
@@ -88,6 +93,7 @@ public class RoleController implements RoleApi {
     @ApiOperationSupport(order = 4)
     @Operation(summary = "获取角色树")
     @PostMapping("/tree")
+    @PreAuthorize("hasAuthority('ROLE_SUMMARY')")
     public BaseView<List<RoleResponse>> tree(@RequestBody @Valid RoleQueryRequest request) {
         List<RoleEntity> entities = roleService.tree(request);
         List<RoleResponse> convert = roleService.convertTree(entities);
@@ -98,6 +104,7 @@ public class RoleController implements RoleApi {
     @ApiOperationSupport(order = 5)
     @Operation(summary = "获取角色列表")
     @PostMapping("/list")
+    @PreAuthorize("hasAuthority('ROLE_SUMMARY')")
     public ListView<RoleResponse> list(@RequestBody @Valid RoleQueryRequest request) {
         List<RoleEntity> entities = roleService.list(request);
         List<RoleResponse> convert = entities.parallelStream().map(entity -> roleService.convert(entity))
@@ -109,6 +116,7 @@ public class RoleController implements RoleApi {
     @ApiOperationSupport(order = 6)
     @Operation(summary = "获取角色分页")
     @PostMapping("/page")
+    @PreAuthorize("hasAuthority('ROLE_SUMMARY')")
     public PageView<RoleResponse> page(@RequestBody @Valid PageRequest<RoleQueryRequest> request) {
         IPage<RoleEntity> page = roleService.page(PageHelper.toPage(new PageDTO<>(), request), request.getParams());
         List<RoleResponse> collect = page.getRecords().parallelStream().map(entity -> roleService.convert(entity))
@@ -117,6 +125,10 @@ public class RoleController implements RoleApi {
     }
 
     @Override
+    @ApiOperationSupport(order = 6)
+    @Operation(summary = "注册角色")
+    @PostMapping("/regist")
+    @PreAuthorize("hasAnyAuthority('ROLE_CREATE','ROLE_UPDATE','ROLE_DELETE')")
     public <T extends RoleDeclaration<?>> BaseView<Boolean> regist(@Valid List<T> roles) {
         Boolean result = roleService.regist(Optional.ofNullable(roles).orElse(new ArrayList<>()));
         return new BaseView<>(result);

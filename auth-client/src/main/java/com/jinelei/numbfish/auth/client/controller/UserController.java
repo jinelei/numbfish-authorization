@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +16,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.numbfish.auth.api.user.UserApi;
-import com.jinelei.numbfish.auth.client.configuration.authentication.instance.PermissionInstance;
 import com.jinelei.numbfish.auth.client.domain.UserEntity;
 import com.jinelei.numbfish.auth.client.helper.PageHelper;
 import com.jinelei.numbfish.auth.client.service.UserService;
@@ -50,6 +50,7 @@ public class UserController implements UserApi {
     @ApiOperationSupport(order = 1)
     @Operation(summary = "创建用户")
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('USER_CREATE')")
     public BaseView<Void> create(@RequestBody @Valid UserCreateRequest request) {
         userService.create(request);
         return new BaseView<>("创建成功");
@@ -59,6 +60,7 @@ public class UserController implements UserApi {
     @ApiOperationSupport(order = 2)
     @Operation(summary = "删除用户")
     @PostMapping("/delete")
+    @PreAuthorize("hasAuthority('USER_DELETE')")
     public BaseView<Void> delete(@RequestBody @Valid UserDeleteRequest request) {
         userService.delete(request);
         return new BaseView<>("删除成功");
@@ -68,6 +70,7 @@ public class UserController implements UserApi {
     @ApiOperationSupport(order = 3)
     @Operation(summary = "更新用户")
     @PostMapping("/update")
+    @PreAuthorize("hasAuthority('USER_UPDATE')")
     public BaseView<Void> update(@RequestBody @Valid UserUpdateRequest request) {
         userService.update(request);
         return new BaseView<>("更新成功");
@@ -77,6 +80,7 @@ public class UserController implements UserApi {
     @ApiOperationSupport(order = 4)
     @Operation(summary = "获取用户")
     @PostMapping("/get")
+    @PreAuthorize("hasAuthority('USER_DETAIL')")
     public BaseView<UserResponse> get(@RequestBody @Valid UserQueryRequest request) {
         UserEntity entity = userService.get(request);
         UserResponse convert = userService.convert(entity);
@@ -87,6 +91,7 @@ public class UserController implements UserApi {
     @ApiOperationSupport(order = 5)
     @Operation(summary = "获取用户列表")
     @PostMapping("/list")
+    @PreAuthorize("hasAuthority('USER_SUMMARY')")
     public ListView<UserResponse> list(@RequestBody @Valid UserQueryRequest request) {
         List<UserEntity> entities = userService.list(request);
         List<UserResponse> convert = entities.parallelStream().map(entity -> userService.convert(entity))
@@ -98,6 +103,7 @@ public class UserController implements UserApi {
     @ApiOperationSupport(order = 6)
     @Operation(summary = "获取用户分页")
     @PostMapping("/page")
+    @PreAuthorize("hasAuthority('USER_SUMMARY')")
     public PageView<UserResponse> page(@RequestBody @Valid PageRequest<UserQueryRequest> request) {
         IPage<UserEntity> page = userService.page(PageHelper.toPage(new PageDTO<>(), request), request.getParams());
         List<UserResponse> collect = page.getRecords().parallelStream().map(entity -> userService.convert(entity))
@@ -118,6 +124,7 @@ public class UserController implements UserApi {
     @ApiOperationSupport(order = 8)
     @Operation(summary = "用户登出")
     @PostMapping("/logout")
+    @PreAuthorize("hasAuthority('USER_DETAIL')")
     public BaseView<Void> logout() {
         userService.logout();
         return new BaseView<>();
@@ -127,7 +134,8 @@ public class UserController implements UserApi {
     @ApiOperationSupport(order = 9)
     @Operation(summary = "用户修改密码")
     @PostMapping("/updatePassword")
-    public BaseView<String> updatePassword(UserUpdatePasswordRequest request) {
+    @PreAuthorize("hasAuthority('USER_UPDATE')")
+    public BaseView<String> updatePassword(@RequestBody @Valid UserUpdatePasswordRequest request) {
         userService.updatePassword(request);
         return new BaseView<>("修改成功");
     }
