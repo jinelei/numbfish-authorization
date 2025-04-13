@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.numbfish.common.utils.ThrowableStackTraceUtils;
+import com.jinelei.numbfish.common.helper.ThrowableStackTraceHelper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -55,7 +55,7 @@ public class ServletHelper {
         try {
             response.getWriter().write(objectMapper.writeValueAsString(object));
         } catch (IOException throwable) {
-            log.error("响应序列化失败：{}", ThrowableStackTraceUtils.getStackTraceAsString(throwable));
+            log.error("响应序列化失败：{}", ThrowableStackTraceHelper.getStackTraceAsString(throwable));
         }
         response.setStatus(httpStatus.value());
     }

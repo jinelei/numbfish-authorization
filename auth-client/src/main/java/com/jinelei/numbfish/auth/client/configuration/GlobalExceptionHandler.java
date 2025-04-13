@@ -1,6 +1,6 @@
 package com.jinelei.numbfish.auth.client.configuration;
 
-import com.jinelei.numbfish.common.utils.ThrowableStackTraceUtils;
+import com.jinelei.numbfish.common.helper.ThrowableStackTraceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
     public BaseView<String> baseExceptionHandler(BaseException exception) {
-        log.error("baseException: {}\n{}", exception.getMessage(), ThrowableStackTraceUtils.getStackTraceAsString(exception));
+        log.error("baseException: {}\n{}", exception.getMessage(), ThrowableStackTraceHelper.getStackTraceAsString(exception));
         return new BaseView<>(exception.getCode(), exception.getCause());
     }
 
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Throwable.class)
     public BaseView<String> throwableHandler(Throwable throwable) {
-        log.error("throwableHandler: {}\n{}", throwable.getMessage(), ThrowableStackTraceUtils.getStackTraceAsString(throwable));
+        log.error("throwableHandler: {}\n{}", throwable.getMessage(), ThrowableStackTraceHelper.getStackTraceAsString(throwable));
         return new BaseView<>(throwable);
     }
 
