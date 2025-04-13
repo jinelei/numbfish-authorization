@@ -11,7 +11,7 @@ spring:
     active: dev
 nacos:
   config:
-    server-addr: 127.0.0.1:8848
+    server-addr: ${HOST:127.0.0.1}:8848
     data-id: app
     group: DEFAULT_GROUP
     namespace: numbfish-cloud-${spring.profiles.active}
@@ -22,4 +22,4 @@ nacos:
     config-long-poll-timeout: 46000
     remote-first: true
   discovery:
-    server-addr: 127.0.0.1:8848
+    server-addr: ${HOST:127.0.0.1}:8848
