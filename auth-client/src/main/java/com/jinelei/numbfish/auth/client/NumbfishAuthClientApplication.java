@@ -24,15 +24,15 @@ import com.jinelei.numbfish.auth.client.configuration.authentication.instance.Pe
 import com.jinelei.numbfish.auth.client.configuration.authentication.instance.RoleInstance;
 import com.jinelei.numbfish.auth.client.helper.SpringHelper;
 
-@SpringBootApplication(scanBasePackageClasses = {NumbfishAuthApplication.class})
+@SpringBootApplication(scanBasePackageClasses = {NumbfishAuthClientApplication.class})
 @MapperScan("com.jinelei.numbfish.auth.client.mapper")
 @Import(SecurityAutoConfiguration.class)
-public class NumbfishAuthApplication implements CommandLineRunner {
-    private static final Logger log = LoggerFactory.getLogger(NumbfishAuthApplication.class);
+public class NumbfishAuthClientApplication implements CommandLineRunner {
+    private static final Logger log = LoggerFactory.getLogger(NumbfishAuthClientApplication.class);
     private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) throws UnknownHostException {
-        ConfigurableApplicationContext run = SpringApplication.run(NumbfishAuthApplication.class, args);
+        ConfigurableApplicationContext run = SpringApplication.run(NumbfishAuthClientApplication.class, args);
         Environment env = run.getEnvironment();
         log.info("""
                         
