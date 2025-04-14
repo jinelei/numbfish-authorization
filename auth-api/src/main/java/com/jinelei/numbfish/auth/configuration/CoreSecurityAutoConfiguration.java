@@ -11,10 +11,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @Configuration
 @EnableMethodSecurity
 @Import({CoreSecurityConfiguration.class, AuthorizationProperty.class})
-public class SecurityAutoConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(SecurityAutoConfiguration.class);
+public class CoreSecurityAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(CoreSecurityAutoConfiguration.class);
 
-    public SecurityAutoConfiguration() {
-        log.info("SecurityAutoConfiguration initialized");
+    public CoreSecurityAutoConfiguration() {
+        log.info("CoreSecurityAutoConfiguration initialized");
     }
 }

@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.jinelei.numbfish.auth.api.permission.PermissionApi;
 import com.jinelei.numbfish.auth.api.role.RoleApi;
-import com.jinelei.numbfish.auth.configuration.SecurityAutoConfiguration;
+import com.jinelei.numbfish.auth.configuration.CoreSecurityAutoConfiguration;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ import com.jinelei.numbfish.auth.client.helper.SpringHelper;
 
 @SpringBootApplication(scanBasePackageClasses = {NumbfishAuthClientApplication.class})
 @MapperScan("com.jinelei.numbfish.auth.client.mapper")
-@Import(SecurityAutoConfiguration.class)
+@Import(CoreSecurityAutoConfiguration.class)
 public class NumbfishAuthClientApplication implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(NumbfishAuthClientApplication.class);
     private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);

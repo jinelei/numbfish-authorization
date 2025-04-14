@@ -36,6 +36,7 @@ public class AuthorizationProperty {
     protected IgnoreProperty ignore;
     protected PlaceholderProperty placeHolder;
     protected ContextProperty context;
+    protected ClientProperty client;
 
     public String getContextUrl() {
         return Optional.ofNullable(this.context)
@@ -152,31 +153,36 @@ public class AuthorizationProperty {
         this.context = context;
     }
 
+    public ClientProperty getClient() {
+        return client;
+    }
+
+    public void setClient(ClientProperty client) {
+        this.client = client;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (o == null || getClass() != o.getClass()) return false;
         AuthorizationProperty that = (AuthorizationProperty) o;
-        return Objects.equals(login, that.login) && Objects.equals(logout, that.logout)
-                && Objects.equals(admin, that.admin) && Objects.equals(ignore, that.ignore)
-                && Objects.equals(placeHolder, that.placeHolder) && Objects.equals(context, that.context);
+        return Objects.equals(login, that.login) && Objects.equals(logout, that.logout) && Objects.equals(admin, that.admin) && Objects.equals(ignore, that.ignore) && Objects.equals(placeHolder, that.placeHolder) && Objects.equals(context, that.context) && Objects.equals(client, that.client);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(login, logout, admin, ignore, placeHolder, context);
+        return Objects.hash(login, logout, admin, ignore, placeHolder, context, client);
     }
 
     @Override
     public String toString() {
-        return "AuthorizationProperty{"
-                + "login=" + login
-                + ", logout=" + logout
-                + ", admin=" + admin
-                + ", ignore=" + ignore
-                + ", header=" + placeHolder
-                + ", context=" + context
-                + '}';
+        return "AuthorizationProperty{" +
+                "login=" + login +
+                ", logout=" + logout +
+                ", admin=" + admin +
+                ", ignore=" + ignore +
+                ", placeHolder=" + placeHolder +
+                ", context=" + context +
+                ", client=" + client +
+                '}';
     }
 }

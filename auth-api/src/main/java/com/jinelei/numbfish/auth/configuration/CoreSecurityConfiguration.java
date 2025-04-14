@@ -42,7 +42,6 @@ public class CoreSecurityConfiguration implements InitializingBean {
         log.info("PasswordEncoder not found, using BCryptPasswordEncoder");
         return new BCryptPasswordEncoder();
     }
-
     @Bean
     public CoreAuthenticationEntryPoint authenticationEntryPoint(ObjectMapper objectMapper) {
         return new CoreAuthenticationEntryPoint(objectMapper);
