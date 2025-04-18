@@ -3,14 +3,16 @@ package com.jinelei.numbfish.auth.client.domain;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jinelei.numbfish.common.entity.BaseEntityIntf;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@SuppressWarnings({"rawtypes", "unused"})
+@SuppressWarnings({ "rawtypes", "unused" })
 @Schema(description = "基础实体对象")
-public class BaseEntity<T> implements Serializable {
+public class BaseEntity<T> implements BaseEntityIntf<T> {
     @TableId
     @Schema(description = "id")
     protected T id;
@@ -30,50 +32,62 @@ public class BaseEntity<T> implements Serializable {
     @Schema(description = "更新时间")
     protected LocalDateTime updatedTime;
 
+    @Override
     public T getId() {
         return id;
     }
 
+    @Override
     public void setId(T id) {
         this.id = id;
     }
 
+    @Override
     public String getRemark() {
         return remark;
     }
 
+    @Override
     public void setRemark(String remark) {
         this.remark = remark;
     }
 
+    @Override
     public Long getCreatedUserId() {
         return createdUserId;
     }
 
+    @Override
     public void setCreatedUserId(Long createdUserId) {
         this.createdUserId = createdUserId;
     }
 
+    @Override
     public LocalDateTime getCreatedTime() {
         return createdTime;
     }
 
+    @Override
     public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
     }
 
+    @Override
     public Long getUpdatedUserId() {
         return updatedUserId;
     }
 
+    @Override
     public void setUpdatedUserId(Long updatedUserId) {
         this.updatedUserId = updatedUserId;
     }
 
+    @Override
     public LocalDateTime getUpdatedTime() {
         return updatedTime;
     }
 
+    @Override
     public void setUpdatedTime(LocalDateTime updatedTime) {
         this.updatedTime = updatedTime;
     }
