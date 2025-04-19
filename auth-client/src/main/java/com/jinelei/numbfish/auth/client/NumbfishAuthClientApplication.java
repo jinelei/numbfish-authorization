@@ -22,7 +22,7 @@ import org.springframework.core.env.Environment;
 
 import com.jinelei.numbfish.auth.client.configuration.authentication.instance.PermissionInstance;
 import com.jinelei.numbfish.auth.client.configuration.authentication.instance.RoleInstance;
-import com.jinelei.numbfish.auth.client.helper.SpringHelper;
+import com.jinelei.numbfish.common.helper.SpringHelper;
 
 @SpringBootApplication(scanBasePackageClasses = {NumbfishAuthClientApplication.class})
 @MapperScan("com.jinelei.numbfish.auth.client.mapper")
