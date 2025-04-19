@@ -119,7 +119,7 @@ public class PermissionController implements PermissionApi {
     @PreAuthorize("hasAuthority('PERMISSION_SUMMARY')")
     public PageView<PermissionResponse> page(@RequestBody @Valid PageRequest<PermissionQueryRequest> request) {
         IPage<PermissionEntity> page = permissionService.page(PageHelper.toPage(new PageDTO<>(), request),
-                request.getParams());
+                Optional.ofNullable(request.getParams()).orElse(new PermissionQueryRequest()));
         List<PermissionResponse> collect = page.getRecords().parallelStream()
                 .map(entity -> permissionService.convert(entity))
                 .collect(Collectors.toList());

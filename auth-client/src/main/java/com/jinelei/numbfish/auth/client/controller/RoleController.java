@@ -117,7 +117,8 @@ public class RoleController implements RoleApi {
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('ROLE_SUMMARY')")
     public PageView<RoleResponse> page(@RequestBody @Valid PageRequest<RoleQueryRequest> request) {
-        IPage<RoleEntity> page = roleService.page(PageHelper.toPage(new PageDTO<>(), request), request.getParams());
+        IPage<RoleEntity> page = roleService.page(PageHelper.toPage(new PageDTO<>(), request),
+                Optional.ofNullable(request.getParams()).orElse(new RoleQueryRequest()));
         List<RoleResponse> collect = page.getRecords().parallelStream().map(entity -> roleService.convert(entity))
                 .collect(Collectors.toList());
         return new PageView<>(collect, page.getTotal(), page.getPages(), page.getSize());

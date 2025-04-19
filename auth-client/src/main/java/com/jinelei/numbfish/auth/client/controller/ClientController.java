@@ -1,6 +1,7 @@
 package com.jinelei.numbfish.auth.client.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +104,8 @@ public class ClientController implements ClientApi {
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('CLIENT_SUMMARY')")
     public PageView<ClientResponse> page(@RequestBody @Valid PageRequest<ClientQueryRequest> request) {
-        IPage<ClientEntity> page = clientService.page(PageHelper.toPage(new PageDTO<>(), request), request.getParams());
+        IPage<ClientEntity> page = clientService.page(PageHelper.toPage(new PageDTO<>(), request),
+                Optional.ofNullable(request.getParams()).orElse(new ClientQueryRequest()));
         List<ClientResponse> collect = page.getRecords().parallelStream().map(entity -> clientService.convert(entity))
                 .collect(Collectors.toList());
         return new PageView<>(collect, page.getTotal(), page.getPages(), page.getSize());
