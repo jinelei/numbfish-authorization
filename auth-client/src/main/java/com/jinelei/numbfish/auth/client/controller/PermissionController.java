@@ -19,7 +19,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.numbfish.auth.api.permission.PermissionApi;
 import com.jinelei.numbfish.auth.client.domain.PermissionEntity;
-import com.jinelei.numbfish.auth.client.helper.PageHelper;
+import com.jinelei.numbfish.common.helper.PageHelper;
 import com.jinelei.numbfish.auth.client.service.PermissionService;
 import com.jinelei.numbfish.auth.dto.permission.PermissionCreateRequest;
 import com.jinelei.numbfish.auth.dto.permission.PermissionDeleteRequest;

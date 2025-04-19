@@ -1,7 +1,7 @@
 package com.jinelei.numbfish.auth.configuration.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.numbfish.auth.helper.ServletHelper;
+import com.jinelei.numbfish.common.helper.ServletHelper;
 import com.jinelei.numbfish.common.view.BaseView;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

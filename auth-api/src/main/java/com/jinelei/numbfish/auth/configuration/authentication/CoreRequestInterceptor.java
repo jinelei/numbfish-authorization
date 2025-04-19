@@ -2,7 +2,7 @@ package com.jinelei.numbfish.auth.configuration.authentication;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.numbfish.auth.helper.SignatureHelper;
+import com.jinelei.numbfish.common.helper.SignatureHelper;
 import com.jinelei.numbfish.auth.property.AuthorizationProperty;
 import com.jinelei.numbfish.auth.property.ClientProperty;
 import com.jinelei.numbfish.common.exception.InternalException;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -31,7 +32,7 @@ public class CoreRequestInterceptor implements RequestInterceptor {
     public CoreRequestInterceptor(ObjectMapper objectMapper, AuthorizationProperty property) {
         this.objectMapper = objectMapper;
         this.property = property;
-        this.signatureHelper = new SignatureHelper(property);
+        this.signatureHelper = new SignatureHelper(property.getSignatureHeader(), property.getTimestampHeader(), property.getAccessKeyHeader());
     }
 
 
@@ -81,7 +82,13 @@ public class CoreRequestInterceptor implements RequestInterceptor {
                 .map(AuthorizationProperty::getClient)
                 .map(ClientProperty::getSecretKey)
                 .orElseThrow(() -> new InternalException("secretKey为空"));
-        final String signature = signatureHelper.generateSignature(accessKey, secretKey, timestamp, params);
+        final String signature;
+        try {
+            signature = signatureHelper.generateSignature(accessKey, secretKey, timestamp, params);
+        } catch (RuntimeException e) {
+            log.error("签名失败：{}", e.getMessage());
+            throw new BadCredentialsException("签名失败");
+        }
         Optional.of(property)
                 .map(AuthorizationProperty::getAccessKeyHeader)
                 .ifPresent(header -> template.header(header, accessKey));

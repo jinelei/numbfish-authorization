@@ -17,7 +17,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.numbfish.auth.api.client.ClientApi;
 import com.jinelei.numbfish.auth.client.domain.ClientEntity;
-import com.jinelei.numbfish.auth.client.helper.PageHelper;
+import com.jinelei.numbfish.common.helper.PageHelper;
 import com.jinelei.numbfish.auth.client.service.ClientService;
 import com.jinelei.numbfish.auth.dto.client.ClientCreateRequest;
 import com.jinelei.numbfish.auth.dto.client.ClientDeleteRequest;

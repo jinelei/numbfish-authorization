@@ -2,7 +2,7 @@ package com.jinelei.numbfish.auth.configuration.authentication;
 
 import java.util.Map;
 
-import com.jinelei.numbfish.auth.helper.SignatureHelper;
+import com.jinelei.numbfish.common.helper.SignatureHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -19,11 +19,17 @@ public class ClientAuthenticationProvider implements AuthenticationProvider {
     private final SignatureHelper signatureHelper;
 
     public ClientAuthenticationProvider(AuthorizationProperty property) {
-        this.signatureHelper = new SignatureHelper(property);
+        this.signatureHelper = new SignatureHelper(property.getSignatureHeader(), property.getTimestampHeader(), property.getAccessKeyHeader());
     }
 
     private void checkSignature(String accessKey, String secretKey, String timestamp, String signature, Map<String, String> params) {
-        final String generateSignature = signatureHelper.generateSignature(accessKey, secretKey, timestamp, params);
+        String generateSignature;
+        try {
+            generateSignature = signatureHelper.generateSignature(accessKey, secretKey, timestamp, params);
+        } catch (RuntimeException e) {
+            log.error("签名失败：{}", e.getMessage());
+            throw new BadCredentialsException("签名失败");
+        }
         // 比较签名是否一致
         if (!signature.equalsIgnoreCase(generateSignature)) {
             throw new BadCredentialsException("签名不匹配");
