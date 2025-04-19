@@ -24,9 +24,10 @@ import com.jinelei.numbfish.auth.client.configuration.authentication.instance.Pe
 import com.jinelei.numbfish.auth.client.configuration.authentication.instance.RoleInstance;
 import com.jinelei.numbfish.common.helper.SpringHelper;
 
-@SpringBootApplication(scanBasePackageClasses = {NumbfishAuthClientApplication.class})
+@SuppressWarnings("unused")
 @MapperScan("com.jinelei.numbfish.auth.client.mapper")
-@Import(CoreSecurityAutoConfiguration.class)
+@Import({CoreSecurityAutoConfiguration.class, SpringHelper.class})
+@SpringBootApplication(scanBasePackageClasses = {NumbfishAuthClientApplication.class})
 public class NumbfishAuthClientApplication implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(NumbfishAuthClientApplication.class);
     private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
