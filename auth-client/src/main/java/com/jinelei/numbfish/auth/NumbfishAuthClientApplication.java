@@ -25,7 +25,7 @@ import com.jinelei.numbfish.auth.configuration.authentication.instance.RoleInsta
 import com.jinelei.numbfish.common.helper.SpringHelper;
 
 @SuppressWarnings("unused")
-@MapperScan("com.jinelei.numbfish.auth.client.mapper")
+@MapperScan("com.jinelei.numbfish.auth.mapper")
 @Import({CoreSecurityAutoConfiguration.class, SpringHelper.class})
 @SpringBootApplication(scanBasePackageClasses = {NumbfishAuthClientApplication.class})
 public class NumbfishAuthClientApplication implements CommandLineRunner {
