@@ -1,8 +1,8 @@
 package com.jinelei.numbfish.auth.convertor;
 
-import com.jinelei.numbfish.auth.dto.permission.PermissionCreateRequest;
-import com.jinelei.numbfish.auth.dto.permission.PermissionResponse;
-import com.jinelei.numbfish.auth.dto.permission.PermissionUpdateRequest;
+import com.jinelei.numbfish.auth.dto.PermissionCreateRequest;
+import com.jinelei.numbfish.auth.dto.PermissionResponse;
+import com.jinelei.numbfish.auth.dto.PermissionUpdateRequest;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

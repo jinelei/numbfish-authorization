@@ -7,8 +7,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.jinelei.numbfish.auth.api.permission.PermissionApi;
-import com.jinelei.numbfish.auth.api.role.RoleApi;
+import com.jinelei.numbfish.auth.api.PermissionApi;
+import com.jinelei.numbfish.auth.api.RoleApi;
 import com.jinelei.numbfish.auth.configuration.CoreSecurityAutoConfiguration;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;

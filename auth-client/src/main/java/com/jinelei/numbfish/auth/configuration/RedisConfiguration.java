@@ -1,7 +1,7 @@
 package com.jinelei.numbfish.auth.configuration;
 
-import com.jinelei.numbfish.auth.dto.client.ClientResponse;
-import com.jinelei.numbfish.auth.dto.user.UserResponse;
+import com.jinelei.numbfish.auth.dto.ClientResponse;
+import com.jinelei.numbfish.auth.dto.UserResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

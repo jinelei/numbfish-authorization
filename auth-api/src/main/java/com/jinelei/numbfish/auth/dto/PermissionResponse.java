@@ -1,7 +1,6 @@
-package com.jinelei.numbfish.auth.dto.role;
+package com.jinelei.numbfish.auth.dto;
 
-import com.jinelei.numbfish.auth.dto.permission.PermissionResponse;
-import com.jinelei.numbfish.auth.enumeration.RoleType;
+import com.jinelei.numbfish.auth.enumeration.PermissionType;
 import com.jinelei.numbfish.common.response.TreeResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -11,21 +10,21 @@ import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
-@Schema(description = "角色响应对象")
-public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
-    @Schema(description = "角色实体的唯一标识")
+@Schema(description = "权限响应对象")
+public class PermissionResponse implements TreeResponse<PermissionResponse>, Serializable {
+    @Schema(description = "权限实体的唯一标识")
     private Long id;
-    @Schema(description = "角色名称")
+    @Schema(description = "权限名称")
     private String name;
-    @Schema(description = "角色代码")
+    @Schema(description = "权限代码")
     private String code;
-    @Schema(description = "角色类型")
-    private RoleType type;
-    @Schema(description = "角色排序值")
+    @Schema(description = "权限类型")
+    private PermissionType type;
+    @Schema(description = "权限排序值")
     private Integer sortValue;
-    @Schema(description = "父角色 ID")
+    @Schema(description = "父权限 ID")
     private Long parentId;
-    @Schema(description = "角色备注信息")
+    @Schema(description = "权限备注信息")
     private String remark;
     @Schema(description = "是否启用，0 表示启用，1 表示禁用")
     private Boolean deleted;
@@ -41,15 +40,7 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
     private String deletedUserId;
     @Schema(description = "删除时间")
     private LocalDateTime deletedTime;
-    private List<RoleResponse> children;
-    @Schema(description = "白名单权限列表")
-    protected List<Long> whitePermissionIds;
-    @Schema(description = "白名单权限实体列表")
-    protected List<PermissionResponse> whitePermissions;
-    @Schema(description = "黑名单权限列表")
-    protected List<Long> blackPermissionIds;
-    @Schema(description = "黑名单权限列表")
-    protected List<PermissionResponse> blackPermissions;
+    private List<PermissionResponse> children;
 
     public Long getId() {
         return id;
@@ -75,11 +66,11 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
         this.code = code;
     }
 
-    public RoleType getType() {
+    public PermissionType getType() {
         return type;
     }
 
-    public void setType(RoleType type) {
+    public void setType(PermissionType type) {
         this.type = type;
     }
 
@@ -163,61 +154,29 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
         this.deletedTime = deletedTime;
     }
 
-    public List<RoleResponse> getChildren() {
+    public List<PermissionResponse> getChildren() {
         return children;
     }
 
-    public void setChildren(List<RoleResponse> children) {
+    public void setChildren(List<PermissionResponse> children) {
         this.children = children;
-    }
-
-    public List<Long> getWhitePermissionIds() {
-        return whitePermissionIds;
-    }
-
-    public void setWhitePermissionIds(List<Long> whitePermissionIds) {
-        this.whitePermissionIds = whitePermissionIds;
-    }
-
-    public List<PermissionResponse> getWhitePermissions() {
-        return whitePermissions;
-    }
-
-    public void setWhitePermissions(List<PermissionResponse> whitePermissions) {
-        this.whitePermissions = whitePermissions;
-    }
-
-    public List<Long> getBlackPermissionIds() {
-        return blackPermissionIds;
-    }
-
-    public void setBlackPermissionIds(List<Long> blackPermissionIds) {
-        this.blackPermissionIds = blackPermissionIds;
-    }
-
-    public List<PermissionResponse> getBlackPermissions() {
-        return blackPermissions;
-    }
-
-    public void setBlackPermissions(List<PermissionResponse> blackPermissions) {
-        this.blackPermissions = blackPermissions;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        RoleResponse that = (RoleResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(deleted, that.deleted) && Objects.equals(createdUserId, that.createdUserId) && Objects.equals(createdTime, that.createdTime) && Objects.equals(updatedUserId, that.updatedUserId) && Objects.equals(updatedTime, that.updatedTime) && Objects.equals(deletedUserId, that.deletedUserId) && Objects.equals(deletedTime, that.deletedTime) && Objects.equals(children, that.children) && Objects.equals(whitePermissionIds, that.whitePermissionIds) && Objects.equals(whitePermissions, that.whitePermissions) && Objects.equals(blackPermissionIds, that.blackPermissionIds) && Objects.equals(blackPermissions, that.blackPermissions);
+        PermissionResponse that = (PermissionResponse) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(deleted, that.deleted) && Objects.equals(createdUserId, that.createdUserId) && Objects.equals(createdTime, that.createdTime) && Objects.equals(updatedUserId, that.updatedUserId) && Objects.equals(updatedTime, that.updatedTime) && Objects.equals(deletedUserId, that.deletedUserId) && Objects.equals(deletedTime, that.deletedTime) && Objects.equals(children, that.children);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, code, type, sortValue, parentId, remark, deleted, createdUserId, createdTime, updatedUserId, updatedTime, deletedUserId, deletedTime, children, whitePermissionIds, whitePermissions, blackPermissionIds, blackPermissions);
+        return Objects.hash(id, name, code, type, sortValue, parentId, remark, deleted, createdUserId, createdTime, updatedUserId, updatedTime, deletedUserId, deletedTime, children);
     }
 
     @Override
     public String toString() {
-        return "RoleResponse{" +
+        return "PermissionResponse{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", code='" + code + '\'' +
@@ -233,10 +192,6 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
                 ", deletedUserId='" + deletedUserId + '\'' +
                 ", deletedTime=" + deletedTime +
                 ", children=" + children +
-                ", whitePermissionIds=" + whitePermissionIds +
-                ", whitePermissions=" + whitePermissions +
-                ", blackPermissionIds=" + blackPermissionIds +
-                ", blackPermissions=" + blackPermissions +
                 '}';
     }
 }

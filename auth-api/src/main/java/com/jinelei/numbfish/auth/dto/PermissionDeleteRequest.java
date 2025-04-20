@@ -1,4 +1,4 @@
-package com.jinelei.numbfish.auth.dto.client;
+package com.jinelei.numbfish.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
-@Schema(description = "客户端删除请求对象")
-public class ClientDeleteRequest implements Serializable {
+@Schema(description = "权限删除请求对象")
+public class PermissionDeleteRequest implements Serializable {
     @Schema(description = "id")
     protected Long id;
     @Schema(description = "id列表")
     protected List<Long> ids;
+    @Schema(description = "上级权限编码")
+    private Long parentId;
 
     public Long getId() {
         return id;
@@ -30,23 +32,32 @@ public class ClientDeleteRequest implements Serializable {
         this.ids = ids;
     }
 
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        ClientDeleteRequest that = (ClientDeleteRequest) o;
-        return Objects.equals(id, that.id) && Objects.equals(ids, that.ids);
+        PermissionDeleteRequest that = (PermissionDeleteRequest) o;
+        return Objects.equals(id, that.id) && Objects.equals(ids, that.ids) && Objects.equals(parentId, that.parentId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, ids);
+        return Objects.hash(id, ids, parentId);
     }
 
     @Override
     public String toString() {
-        return "ClientDeleteRequest{" +
+        return "PermissionDeleteRequest{" +
                 "id=" + id +
                 ", ids=" + ids +
+                ", parentId=" + parentId +
                 '}';
     }
 }

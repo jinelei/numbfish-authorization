@@ -1,6 +1,6 @@
-package com.jinelei.numbfish.auth.api.user;
+package com.jinelei.numbfish.auth.api;
 
-import com.jinelei.numbfish.auth.dto.user.*;
+import com.jinelei.numbfish.auth.dto.*;
 import com.jinelei.numbfish.common.request.PageRequest;
 import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;

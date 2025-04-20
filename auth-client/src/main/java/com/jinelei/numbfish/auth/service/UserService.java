@@ -2,8 +2,8 @@ package com.jinelei.numbfish.auth.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jinelei.numbfish.auth.dto.*;
 import com.jinelei.numbfish.auth.entity.UserEntity;
-import com.jinelei.numbfish.auth.dto.user.*;
 
 import java.util.List;
 

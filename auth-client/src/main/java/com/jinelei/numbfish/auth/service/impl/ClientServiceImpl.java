@@ -35,11 +35,11 @@ import com.jinelei.numbfish.auth.service.ClientService;
 import com.jinelei.numbfish.auth.service.PermissionService;
 import com.jinelei.numbfish.auth.service.RolePermissionService;
 import com.jinelei.numbfish.auth.service.RoleService;
-import com.jinelei.numbfish.auth.dto.client.ClientCreateRequest;
-import com.jinelei.numbfish.auth.dto.client.ClientDeleteRequest;
-import com.jinelei.numbfish.auth.dto.client.ClientQueryRequest;
-import com.jinelei.numbfish.auth.dto.client.ClientResponse;
-import com.jinelei.numbfish.auth.dto.client.ClientUpdateRequest;
+import com.jinelei.numbfish.auth.dto.ClientCreateRequest;
+import com.jinelei.numbfish.auth.dto.ClientDeleteRequest;
+import com.jinelei.numbfish.auth.dto.ClientQueryRequest;
+import com.jinelei.numbfish.auth.dto.ClientResponse;
+import com.jinelei.numbfish.auth.dto.ClientUpdateRequest;
 import com.jinelei.numbfish.common.exception.InvalidArgsException;
 
 @SuppressWarnings("unused")

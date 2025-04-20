@@ -48,13 +48,13 @@ import com.jinelei.numbfish.auth.service.RolePermissionService;
 import com.jinelei.numbfish.auth.service.RoleService;
 import com.jinelei.numbfish.auth.service.UserRoleService;
 import com.jinelei.numbfish.auth.service.UserService;
-import com.jinelei.numbfish.auth.dto.user.UserCreateRequest;
-import com.jinelei.numbfish.auth.dto.user.UserDeleteRequest;
-import com.jinelei.numbfish.auth.dto.user.UserLoginRequest;
-import com.jinelei.numbfish.auth.dto.user.UserQueryRequest;
-import com.jinelei.numbfish.auth.dto.user.UserResponse;
-import com.jinelei.numbfish.auth.dto.user.UserUpdatePasswordRequest;
-import com.jinelei.numbfish.auth.dto.user.UserUpdateRequest;
+import com.jinelei.numbfish.auth.dto.UserCreateRequest;
+import com.jinelei.numbfish.auth.dto.UserDeleteRequest;
+import com.jinelei.numbfish.auth.dto.UserLoginRequest;
+import com.jinelei.numbfish.auth.dto.UserQueryRequest;
+import com.jinelei.numbfish.auth.dto.UserResponse;
+import com.jinelei.numbfish.auth.dto.UserUpdatePasswordRequest;
+import com.jinelei.numbfish.auth.dto.UserUpdateRequest;
 import com.jinelei.numbfish.common.exception.InvalidArgsException;
 
 @SuppressWarnings("unused")

@@ -1,9 +1,9 @@
 package com.jinelei.numbfish.auth.convertor;
 
 import com.jinelei.numbfish.auth.entity.UserEntity;
-import com.jinelei.numbfish.auth.dto.user.UserCreateRequest;
-import com.jinelei.numbfish.auth.dto.user.UserResponse;
-import com.jinelei.numbfish.auth.dto.user.UserUpdateRequest;
+import com.jinelei.numbfish.auth.dto.UserCreateRequest;
+import com.jinelei.numbfish.auth.dto.UserResponse;
+import com.jinelei.numbfish.auth.dto.UserUpdateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;

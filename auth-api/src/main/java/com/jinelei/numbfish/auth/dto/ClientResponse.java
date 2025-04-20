@@ -1,6 +1,5 @@
-package com.jinelei.numbfish.auth.dto.client;
+package com.jinelei.numbfish.auth.dto;
 
-import com.jinelei.numbfish.auth.dto.permission.PermissionResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;

@@ -1,4 +1,4 @@
-package com.jinelei.numbfish.auth.dto.role;
+package com.jinelei.numbfish.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -11,8 +11,11 @@ import java.util.Objects;
 import com.jinelei.numbfish.auth.enumeration.RoleType;
 
 @SuppressWarnings("unused")
-@Schema(description = "角色创建请求对象")
-public class RoleCreateRequest implements Serializable {
+@Schema(description = "角色修改请求对象")
+public class RoleUpdateRequest implements Serializable {
+    @NotNull(message = "角色id不能为空")
+    @Schema(description = "id")
+    protected Long id;
     @NotBlank(message = "角色名称不能为空")
     @Schema(description = "角色名称")
     private String name;
@@ -34,6 +37,14 @@ public class RoleCreateRequest implements Serializable {
     @NotNull(message = "黑名单权限列表不能为空")
     @Schema(description = "黑名单权限列表")
     protected List<Long> blackPermissionIds;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -102,19 +113,20 @@ public class RoleCreateRequest implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        RoleCreateRequest that = (RoleCreateRequest) o;
-        return Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(whitePermissionIds, that.whitePermissionIds) && Objects.equals(blackPermissionIds, that.blackPermissionIds);
+        RoleUpdateRequest that = (RoleUpdateRequest) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(whitePermissionIds, that.whitePermissionIds) && Objects.equals(blackPermissionIds, that.blackPermissionIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, code, type, sortValue, parentId, remark, whitePermissionIds, blackPermissionIds);
+        return Objects.hash(id, name, code, type, sortValue, parentId, remark, whitePermissionIds, blackPermissionIds);
     }
 
     @Override
     public String toString() {
-        return "RoleCreateRequest{" +
-                "name='" + name + '\'' +
+        return "RoleUpdateRequest{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", code='" + code + '\'' +
                 ", type=" + type +
                 ", sortValue=" + sortValue +
@@ -124,4 +136,5 @@ public class RoleCreateRequest implements Serializable {
                 ", blackPermissionIds=" + blackPermissionIds +
                 '}';
     }
+
 }

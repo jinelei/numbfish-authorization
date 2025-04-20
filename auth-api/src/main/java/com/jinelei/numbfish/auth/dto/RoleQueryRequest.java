@@ -1,4 +1,4 @@
-package com.jinelei.numbfish.auth.dto.role;
+package com.jinelei.numbfish.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

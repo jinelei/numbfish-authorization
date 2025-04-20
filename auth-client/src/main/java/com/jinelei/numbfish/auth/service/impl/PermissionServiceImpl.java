@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jinelei.numbfish.auth.dto.permission.*;
+import com.jinelei.numbfish.auth.dto.*;
 import com.jinelei.numbfish.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.numbfish.common.exception.NotExistException;
 import com.jinelei.numbfish.common.helper.Snowflake;

@@ -1,4 +1,4 @@
-package com.jinelei.numbfish.auth.dto.permission;
+package com.jinelei.numbfish.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -10,11 +10,8 @@ import java.util.Objects;
 import com.jinelei.numbfish.auth.enumeration.PermissionType;
 
 @SuppressWarnings("unused")
-@Schema(description = "权限修改请求对象")
-public class PermissionUpdateRequest implements Serializable {
-    @NotNull(message = "权限id不能为空")
-    @Schema(description = "id")
-    protected Long id;
+@Schema(description = "权限创建请求对象")
+public class PermissionCreateRequest implements Serializable {
     @NotBlank(message = "权限名称不能为空")
     @Schema(description = "权限名称")
     private String name;
@@ -30,14 +27,6 @@ public class PermissionUpdateRequest implements Serializable {
     private Long parentId;
     @Schema(description = "权限备注")
     protected String remark;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -90,20 +79,19 @@ public class PermissionUpdateRequest implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        PermissionUpdateRequest that = (PermissionUpdateRequest) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark);
+        PermissionCreateRequest that = (PermissionCreateRequest) o;
+        return Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, code, type, sortValue, parentId, remark);
+        return Objects.hash(name, code, type, sortValue, parentId, remark);
     }
 
     @Override
     public String toString() {
-        return "PermissionUpdateRequest{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+        return "PermissionCreateRequest{" +
+                "name='" + name + '\'' +
                 ", code='" + code + '\'' +
                 ", type=" + type +
                 ", sortValue=" + sortValue +
@@ -111,5 +99,4 @@ public class PermissionUpdateRequest implements Serializable {
                 ", remark='" + remark + '\'' +
                 '}';
     }
-
 }

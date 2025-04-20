@@ -2,7 +2,7 @@ package com.jinelei.numbfish.auth.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jinelei.numbfish.auth.dto.permission.*;
+import com.jinelei.numbfish.auth.dto.*;
 import com.jinelei.numbfish.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.numbfish.auth.entity.PermissionEntity;
 

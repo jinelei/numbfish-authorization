@@ -28,8 +28,8 @@ import org.springframework.security.web.util.matcher.*;
 import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jinelei.numbfish.auth.dto.client.ClientResponse;
-import com.jinelei.numbfish.auth.dto.permission.PermissionResponse;
+import com.jinelei.numbfish.auth.dto.ClientResponse;
+import com.jinelei.numbfish.auth.dto.PermissionResponse;
 import com.jinelei.numbfish.auth.property.AuthorizationProperty;
 import com.jinelei.numbfish.common.wrapper.RepeatRequestWrapper;
 

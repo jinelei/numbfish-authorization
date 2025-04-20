@@ -1,4 +1,4 @@
-package com.jinelei.numbfish.auth.dto.permission;
+package com.jinelei.numbfish.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
-@Schema(description = "权限删除请求对象")
-public class PermissionDeleteRequest implements Serializable {
+@Schema(description = "角色删除请求对象")
+public class RoleDeleteRequest implements Serializable {
     @Schema(description = "id")
     protected Long id;
     @Schema(description = "id列表")
     protected List<Long> ids;
-    @Schema(description = "上级权限编码")
+    @Schema(description = "上级角色编码")
     private Long parentId;
 
     public Long getId() {
@@ -43,7 +43,7 @@ public class PermissionDeleteRequest implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        PermissionDeleteRequest that = (PermissionDeleteRequest) o;
+        RoleDeleteRequest that = (RoleDeleteRequest) o;
         return Objects.equals(id, that.id) && Objects.equals(ids, that.ids) && Objects.equals(parentId, that.parentId);
     }
 

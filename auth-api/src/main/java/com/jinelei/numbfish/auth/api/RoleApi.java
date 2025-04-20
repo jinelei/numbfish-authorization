@@ -1,6 +1,6 @@
-package com.jinelei.numbfish.auth.api.role;
+package com.jinelei.numbfish.auth.api;
 
-import com.jinelei.numbfish.auth.dto.role.*;
+import com.jinelei.numbfish.auth.dto.*;
 import com.jinelei.numbfish.auth.permission.declaration.RoleDeclaration;
 import com.jinelei.numbfish.common.request.PageRequest;
 import com.jinelei.numbfish.common.view.BaseView;
