@@ -17,6 +17,7 @@ import com.jinelei.numbfish.auth.service.RoleService;
 import com.jinelei.numbfish.auth.enumeration.RolePermissionType;
 import com.jinelei.numbfish.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.numbfish.auth.permission.declaration.RoleDeclaration;
+import com.jinelei.numbfish.common.entity.BaseEntity;
 import com.jinelei.numbfish.common.exception.InvalidArgsException;
 import com.jinelei.numbfish.common.exception.NotExistException;
 import com.jinelei.numbfish.common.helper.Snowflake;

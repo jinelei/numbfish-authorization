@@ -29,6 +29,7 @@ import com.jinelei.numbfish.auth.convertor.PermissionConvertor;
 import com.jinelei.numbfish.auth.entity.PermissionEntity;
 import com.jinelei.numbfish.auth.mapper.PermissionMapper;
 import com.jinelei.numbfish.auth.service.PermissionService;
+import com.jinelei.numbfish.common.entity.BaseEntity;
 import com.jinelei.numbfish.common.exception.InvalidArgsException;
 
 @SuppressWarnings("unused")
