@@ -63,10 +63,8 @@ public class NumbfishAuthClientApplication {
                     .map(n -> "%s: %s".formatted(n, e.getProperty(n)))
                     .collect(Collectors.joining("\n"));
             log.info("""
-                    \n
+                    System Property:\n
                     ----------------------------------------------------------
-                    \t\
-                    Config:
                     {}
                     ----------------------------------------------------------""", content);
         }
