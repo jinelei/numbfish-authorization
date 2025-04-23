@@ -2,8 +2,8 @@ package com.jinelei.numbfish.auth.enumeration;
 
 @SuppressWarnings("unused")
 public enum RoleType {
-    NORMAL(1, "普通用户"),
-    ADMIN(2, "管理员");
+    NORMAL(0, "普通用户"),
+    ADMIN(1, "管理员");
 
     private final int value;
     private final String description;

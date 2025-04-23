@@ -2,9 +2,9 @@ package com.jinelei.numbfish.auth.enumeration;
 
 @SuppressWarnings("unused")
 public enum AuthorizeType {
-    USER(0, "用户模式"),
-    CLIENT(1, "客户端模式"),
-    UNKNOWN(-1, "未知模式");
+    UNKNOWN(0, "未知模式"),
+    USER(1, "用户模式"),
+    CLIENT(2, "客户端模式"),;
     private final int value;
     private final String name;
 

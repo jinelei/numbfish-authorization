@@ -2,9 +2,9 @@ package com.jinelei.numbfish.auth.enumeration;
 
 @SuppressWarnings("unused")
 public enum PermissionType {
-    DIRECTORY(1, "目录"),
-    MENU(2, "菜单"),
-    ACTION(3, "动作");
+    DIRECTORY(0, "目录"),
+    MENU(1, "菜单"),
+    ACTION(2, "动作");
 
     private final int value;
     private final String description;

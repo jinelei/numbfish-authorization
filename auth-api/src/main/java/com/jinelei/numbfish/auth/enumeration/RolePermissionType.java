@@ -2,8 +2,8 @@ package com.jinelei.numbfish.auth.enumeration;
 
 @SuppressWarnings("unused")
 public enum RolePermissionType {
-    WHITE(1, "白名单"),
-    BLACK(2, "黑名单");
+    WHITE(0, "白名单"),
+    BLACK(1, "黑名单");
 
     private final int value;
     private final String description;
