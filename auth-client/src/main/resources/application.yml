@@ -68,6 +68,7 @@ numbfish:
       urls:
         - /webjars
         - /doc.html
+        - /user/login
         - /setup/**
         - /favicon.ico
         - /v3/api-docs/**
