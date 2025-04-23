@@ -2,35 +2,33 @@ package com.jinelei.numbfish.auth;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.jinelei.numbfish.auth.api.PermissionApi;
-import com.jinelei.numbfish.auth.api.RoleApi;
 import com.jinelei.numbfish.auth.configuration.CoreSecurityAutoConfiguration;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.Environment;
 
-import com.jinelei.numbfish.auth.configuration.authentication.instance.PermissionInstance;
-import com.jinelei.numbfish.auth.configuration.authentication.instance.RoleInstance;
 import com.jinelei.numbfish.common.helper.SpringHelper;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
 
 @SuppressWarnings("unused")
 @MapperScan("com.jinelei.numbfish.auth.mapper")
 @Import({CoreSecurityAutoConfiguration.class, SpringHelper.class})
 @SpringBootApplication(scanBasePackageClasses = {NumbfishAuthClientApplication.class})
-public class NumbfishAuthClientApplication implements CommandLineRunner {
+public class NumbfishAuthClientApplication {
     private static final Logger log = LoggerFactory.getLogger(NumbfishAuthClientApplication.class);
-    private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) throws UnknownHostException {
         ConfigurableApplicationContext run = SpringApplication.run(NumbfishAuthClientApplication.class, args);
@@ -53,14 +51,25 @@ public class NumbfishAuthClientApplication implements CommandLineRunner {
                 env.getProperty("server.port"),
                 InetAddress.getLocalHost().getHostAddress(),
                 env.getProperty("server.port"));
-    }
-
-    @Override
-    public void run(String... args) {
-        executorService.schedule(() -> {
-            SpringHelper.getBean(PermissionApi.class).regist(List.of(PermissionInstance.class.getEnumConstants()));
-            SpringHelper.getBean(RoleApi.class).regist(List.of(RoleInstance.class.getEnumConstants()));
-        }, 1, TimeUnit.MINUTES);
+        if (env instanceof AbstractEnvironment e) {
+            final MutablePropertySources propertySources = e.getPropertySources();
+            String content = propertySources.stream()
+                    .filter(p -> p.getName().startsWith("Config resource"))
+                    .map(PropertySource::getSource)
+                    .filter(p -> Map.class.isAssignableFrom(p.getClass()))
+                    .map(p -> (Map<String, Object>) p)
+                    .map(Map::keySet)
+                    .flatMap(Collection::stream)
+                    .map(n -> "%s: %s".formatted(n, e.getProperty(n)))
+                    .collect(Collectors.joining("\n"));
+            log.info("""
+                    \n
+                    ----------------------------------------------------------
+                    \t\
+                    Config:
+                    {}
+                    ----------------------------------------------------------""", content);
+        }
     }
 
 }
