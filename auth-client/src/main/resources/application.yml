@@ -1,5 +1,7 @@
 server:
   port: ${SERVER_PORT:9999}
+  servlet:
+    context-path: ${SERVER_CONTEXT:/auth}
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -8,7 +10,7 @@ springdoc:
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
-      packages-to-scan: com.jinelei.numbfish.auth.client.controller
+      packages-to-scan: com.jinelei.numbfish.auth.controller
 
 # knife4j的增强配置，不需要增强可以不配
 knife4j:
@@ -27,6 +29,7 @@ knife4j:
 logging:
   level:
     root: warn
+    org.springframework.boot.web.embedded.tomcat: info
     com.jinelei: debug
 
 spring:
@@ -66,7 +69,7 @@ numbfish:
       url: /user/login
     ignore:
       urls:
-        - /webjars
+        - /webjars/**
         - /doc.html
         - /user/login
         - /setup/**
