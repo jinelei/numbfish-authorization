@@ -8,14 +8,11 @@ CREATE TABLE user_role (
     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_user_id VARCHAR(255) COMMENT '更新人用户 ID',
     updated_time TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    deleted TINYINT(1) DEFAULT 0 COMMENT '是否启用，0 表示启用，1 表示禁用',
-    deleted_user_id VARCHAR(255) COMMENT '删除人用户 ID',
-    deleted_time TIMESTAMP COMMENT '删除时间',
     FOREIGN KEY (role_id) REFERENCES role(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
     FOREIGN KEY (user_id) REFERENCES user(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    UNIQUE KEY uk_user_role_deleted (role_id, user_id, deleted)
+    UNIQUE KEY uk_user_role(role_id, user_id)
 ) COMMENT = '用户和角色关联';

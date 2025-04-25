@@ -11,5 +11,5 @@ CREATE TABLE client (
     deleted TINYINT(1) DEFAULT 0 COMMENT '是否启用，0 表示启用，1 表示禁用',
     deleted_user_id VARCHAR(255) COMMENT '删除人客户端 ID',
     deleted_time TIMESTAMP COMMENT '删除时间',
-    UNIQUE KEY uk_access_key_deleted (access_key, deleted)
+    UNIQUE KEY uk_access_key(access_key)
 ) COMMENT = '客户端实体';

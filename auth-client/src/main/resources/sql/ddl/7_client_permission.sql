@@ -8,14 +8,11 @@ CREATE TABLE client_permission (
     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_user_id VARCHAR(255) COMMENT '更新人用户 ID',
     updated_time TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    deleted TINYINT(1) DEFAULT 0 COMMENT '是否启用，0 表示启用，1 表示禁用',
-    deleted_user_id VARCHAR(255) COMMENT '删除人用户 ID',
-    deleted_time TIMESTAMP COMMENT '删除时间',
     FOREIGN KEY (client_id) REFERENCES client(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
     FOREIGN KEY (permission_id) REFERENCES permission(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    UNIQUE KEY uk_client_permission_deleted (client_id, permission_id, deleted)
+    UNIQUE KEY uk_client_permission(client_id, permission_id)
 ) COMMENT = '客户端和权限关联';

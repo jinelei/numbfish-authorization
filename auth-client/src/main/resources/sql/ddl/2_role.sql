@@ -10,11 +10,8 @@ CREATE TABLE role (
     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_user_id VARCHAR(255) COMMENT '更新人用户 ID',
     updated_time TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    deleted TINYINT(1) DEFAULT 0 COMMENT '是否启用，0 表示启用，1 表示禁用',
-    deleted_user_id VARCHAR(255) COMMENT '删除人用户 ID',
-    deleted_time TIMESTAMP COMMENT '删除时间',
-    UNIQUE KEY uk_name_deleted (name, deleted),
-    UNIQUE KEY uk_code_deleted (code, deleted),
+    UNIQUE KEY uk_name(name),
+    UNIQUE KEY uk_code(code),
     FOREIGN KEY (parent_id) REFERENCES role(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
