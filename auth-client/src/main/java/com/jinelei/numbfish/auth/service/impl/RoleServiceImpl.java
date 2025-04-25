@@ -41,6 +41,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
+import static org.springframework.data.util.Optionals.ifPresentOrElse;
+
 @SuppressWarnings("unused")
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
@@ -58,15 +60,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
     @Override
     public void create(RoleCreateRequest request) {
         final RoleEntity entity = roleConvertor.entityFromCreateRequest(request);
-        Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("权限信息不合法"));
-        Optional.of(entity).map(RoleEntity::getParentId)
-                .ifPresentOrElse(parentId -> {
-                    Optional.ofNullable(baseMapper.selectById(parentId))
-                            .orElseThrow(() -> new NotExistException("父级权限不存在"));
-                    entity.setSortValue(Optional.ofNullable(request.getSortValue())
-                            .orElseGet(() -> baseMapper.selectMaxSortValue(parentId) + 1));
-                }, () -> entity.setSortValue(Optional.ofNullable(request.getSortValue())
-                        .orElseGet(() -> baseMapper.selectMaxSortValue() + 1)));
+        Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("角色信息不合法"));
+        Long parentId = Optional.of(entity).map(RoleEntity::getParentId).orElse(null);
+        Optional.ofNullable(parentId).map(baseMapper::selectById).orElseThrow(() -> new NotExistException("父级角色不存在"));
+        entity.setSortValue(Optional.ofNullable(request.getSortValue()).orElseGet(() -> baseMapper.selectMaxSortValue(parentId) + 1));
         int inserted = baseMapper.insert(entity);
         log.debug("创建角色: {}", inserted);
         Optional.ofNullable(request.getWhitePermissionIds())
@@ -99,7 +96,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
                             .insert(rolePermissionEntities);
                     log.debug("创建角色权限关系(黑名单): {}", insert.size());
                 });
-        Assert.state(inserted == 1, "权限创建失败");
+        Assert.state(inserted == 1, "角色创建失败");
     }
 
     @Override
@@ -107,7 +104,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
         if (Objects.nonNull(request.getId())) {
             int deleted = baseMapper.deleteById(request.getId());
             log.debug("删除角色: {}", deleted);
-            Assert.state(deleted == 1, "权限删除失败");
+            Assert.state(deleted == 1, "角色删除失败");
             LambdaUpdateWrapper<RolePermissionEntity> wrapper = Wrappers
                     .lambdaUpdate(RolePermissionEntity.class)
                     .eq(RolePermissionEntity::getRoleId, request.getId());
@@ -259,10 +256,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
                 .filter(i -> Objects.nonNull(i.getParent()))
                 .collect(Collectors.groupingBy(i -> i.getParent()));
         if (rootNodes.isEmpty()) {
-            log.error("权限树错误: 缺失根节点");
+            log.error("角色树错误: 缺失根节点");
         }
 
-        // 查询所有的权限列表
+        // 查询所有的角色列表
         List<PermissionDeclaration<?>> permissions = new CopyOnWriteArrayList<>();
         roles.parallelStream()
                 .map(i -> i.getPermissions())
@@ -301,7 +298,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
                 List<RoleEntity> list = existEntities.parallelStream()
                         .filter(i -> i.getCode().equals(node.getCode())).toList();
                 if (list.size() > 1) {
-                    log.error("查询权限编码不唯一: {}", node.getCode());
+                    log.error("查询角色编码不唯一: {}", node.getCode());
                 }
                 final RoleEntity entity = fromDeclaration(
                         list.stream().findFirst().orElse(new RoleEntity()),

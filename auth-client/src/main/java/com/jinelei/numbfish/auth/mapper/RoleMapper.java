@@ -14,10 +14,6 @@ import java.util.List;
 @Mapper
 public interface RoleMapper extends BaseMapper<RoleEntity> {
 
-    @Select("select IFNULL(MAX(sort_value), 0) from role")
-    int selectMaxSortValue();
-
-    @Select("select IFNULL(MAX(sort_value), 0) from role where parent_id = #{parentId}")
     int selectMaxSortValue(@Param("parentId") Long parentId);
 
     List<RoleEntity> getRoleTreeByIds(@Param("ids") List<Long> ids, @Param("mode") TreeBuildMode mode);

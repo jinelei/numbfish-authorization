@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jinelei.numbfish.auth.dto.*;
+import com.jinelei.numbfish.auth.entity.RoleEntity;
 import com.jinelei.numbfish.auth.permission.declaration.PermissionDeclaration;
 import com.jinelei.numbfish.common.exception.NotExistException;
 import com.jinelei.numbfish.common.helper.Snowflake;
@@ -46,14 +47,9 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     public void create(PermissionCreateRequest request) {
         final PermissionEntity entity = permissionConvertor.entityFromCreateRequest(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("权限信息不合法"));
-        Optional.of(entity).map(PermissionEntity::getParentId)
-                .ifPresentOrElse(parentId -> {
-                    Optional.ofNullable(baseMapper.selectById(parentId))
-                            .orElseThrow(() -> new NotExistException("父级权限不存在"));
-                    entity.setSortValue(Optional.ofNullable(request.getSortValue())
-                            .orElseGet(() -> baseMapper.selectMaxSortValue(parentId) + 1));
-                }, () -> entity.setSortValue(Optional.ofNullable(request.getSortValue())
-                        .orElseGet(() -> baseMapper.selectMaxSortValue() + 1)));
+        Long parentId = Optional.of(entity).map(PermissionEntity::getParentId).orElse(null);
+        Optional.ofNullable(parentId).map(baseMapper::selectById).orElseThrow(() -> new NotExistException("父级权限不存在"));
+        entity.setSortValue(Optional.ofNullable(request.getSortValue()).orElseGet(() -> baseMapper.selectMaxSortValue(parentId) + 1));
         int inserted = baseMapper.insert(entity);
         Assert.state(inserted == 1, "权限创建失败");
     }
