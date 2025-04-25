@@ -1,11 +1,15 @@
 package com.jinelei.numbfish.auth.controller;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import com.jinelei.numbfish.auth.dto.SetupRequest;
 import com.jinelei.numbfish.auth.service.SetupService;
+import com.jinelei.numbfish.common.view.BaseView;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,9 +28,19 @@ public class SetupController {
         this.setupService = setupService;
     }
 
-    @RequestMapping("/init")
-    public void init() {
+    @PostMapping("/check")
+    public BaseView<Boolean> checkIsSetup() {
+        log.info("checkIsSetup");
+        return new BaseView<>(setupService.checkIsSetup());
+    }
+
+    @PostMapping("/init")
+    public BaseView<Boolean> init(@RequestBody SetupRequest request) {
         log.info("init");
+        if (!setupService.init(request)) {
+            throw new RuntimeException("初始化失败");
+        }
+        return new BaseView<>(true);
     }
 
 }
