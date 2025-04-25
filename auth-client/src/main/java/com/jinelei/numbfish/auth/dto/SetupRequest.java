@@ -1,7 +1,6 @@
 package com.jinelei.numbfish.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,10 +8,8 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 @Schema(description = "用户权限初始化请求对象")
 public class SetupRequest implements Serializable {
-    @NotBlank(message = "用户名称不能为空")
     @Schema(description = "用户名称")
     private String username;
-    @NotBlank(message = "用户密码不能为空")
     @Schema(description = "密码")
     private String password;
     @Schema(description = "用户头像")
