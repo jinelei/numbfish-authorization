@@ -1,6 +1,5 @@
 package com.jinelei.numbfish.auth.configuration;
 
-import io.swagger.v3.oas.models.Components;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,8 +21,7 @@ public class SwaggerConfiguration {
                         .license(new License().name("Apache 2.0").url("https://jinelei.com/auth/")))
                 .externalDocs(new ExternalDocumentation()
                         .description("外部文档")
-                        .url("https://springshop.wiki.github.org/docs"))
-                .components(new Components());
+                        .url("https://springshop.wiki.github.org/docs"));
     }
 
 }
