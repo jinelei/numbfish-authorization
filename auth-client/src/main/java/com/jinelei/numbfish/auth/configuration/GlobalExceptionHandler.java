@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BaseException.class)
     public BaseView<String> baseExceptionHandler(BaseException exception) {
         log.error("baseException: {}\n{}", exception.getMessage(), ThrowableStackTraceHelper.getStackTraceAsString(exception));
-        return new BaseView<>(exception.getCode(), exception.getCause());
+        return new BaseView<>(exception.getCode(), exception.getMessage(), null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

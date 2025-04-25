@@ -8,6 +8,7 @@ import com.jinelei.numbfish.auth.service.PermissionService;
 import com.jinelei.numbfish.auth.service.RoleService;
 import com.jinelei.numbfish.auth.service.SetupService;
 import com.jinelei.numbfish.auth.service.UserService;
+import com.jinelei.numbfish.common.exception.BaseException;
 import com.jinelei.numbfish.common.exception.InternalException;
 import com.jinelei.numbfish.common.exception.InvalidArgsException;
 import org.apache.ibatis.session.SqlSession;
@@ -15,7 +16,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -37,14 +37,12 @@ public class SetupServiceImpl implements SetupService {
     private final RoleService roleService;
     private final UserService userService;
     private final SqlSessionFactory sqlSessionFactory;
-    private final PasswordEncoder passwordEncoder;
 
-    public SetupServiceImpl(RoleService roleService, PermissionService permissionService, UserService userService, SqlSessionFactory sqlSessionFactory, PasswordEncoder passwordEncoder) {
+    public SetupServiceImpl(RoleService roleService, PermissionService permissionService, UserService userService, SqlSessionFactory sqlSessionFactory) {
         this.roleService = roleService;
         this.permissionService = permissionService;
         this.userService = userService;
         this.sqlSessionFactory = sqlSessionFactory;
-        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -137,8 +135,9 @@ public class SetupServiceImpl implements SetupService {
 
     @Override
     public Boolean init(SetupRequest request) {
-        try (SqlSession session = sqlSessionFactory.openSession()) {
-            final Connection connection = session.getConnection();
+        try (SqlSession session = sqlSessionFactory.openSession();
+             Connection connection = session.getConnection()) {
+            connection.setAutoCommit(false);
             boolean result = checkTableExist("permission", connection) &&
                     checkTableExist("role", connection) &&
                     checkTableExist("user", connection) &&
@@ -147,17 +146,15 @@ public class SetupServiceImpl implements SetupService {
                     checkTableExist("user_role", connection) &&
                     checkTableExist("client_permission", connection);
             if (!result) {
-                throw new InvalidArgsException("数据库表已经存在，无需初始化");
+                // 创建表
+                createTable(loadDdlSql("ddl", "1_permission.sql"), connection);
+                createTable(loadDdlSql("ddl", "2_role.sql"), connection);
+                createTable(loadDdlSql("ddl", "3_user.sql"), connection);
+                createTable(loadDdlSql("ddl", "4_client.sql"), connection);
+                createTable(loadDdlSql("ddl", "5_role_permission.sql"), connection);
+                createTable(loadDdlSql("ddl", "6_user_role.sql"), connection);
+                createTable(loadDdlSql("ddl", "7_client_permission.sql"), connection);
             }
-
-            // 创建表
-            createTable(loadDdlSql("ddl", "1_permission.sql"), connection);
-            createTable(loadDdlSql("ddl", "2_role.sql"), connection);
-            createTable(loadDdlSql("ddl", "3_user.sql"), connection);
-            createTable(loadDdlSql("ddl", "4_client.sql"), connection);
-            createTable(loadDdlSql("ddl", "5_role_permission.sql"), connection);
-            createTable(loadDdlSql("ddl", "6_user_role.sql"), connection);
-            createTable(loadDdlSql("ddl", "7_client_permission.sql"), connection);
 
             // 初始化数据
 
@@ -173,7 +170,6 @@ public class SetupServiceImpl implements SetupService {
                     .map(SetupRequest::getPassword)
                     .map(String::trim)
                     .filter(StringUtils::hasLength)
-                    .map(passwordEncoder::encode)
                     .orElseThrow(() -> new InvalidArgsException("用户密码不能为空")));
             createUserRequest.setRemark("超级管理员");
             Optional.of(request)
@@ -193,7 +189,12 @@ public class SetupServiceImpl implements SetupService {
             roleService.regist(List.of(RoleInstance.class.getEnumConstants()));
 
             // 提交事务
+            connection.commit();
             session.commit();
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new InternalException("初始化系统失败", e);
         }
         return true;
     }
