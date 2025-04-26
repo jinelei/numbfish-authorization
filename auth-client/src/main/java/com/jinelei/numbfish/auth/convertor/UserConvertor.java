@@ -42,9 +42,9 @@ public interface UserConvertor {
     UserResponse entityToResponse(UserEntity source);
 
     @Mappings(value = {
-            @Mapping(target = "password", ignore = true),
+            @Mapping(target = "phone", ignore = true),
+            @Mapping(target = "email", ignore = true),
             @Mapping(target = "roles", ignore = true),
-            @Mapping(target = "roleIds", ignore = true),
             @Mapping(target = "permissions", ignore = true)
     })
     UserInfoResponse entityToInfoResponse(UserEntity source);

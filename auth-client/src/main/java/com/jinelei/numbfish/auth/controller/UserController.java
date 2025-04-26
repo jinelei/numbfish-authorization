@@ -140,7 +140,7 @@ public class UserController implements UserApi {
     @ApiOperationSupport(order = 10)
     @Operation(summary = "用户信息")
     @PostMapping("/info")
-    @PreAuthorize("hasAuthority('USER_INFO')")
+    @PreAuthorize("hasAuthority('USER_DETAIL')")
     public BaseView<UserInfoResponse> info() {
         UserInfoResponse info = userService.info();
         return new BaseView<>("查询成功", info);

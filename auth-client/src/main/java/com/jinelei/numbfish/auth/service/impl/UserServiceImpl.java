@@ -1,19 +1,18 @@
 package com.jinelei.numbfish.auth.service.impl;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import com.jinelei.numbfish.auth.configuration.SecurityConfiguration;
 import com.jinelei.numbfish.auth.configuration.authentication.TokenAuthenticationToken;
 import com.jinelei.numbfish.auth.configuration.authentication.TokenCacheKeyGenerator;
 import com.jinelei.numbfish.auth.dto.*;
+import com.jinelei.numbfish.auth.enumeration.TreeBuildMode;
+import com.jinelei.numbfish.auth.mapper.PermissionMapper;
+import com.jinelei.numbfish.auth.mapper.RoleMapper;
 import com.jinelei.numbfish.auth.property.AdminProperty;
 import com.jinelei.numbfish.auth.property.AuthorizationProperty;
+import com.jinelei.numbfish.common.entity.BaseEntity;
 import org.apache.ibatis.executor.BatchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -259,6 +258,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         if (authentication instanceof TokenAuthenticationToken token) {
             UserEntity userEntity = getById(token.getUserId());
             UserInfoResponse userInfoResponse = userConvertor.entityToInfoResponse(userEntity);
+            List<RoleEntity> roleByUser = getRoleListByUserId(userEntity);
+            List<PermissionEntity> permissionByUser = getPermissionListByUserId(userEntity, roleByUser);
+            userInfoResponse.setRoles(roleService.convertTree(roleByUser));
+            userInfoResponse.setPermissions(permissionService.convertTree(permissionByUser));
             return userInfoResponse;
         }
         return null;
@@ -271,31 +274,49 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         UserEntity userEntity = baseMapper.selectOne(wrapper);
         Optional.ofNullable(userEntity).orElseThrow(() -> new UsernameNotFoundException("用户不存在"));
         final Collection<GrantedAuthority> authorities = new ArrayList<>();
-        if (Optional.ofNullable(property).map(AuthorizationProperty::getAdmin).map(AdminProperty::getUsername).map(username::equals).orElse(false)) {
+        List<RoleEntity> roleByUser = getRoleListByUserId(userEntity);
+        List<PermissionEntity> permissionByUser = getPermissionListByUserId(userEntity, roleByUser);
+        roleByUser.stream().map(RoleEntity::getCode).map(i -> "ROLE_" + i).map(SimpleGrantedAuthority::new).forEach(authorities::add);
+        permissionByUser.stream().map(PermissionEntity::getCode).map(SimpleGrantedAuthority::new).forEach(authorities::add);
+        return new User(userEntity.getUsername(), userEntity.getPassword(), authorities);
+    }
+
+    private Boolean isAdmin(UserEntity user) {
+        final String username = Optional.ofNullable(user).map(UserEntity::getUsername).orElseThrow(() -> new InvalidArgsException("用户不存在"));
+        return Optional.ofNullable(property).map(AuthorizationProperty::getAdmin).map(AdminProperty::getUsername).map(username::equals).orElse(false);
+    }
+
+    private List<RoleEntity> getRoleListByUserId(UserEntity user) {
+        final Boolean isAdmin = isAdmin(user);
+        final Set<Long> roleIds = new HashSet<>();
+        if (isAdmin) {
             final List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class));
-            if (!roleEntities.isEmpty()) {
-                roleEntities.parallelStream().map(RoleEntity::getCode).map(i -> "ROLE_" + i).map(SimpleGrantedAuthority::new).forEach(authorities::add);
-            }
-            final List<PermissionEntity> permissionEntities = permissionService.list(Wrappers.lambdaQuery(PermissionEntity.class));
-            if (!permissionEntities.isEmpty()) {
-                permissionEntities.parallelStream().map(PermissionEntity::getCode).map(SimpleGrantedAuthority::new).forEach(authorities::add);
-            }
+            roleEntities.parallelStream().map(BaseEntity::getId).forEach(roleIds::add);
         } else {
             // 查询用户关联的所有的角色
-            final List<UserRoleEntity> userRoleEntities = userRoleService.list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, userEntity.getId()));
-            final List<Long> roleIds = userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).toList();
-            if (!roleIds.isEmpty()) {
-                final List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class).in(RoleEntity::getId, roleIds));
-                roleEntities.parallelStream().map(RoleEntity::getCode).map(i -> "ROLE_" + i).map(SimpleGrantedAuthority::new).forEach(authorities::add);
+            final List<UserRoleEntity> userRoleEntities = userRoleService.list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, user.getId()));
+            userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).forEach(roleIds::add);
+        }
+        List<RoleEntity> allRoles = ((RoleMapper) roleService.getBaseMapper()).getRoleTreeByIds(new ArrayList<>(roleIds), TreeBuildMode.CHILD_AND_CURRENT);
+        return allRoles;
+    }
+
+    private List<PermissionEntity> getPermissionListByUserId(UserEntity user, List<RoleEntity> roles) {
+        final Boolean isAdmin = isAdmin(user);
+        final Set<Long> permissionIds = new HashSet<>();
+        if (isAdmin) {
+            final List<PermissionEntity> permissionEntities = permissionService.list(Wrappers.lambdaQuery(PermissionEntity.class));
+            permissionEntities.parallelStream().map(BaseEntity::getId).forEach(permissionIds::add);
+        } else {
+            // 查询用户关联的所有的角色
+            if (!roles.isEmpty()) {
+                List<Long> roleIds = roles.parallelStream().map(BaseEntity::getId).toList();
                 final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
-                final List<Long> permissionIds = rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId).toList();
-                if (!permissionIds.isEmpty()) {
-                    final List<PermissionEntity> permissionEntities = permissionService.list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getId, permissionIds));
-                    permissionEntities.parallelStream().map(PermissionEntity::getCode).map(SimpleGrantedAuthority::new).forEach(authorities::add);
-                }
+                rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId).forEach(permissionIds::add);
             }
         }
-        return new User(userEntity.getUsername(), userEntity.getPassword(), authorities);
+        List<PermissionEntity> allPermissions = ((PermissionMapper) permissionService.getBaseMapper()).getPermissionTreeByIds(new ArrayList<>(permissionIds), TreeBuildMode.CHILD_AND_CURRENT);
+        return allPermissions;
     }
 
 }
