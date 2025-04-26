@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.jinelei.numbfish.auth.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -20,13 +21,6 @@ import com.jinelei.numbfish.auth.api.UserApi;
 import com.jinelei.numbfish.auth.entity.UserEntity;
 import com.jinelei.numbfish.common.helper.PageHelper;
 import com.jinelei.numbfish.auth.service.UserService;
-import com.jinelei.numbfish.auth.dto.UserCreateRequest;
-import com.jinelei.numbfish.auth.dto.UserDeleteRequest;
-import com.jinelei.numbfish.auth.dto.UserLoginRequest;
-import com.jinelei.numbfish.auth.dto.UserQueryRequest;
-import com.jinelei.numbfish.auth.dto.UserResponse;
-import com.jinelei.numbfish.auth.dto.UserUpdatePasswordRequest;
-import com.jinelei.numbfish.auth.dto.UserUpdateRequest;
 import com.jinelei.numbfish.common.request.PageRequest;
 import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;
@@ -140,6 +134,16 @@ public class UserController implements UserApi {
     public BaseView<String> updatePassword(@RequestBody @Valid UserUpdatePasswordRequest request) {
         userService.updatePassword(request);
         return new BaseView<>("修改成功");
+    }
+
+    @Override
+    @ApiOperationSupport(order = 10)
+    @Operation(summary = "用户信息")
+    @PostMapping("/info")
+    @PreAuthorize("hasAuthority('USER_INFO')")
+    public BaseView<UserInfoResponse> info() {
+        UserInfoResponse info = userService.info();
+        return new BaseView<>("查询成功", info);
     }
 
 }

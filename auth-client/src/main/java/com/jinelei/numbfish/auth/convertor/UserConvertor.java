@@ -1,5 +1,6 @@
 package com.jinelei.numbfish.auth.convertor;
 
+import com.jinelei.numbfish.auth.dto.UserInfoResponse;
 import com.jinelei.numbfish.auth.entity.UserEntity;
 import com.jinelei.numbfish.auth.dto.UserCreateRequest;
 import com.jinelei.numbfish.auth.dto.UserResponse;
@@ -39,4 +40,12 @@ public interface UserConvertor {
             @Mapping(target = "permissions", ignore = true)
     })
     UserResponse entityToResponse(UserEntity source);
+
+    @Mappings(value = {
+            @Mapping(target = "password", ignore = true),
+            @Mapping(target = "roles", ignore = true),
+            @Mapping(target = "roleIds", ignore = true),
+            @Mapping(target = "permissions", ignore = true)
+    })
+    UserInfoResponse entityToInfoResponse(UserEntity source);
 }

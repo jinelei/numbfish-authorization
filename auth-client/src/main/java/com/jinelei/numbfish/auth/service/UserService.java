@@ -31,4 +31,5 @@ public interface UserService extends IService<UserEntity> {
 
     UserResponse convert(UserEntity entity);
 
+    UserInfoResponse info();
 }

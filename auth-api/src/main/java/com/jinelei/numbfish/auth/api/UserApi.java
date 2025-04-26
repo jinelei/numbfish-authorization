@@ -85,5 +85,11 @@ public interface UserApi {
      */
     BaseView<String> updatePassword(@Valid UserUpdatePasswordRequest request);
 
+    /**
+     * 查询用户信息
+     *
+     * @return 用户响应对象
+     */
+    BaseView<UserInfoResponse> info();
 
 }

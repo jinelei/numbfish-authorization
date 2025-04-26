@@ -8,7 +8,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.jinelei.numbfish.auth.configuration.SecurityConfiguration;
+import com.jinelei.numbfish.auth.configuration.authentication.TokenAuthenticationToken;
 import com.jinelei.numbfish.auth.configuration.authentication.TokenCacheKeyGenerator;
+import com.jinelei.numbfish.auth.dto.*;
 import com.jinelei.numbfish.auth.property.AdminProperty;
 import com.jinelei.numbfish.auth.property.AuthorizationProperty;
 import org.apache.ibatis.executor.BatchResult;
@@ -16,8 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -48,13 +54,6 @@ import com.jinelei.numbfish.auth.service.RolePermissionService;
 import com.jinelei.numbfish.auth.service.RoleService;
 import com.jinelei.numbfish.auth.service.UserRoleService;
 import com.jinelei.numbfish.auth.service.UserService;
-import com.jinelei.numbfish.auth.dto.UserCreateRequest;
-import com.jinelei.numbfish.auth.dto.UserDeleteRequest;
-import com.jinelei.numbfish.auth.dto.UserLoginRequest;
-import com.jinelei.numbfish.auth.dto.UserQueryRequest;
-import com.jinelei.numbfish.auth.dto.UserResponse;
-import com.jinelei.numbfish.auth.dto.UserUpdatePasswordRequest;
-import com.jinelei.numbfish.auth.dto.UserUpdateRequest;
 import com.jinelei.numbfish.common.exception.InvalidArgsException;
 
 @SuppressWarnings("unused")
@@ -250,6 +249,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
     @Override
     public UserResponse convert(UserEntity entity) {
         return userConvertor.entityToResponse(entity);
+    }
+
+    @Override
+    public UserInfoResponse info() {
+        final Authentication authentication = Optional.ofNullable(SecurityContextHolder.getContext())
+                .map(SecurityContext::getAuthentication)
+                .orElseThrow(() -> new InvalidArgsException("用户未登录"));
+        if (authentication instanceof TokenAuthenticationToken token) {
+            UserEntity userEntity = getById(token.getUserId());
+            UserInfoResponse userInfoResponse = userConvertor.entityToInfoResponse(userEntity);
+            return userInfoResponse;
+        }
+        return null;
     }
 
     @Override
