@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.numbfish.auth.api.RoleApi;
 import com.jinelei.numbfish.auth.entity.RoleEntity;
 import com.jinelei.numbfish.common.helper.PageHelper;
@@ -32,13 +30,9 @@ import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;
 import com.jinelei.numbfish.common.view.PageView;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @SuppressWarnings("unused")
-@ApiSupport(order = 2)
-@Tag(name = "角色管理")
 @Validated
 @RestController
 @RequestMapping("/role")
@@ -48,8 +42,6 @@ public class RoleController implements RoleApi {
     protected RoleService roleService;
 
     @Override
-    @ApiOperationSupport(order = 1)
-    @Operation(summary = "创建角色")
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ROLE_CREATE')")
     public BaseView<Void> create(@RequestBody @Valid RoleCreateRequest request) {
@@ -58,8 +50,6 @@ public class RoleController implements RoleApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 2)
-    @Operation(summary = "删除角色")
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('ROLE_DELETE')")
     public BaseView<Void> delete(@RequestBody @Valid RoleDeleteRequest request) {
@@ -68,8 +58,6 @@ public class RoleController implements RoleApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 3)
-    @Operation(summary = "更新角色")
     @PostMapping("/update")
     @PreAuthorize("hasAuthority('ROLE_UPDATE')")
     public BaseView<Void> update(@RequestBody @Valid RoleUpdateRequest request) {
@@ -78,8 +66,6 @@ public class RoleController implements RoleApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 4)
-    @Operation(summary = "获取角色")
     @PostMapping("/get")
     @PreAuthorize("hasAuthority('ROLE_DETAIL')")
     public BaseView<RoleResponse> get(@RequestBody @Valid RoleQueryRequest request) {
@@ -89,8 +75,6 @@ public class RoleController implements RoleApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 4)
-    @Operation(summary = "获取角色树")
     @PostMapping("/tree")
     @PreAuthorize("hasAuthority('ROLE_SUMMARY')")
     public BaseView<List<RoleResponse>> tree(@RequestBody @Valid RoleQueryRequest request) {
@@ -100,8 +84,6 @@ public class RoleController implements RoleApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 5)
-    @Operation(summary = "获取角色列表")
     @PostMapping("/list")
     @PreAuthorize("hasAuthority('ROLE_SUMMARY')")
     public ListView<RoleResponse> list(@RequestBody @Valid RoleQueryRequest request) {
@@ -112,8 +94,6 @@ public class RoleController implements RoleApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 6)
-    @Operation(summary = "获取角色分页")
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('ROLE_SUMMARY')")
     public PageView<RoleResponse> page(@RequestBody @Valid PageRequest<RoleQueryRequest> request) {
@@ -125,8 +105,6 @@ public class RoleController implements RoleApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 6)
-    @Operation(summary = "注册角色")
     @PostMapping("/regist")
     @PreAuthorize("hasAnyAuthority('ROLE_CREATE','ROLE_UPDATE','ROLE_DELETE')")
     public <T extends RoleDeclaration<?>> BaseView<Boolean> regist(@Valid List<T> roles) {

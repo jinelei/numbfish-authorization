@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.numbfish.auth.api.ClientApi;
 import com.jinelei.numbfish.auth.entity.ClientEntity;
 import com.jinelei.numbfish.common.helper.PageHelper;
@@ -30,13 +28,9 @@ import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;
 import com.jinelei.numbfish.common.view.PageView;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @SuppressWarnings("unused")
-@ApiSupport(order = 3)
-@Tag(name = "客户端管理")
 @Validated
 @RestController
 @RequestMapping("/client")
@@ -46,8 +40,6 @@ public class ClientController implements ClientApi {
     protected ClientService clientService;
 
     @Override
-    @ApiOperationSupport(order = 1)
-    @Operation(summary = "创建客户端")
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('CLIENT_CREATE')")
     public BaseView<Void> create(@RequestBody @Valid ClientCreateRequest request) {
@@ -56,8 +48,6 @@ public class ClientController implements ClientApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 2)
-    @Operation(summary = "删除客户端")
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('CLIENT_DELETE')")
     public BaseView<Void> delete(@RequestBody @Valid ClientDeleteRequest request) {
@@ -66,8 +56,6 @@ public class ClientController implements ClientApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 3)
-    @Operation(summary = "更新客户端")
     @PostMapping("/update")
     @PreAuthorize("hasAuthority('CLIENT_UPDATE')")
     public BaseView<Void> update(@RequestBody @Valid ClientUpdateRequest request) {
@@ -76,8 +64,6 @@ public class ClientController implements ClientApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 4)
-    @Operation(summary = "获取客户端")
     @PostMapping("/get")
     @PreAuthorize("hasAuthority('CLIENT_DETAIL')")
     public BaseView<ClientResponse> get(@RequestBody @Valid ClientQueryRequest request) {
@@ -87,8 +73,6 @@ public class ClientController implements ClientApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 5)
-    @Operation(summary = "获取客户端列表")
     @PostMapping("/list")
     @PreAuthorize("hasAuthority('CLIENT_SUMMARY')")
     public ListView<ClientResponse> list(@RequestBody @Valid ClientQueryRequest request) {
@@ -99,8 +83,6 @@ public class ClientController implements ClientApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 6)
-    @Operation(summary = "获取客户端分页")
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('CLIENT_SUMMARY')")
     public PageView<ClientResponse> page(@RequestBody @Valid PageRequest<ClientQueryRequest> request) {

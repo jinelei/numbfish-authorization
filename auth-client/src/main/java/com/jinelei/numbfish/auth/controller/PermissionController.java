@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.numbfish.auth.api.PermissionApi;
 import com.jinelei.numbfish.auth.entity.PermissionEntity;
 import com.jinelei.numbfish.common.helper.PageHelper;
@@ -32,13 +30,9 @@ import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;
 import com.jinelei.numbfish.common.view.PageView;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @SuppressWarnings("unused")
-@ApiSupport(order = 1)
-@Tag(name = "权限管理")
 @Validated
 @RestController
 @RequestMapping("/permission")
@@ -48,8 +42,6 @@ public class PermissionController implements PermissionApi {
     protected PermissionService permissionService;
 
     @Override
-    @ApiOperationSupport(order = 1)
-    @Operation(summary = "创建权限")
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('PERMISSION_CREATE')")
     public BaseView<Void> create(@RequestBody @Valid PermissionCreateRequest request) {
@@ -58,8 +50,6 @@ public class PermissionController implements PermissionApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 2)
-    @Operation(summary = "删除权限")
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('PERMISSION_DELETE')")
     public BaseView<Void> delete(@RequestBody @Valid PermissionDeleteRequest request) {
@@ -68,8 +58,6 @@ public class PermissionController implements PermissionApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 3)
-    @Operation(summary = "更新权限")
     @PostMapping("/update")
     @PreAuthorize("hasAuthority('PERMISSION_UPDATE')")
     public BaseView<Void> update(@RequestBody @Valid PermissionUpdateRequest request) {
@@ -78,8 +66,6 @@ public class PermissionController implements PermissionApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 4)
-    @Operation(summary = "获取权限")
     @PostMapping("/get")
     @PreAuthorize("hasAuthority('PERMISSION_DETAIL')")
     public BaseView<PermissionResponse> get(@RequestBody @Valid PermissionQueryRequest request) {
@@ -89,8 +75,6 @@ public class PermissionController implements PermissionApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 4)
-    @Operation(summary = "获取权限树")
     @PostMapping("/tree")
     @PreAuthorize("hasAuthority('PERMISSION_SUMMARY')")
     public BaseView<List<PermissionResponse>> tree(@RequestBody @Valid PermissionQueryRequest request) {
@@ -101,8 +85,6 @@ public class PermissionController implements PermissionApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 5)
-    @Operation(summary = "获取权限列表")
     @PostMapping("/list")
     @PreAuthorize("hasAuthority('PERMISSION_SUMMARY')")
     public ListView<PermissionResponse> list(@RequestBody @Valid PermissionQueryRequest request) {
@@ -113,8 +95,6 @@ public class PermissionController implements PermissionApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 6)
-    @Operation(summary = "获取权限分页")
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('PERMISSION_SUMMARY')")
     public PageView<PermissionResponse> page(@RequestBody @Valid PageRequest<PermissionQueryRequest> request) {
@@ -127,8 +107,6 @@ public class PermissionController implements PermissionApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 6)
-    @Operation(summary = "注册权限")
     @PostMapping("/regist")
     @PreAuthorize("hasAnyAuthority('PERMISSION_CREATE','PERMISSION_UPDATE','PERMISSION_DELETE')")
     public <T extends PermissionDeclaration<?>> BaseView<Boolean> regist(@Valid List<T> permissions) {

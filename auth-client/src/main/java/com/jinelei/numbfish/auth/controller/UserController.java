@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.numbfish.auth.api.UserApi;
 import com.jinelei.numbfish.auth.entity.UserEntity;
 import com.jinelei.numbfish.common.helper.PageHelper;
@@ -26,13 +24,9 @@ import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;
 import com.jinelei.numbfish.common.view.PageView;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @SuppressWarnings("unused")
-@ApiSupport(order = 3)
-@Tag(name = "用户管理")
 @Validated
 @RestController
 @RequestMapping("/user")
@@ -42,8 +36,6 @@ public class UserController implements UserApi {
     protected UserService userService;
 
     @Override
-    @ApiOperationSupport(order = 1)
-    @Operation(summary = "创建用户")
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('USER_CREATE')")
     public BaseView<Void> create(@RequestBody @Valid UserCreateRequest request) {
@@ -52,8 +44,6 @@ public class UserController implements UserApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 2)
-    @Operation(summary = "删除用户")
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('USER_DELETE')")
     public BaseView<Void> delete(@RequestBody @Valid UserDeleteRequest request) {
@@ -62,8 +52,6 @@ public class UserController implements UserApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 3)
-    @Operation(summary = "更新用户")
     @PostMapping("/update")
     @PreAuthorize("hasAuthority('USER_UPDATE')")
     public BaseView<Void> update(@RequestBody @Valid UserUpdateRequest request) {
@@ -72,8 +60,6 @@ public class UserController implements UserApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 4)
-    @Operation(summary = "获取用户")
     @PostMapping("/get")
     @PreAuthorize("hasAuthority('USER_DETAIL')")
     public BaseView<UserResponse> get(@RequestBody @Valid UserQueryRequest request) {
@@ -83,8 +69,6 @@ public class UserController implements UserApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 5)
-    @Operation(summary = "获取用户列表")
     @PostMapping("/list")
     @PreAuthorize("hasAuthority('USER_SUMMARY')")
     public ListView<UserResponse> list(@RequestBody @Valid UserQueryRequest request) {
@@ -95,8 +79,6 @@ public class UserController implements UserApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 6)
-    @Operation(summary = "获取用户分页")
     @PostMapping("/page")
     @PreAuthorize("hasAuthority('USER_SUMMARY')")
     public PageView<UserResponse> page(@RequestBody @Valid PageRequest<UserQueryRequest> request) {
@@ -108,8 +90,6 @@ public class UserController implements UserApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 7)
-    @Operation(summary = "用户登陆")
     @PostMapping("/login")
     public BaseView<String> login(@RequestBody @Valid UserLoginRequest request) {
         String token = userService.login(request);
@@ -117,8 +97,6 @@ public class UserController implements UserApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 8)
-    @Operation(summary = "用户登出")
     @PostMapping("/logout")
     @PreAuthorize("hasAuthority('USER_DETAIL')")
     public BaseView<Void> logout() {
@@ -127,8 +105,6 @@ public class UserController implements UserApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 9)
-    @Operation(summary = "用户修改密码")
     @PostMapping("/updatePassword")
     @PreAuthorize("hasAuthority('USER_UPDATE')")
     public BaseView<String> updatePassword(@RequestBody @Valid UserUpdatePasswordRequest request) {
@@ -137,8 +113,6 @@ public class UserController implements UserApi {
     }
 
     @Override
-    @ApiOperationSupport(order = 10)
-    @Operation(summary = "用户信息")
     @PostMapping("/info")
     @PreAuthorize("hasAuthority('USER_DETAIL')")
     public BaseView<UserInfoResponse> info() {
