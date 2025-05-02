@@ -1,19 +1,19 @@
-# Numbfish Auth 授权模块
+# Numbfish Authorization 授权模块
 
 ## Docker
 
-1. install整个numbfish-auth项目
+1. install整个numbfish-authorization项目
 
 ``./mvnw install -f ./pom.xml``
 
-2. package整个numbfish-auth项目
+2. package整个numbfish-authorization项目
 
 ``./mvnw package -f ./pom.xml``
 
-3. 切换到auth-client下，执行docker build构建镜像
+3. 切换到authorization-client下，执行docker build构建镜像
 
-``cd auth-client``  
-``docker build --rm -t numbfish-auth .``
+``cd authorization-client``  
+``docker build --rm -t numbfish-authorization .``
 
 ### Docker 暴露环境变量说明
 

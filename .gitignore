@@ -2,8 +2,8 @@
 !**/target/
 !.mvn/wrapper/maven-wrapper.jar
 *.class
-/auth-api/target/
-/auth-client/target/
+/authorization-api/target/
+/authorization-client/target/
 
 ### IntelliJ IDEA ###
 .idea

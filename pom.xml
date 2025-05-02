@@ -11,12 +11,12 @@
     </parent>
 
     <groupId>com.jinelei.numbfish</groupId>
-    <artifactId>auth</artifactId>
+    <artifactId>authorization</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1</version>
-    <name>numbfish-auth</name>
+    <name>numbfish-authorization</name>
     <description>numbfish authorization center</description>
-    <url>https://jinelei.com/numbfish-auth</url>
+    <url>https://jinelei.com/numbfish-authorization</url>
 
     <licenses>
         <license>
@@ -38,10 +38,10 @@
     </developers>
 
     <scm>
-        <connection>https://github.com/jinelei/numbfish-auth.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:jinelei/numbfish-auth.git
+        <connection>https://github.com/jinelei/numbfish-authorization.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:jinelei/numbfish-authorization.git
         </developerConnection>
-        <url>https://github.com/jinelei/numbfish-auth</url>
+        <url>https://github.com/jinelei/numbfish-authorization</url>
     </scm>
 
     <properties>
@@ -53,7 +53,7 @@
         <spring-boot.version>3.4.3</spring-boot.version>
         <springfox-swagger2.version>3.0.0</springfox-swagger2.version>
         <numbfish-common.version>0.0.1</numbfish-common.version>
-        <numbfish-auth-api.version>0.0.1</numbfish-auth-api.version>
+        <numbfish-authorization-api.version>0.0.1</numbfish-authorization-api.version>
         <springboot-maven-plugin.version>3.4.3</springboot-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
@@ -68,8 +68,8 @@
     </properties>
 
     <modules>
-        <module>auth-api</module>
-        <module>auth-client</module>
+        <module>authorization-api</module>
+        <module>authorization-client</module>
     </modules>
 
     <dependencyManagement>
