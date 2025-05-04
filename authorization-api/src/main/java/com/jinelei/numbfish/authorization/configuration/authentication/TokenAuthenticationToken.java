@@ -54,4 +54,8 @@ public class TokenAuthenticationToken extends UsernamePasswordAuthenticationToke
     public void eraseCredentials() {
         super.eraseCredentials();
     }
+
+    public String getToken() {
+        return token;
+    }
 }

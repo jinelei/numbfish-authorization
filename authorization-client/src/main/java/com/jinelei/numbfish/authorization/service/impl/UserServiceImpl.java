@@ -223,9 +223,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
 
     @Override
     public void logout() {
-        String token = "";
-        stringRedisTemplate.delete(cacheKeyGenerator.apply(token));
         log.debug("用户登出");
+        Optional.ofNullable(SecurityContextHolder.getContext())
+                .map(SecurityContext::getAuthentication)
+                .filter(a -> a instanceof TokenAuthenticationToken)
+                .map(TokenAuthenticationToken.class::cast)
+                .map(TokenAuthenticationToken::getToken)
+                .ifPresentOrElse(token -> stringRedisTemplate.delete(cacheKeyGenerator.apply(token)),
+                        () -> {
+                            throw new InvalidArgsException("用户未登录");
+                        });
     }
 
     @Override
