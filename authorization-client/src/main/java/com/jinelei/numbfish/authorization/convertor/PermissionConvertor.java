@@ -38,9 +38,6 @@ public interface PermissionConvertor {
     PermissionEntity entityFromUpdateRequest(PermissionUpdateRequest source);
 
     @Mappings({
-            @Mapping(target = "deleted", ignore = true),
-            @Mapping(target = "deletedTime", ignore = true),
-            @Mapping(target = "deletedUserId", ignore = true),
     })
     PermissionResponse entityToResponse(PermissionEntity source);
 
