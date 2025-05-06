@@ -26,10 +26,6 @@ public class PermissionResponse implements TreeResponse<PermissionResponse>, Ser
     private Long parentId;
     @Schema(description = "权限备注信息")
     private String remark;
-    @Schema(description = "权限路径")
-    protected String path;
-    @Schema(description = "图标")
-    protected String icon;
     @Schema(description = "创建人用户 ID")
     private String createdUserId;
     @Schema(description = "创建时间")
@@ -38,6 +34,7 @@ public class PermissionResponse implements TreeResponse<PermissionResponse>, Ser
     private String updatedUserId;
     @Schema(description = "更新时间")
     private LocalDateTime updatedTime;
+    @Schema(description = "子级列表")
     private List<PermissionResponse> children;
 
     public Long getId() {
@@ -128,22 +125,6 @@ public class PermissionResponse implements TreeResponse<PermissionResponse>, Ser
         this.updatedTime = updatedTime;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
     public List<PermissionResponse> getChildren() {
         return children;
     }
@@ -156,12 +137,12 @@ public class PermissionResponse implements TreeResponse<PermissionResponse>, Ser
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         PermissionResponse that = (PermissionResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(path, that.path) && Objects.equals(icon, that.icon) && Objects.equals(createdUserId, that.createdUserId) && Objects.equals(createdTime, that.createdTime) && Objects.equals(updatedUserId, that.updatedUserId) && Objects.equals(updatedTime, that.updatedTime) && Objects.equals(children, that.children);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(createdUserId, that.createdUserId) && Objects.equals(createdTime, that.createdTime) && Objects.equals(updatedUserId, that.updatedUserId) && Objects.equals(updatedTime, that.updatedTime) && Objects.equals(children, that.children);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, code, type, sortValue, parentId, remark, path, icon, createdUserId, createdTime, updatedUserId, updatedTime, children);
+        return Objects.hash(id, name, code, type, sortValue, parentId, remark, createdUserId, createdTime, updatedUserId, updatedTime, children);
     }
 
     @Override
@@ -174,8 +155,6 @@ public class PermissionResponse implements TreeResponse<PermissionResponse>, Ser
                 ", sortValue=" + sortValue +
                 ", parentId=" + parentId +
                 ", remark='" + remark + '\'' +
-                ", path='" + path + '\'' +
-                ", icon='" + icon + '\'' +
                 ", createdUserId='" + createdUserId + '\'' +
                 ", createdTime=" + createdTime +
                 ", updatedUserId='" + updatedUserId + '\'' +

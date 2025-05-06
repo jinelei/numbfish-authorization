@@ -16,8 +16,6 @@ public class PermissionEntity extends BaseEntity<Long> {
     protected PermissionType type;
     protected Integer sortValue;
     protected Long parentId;
-    protected String path;
-    protected String icon;
     @TableField(exist = false)
     private List<PermissionEntity> children;
 
@@ -61,22 +59,6 @@ public class PermissionEntity extends BaseEntity<Long> {
         this.parentId = parentId;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
     public List<PermissionEntity> getChildren() {
         return children;
     }
@@ -87,15 +69,16 @@ public class PermissionEntity extends BaseEntity<Long> {
 
     @Override
     public boolean equals(Object o) {
+
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         PermissionEntity that = (PermissionEntity) o;
-        return Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(path, that.path) && Objects.equals(icon, that.icon) && Objects.equals(children, that.children);
+        return Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(children, that.children);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), name, code, type, sortValue, parentId, path, icon, children);
+        return Objects.hash(super.hashCode(), name, code, type, sortValue, parentId, children);
     }
 
     @Override
@@ -106,8 +89,6 @@ public class PermissionEntity extends BaseEntity<Long> {
                 ", type=" + type +
                 ", sortValue=" + sortValue +
                 ", parentId=" + parentId +
-                ", path='" + path + '\'' +
-                ", icon='" + icon + '\'' +
                 ", children=" + children +
                 ", id=" + id +
                 ", remark='" + remark + '\'' +

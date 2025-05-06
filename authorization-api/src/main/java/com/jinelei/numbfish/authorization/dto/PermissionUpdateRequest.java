@@ -30,10 +30,6 @@ public class PermissionUpdateRequest implements Serializable {
     private Long parentId;
     @Schema(description = "权限备注")
     protected String remark;
-    @Schema(description = "权限路径")
-    protected String path;
-    @Schema(description = "图标")
-    protected String icon;
 
     public Long getId() {
         return id;
@@ -91,32 +87,16 @@ public class PermissionUpdateRequest implements Serializable {
         this.remark = remark;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         PermissionUpdateRequest that = (PermissionUpdateRequest) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(path, that.path) && Objects.equals(icon, that.icon);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, code, type, sortValue, parentId, remark, path, icon);
+        return Objects.hash(id, name, code, type, sortValue, parentId, remark);
     }
 
     @Override
@@ -129,8 +109,6 @@ public class PermissionUpdateRequest implements Serializable {
                 ", sortValue=" + sortValue +
                 ", parentId=" + parentId +
                 ", remark='" + remark + '\'' +
-                ", path='" + path + '\'' +
-                ", icon='" + icon + '\'' +
                 '}';
     }
 

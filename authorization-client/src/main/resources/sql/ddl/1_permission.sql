@@ -6,8 +6,6 @@ CREATE TABLE permission (
     sort_value INT DEFAULT 0 COMMENT '权限排序值',
     parent_id BIGINT COMMENT '父权限 ID',
     remark TEXT COMMENT '权限备注信息',
-    path VARCHAR(255) COMMENT '权限路径',
-    icon VARCHAR(255) COMMENT '权限图标',
     created_user_id VARCHAR(255) COMMENT '创建人用户 ID',
     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_user_id VARCHAR(255) COMMENT '更新人用户 ID',

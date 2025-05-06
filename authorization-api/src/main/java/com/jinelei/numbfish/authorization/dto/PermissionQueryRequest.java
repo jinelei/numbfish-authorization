@@ -28,10 +28,6 @@ public class PermissionQueryRequest implements Serializable {
     private String parentId;
     @Schema(description = "权限备注")
     protected String remark;
-    @Schema(description = "权限路径")
-    protected String path;
-    @Schema(description = "图标")
-    protected String icon;
     @Schema(description = "树构建模式")
     protected TreeBuildMode mode;
 
@@ -99,22 +95,6 @@ public class PermissionQueryRequest implements Serializable {
         this.remark = remark;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
     public TreeBuildMode getMode() {
         return mode;
     }
@@ -127,12 +107,12 @@ public class PermissionQueryRequest implements Serializable {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         PermissionQueryRequest that = (PermissionQueryRequest) o;
-        return Objects.equals(id, that.id) && Objects.equals(ids, that.ids) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(path, that.path) && Objects.equals(icon, that.icon) && mode == that.mode;
+        return Objects.equals(id, that.id) && Objects.equals(ids, that.ids) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && mode == that.mode;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, ids, name, code, type, sortValue, parentId, remark, path, icon, mode);
+        return Objects.hash(id, ids, name, code, type, sortValue, parentId, remark, mode);
     }
 
     @Override
@@ -146,8 +126,6 @@ public class PermissionQueryRequest implements Serializable {
                 ", sortValue=" + sortValue +
                 ", parentId='" + parentId + '\'' +
                 ", remark='" + remark + '\'' +
-                ", path='" + path + '\'' +
-                ", icon='" + icon + '\'' +
                 ", mode=" + mode +
                 '}';
     }
