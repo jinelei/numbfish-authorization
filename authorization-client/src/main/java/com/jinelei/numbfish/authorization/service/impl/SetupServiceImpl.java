@@ -16,6 +16,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -37,12 +38,15 @@ public class SetupServiceImpl implements SetupService {
     private final RoleService roleService;
     private final UserService userService;
     private final SqlSessionFactory sqlSessionFactory;
+    private final PasswordEncoder passwordEncoder;
 
-    public SetupServiceImpl(RoleService roleService, PermissionService permissionService, UserService userService, SqlSessionFactory sqlSessionFactory) {
+    public SetupServiceImpl(RoleService roleService, PermissionService permissionService, UserService userService,
+            SqlSessionFactory sqlSessionFactory, PasswordEncoder passwordEncoder) {
         this.roleService = roleService;
         this.permissionService = permissionService;
         this.userService = userService;
         this.sqlSessionFactory = sqlSessionFactory;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -98,12 +102,12 @@ public class SetupServiceImpl implements SetupService {
     }
 
     /**
-     * 创建表
+     * 执行SQL
      *
-     * @param createSql  创建表的sql语句
+     * @param createSql  执行SQL语句
      * @param connection 数据库连接
      */
-    private static void createTable(String createSql, Connection connection) {
+    private static void executeSql(String createSql, Connection connection) {
         try (Statement statement = connection.createStatement()) {
             statement.execute(createSql);
         } catch (Exception e) {
@@ -136,7 +140,7 @@ public class SetupServiceImpl implements SetupService {
     @Override
     public Boolean init(SetupRequest request) {
         try (SqlSession session = sqlSessionFactory.openSession();
-             Connection connection = session.getConnection()) {
+                Connection connection = session.getConnection()) {
             connection.setAutoCommit(false);
             boolean result = checkTableExist("permission", connection) &&
                     checkTableExist("role", connection) &&
@@ -147,13 +151,13 @@ public class SetupServiceImpl implements SetupService {
                     checkTableExist("client_permission", connection);
             if (!result) {
                 // 创建表
-                createTable(loadDdlSql("ddl", "1_permission.sql"), connection);
-                createTable(loadDdlSql("ddl", "2_role.sql"), connection);
-                createTable(loadDdlSql("ddl", "3_user.sql"), connection);
-                createTable(loadDdlSql("ddl", "4_client.sql"), connection);
-                createTable(loadDdlSql("ddl", "5_role_permission.sql"), connection);
-                createTable(loadDdlSql("ddl", "6_user_role.sql"), connection);
-                createTable(loadDdlSql("ddl", "7_client_permission.sql"), connection);
+                executeSql(loadDdlSql("ddl", "1_permission.sql"), connection);
+                executeSql(loadDdlSql("ddl", "2_role.sql"), connection);
+                executeSql(loadDdlSql("ddl", "3_user.sql"), connection);
+                executeSql(loadDdlSql("ddl", "4_client.sql"), connection);
+                executeSql(loadDdlSql("ddl", "5_role_permission.sql"), connection);
+                executeSql(loadDdlSql("ddl", "6_user_role.sql"), connection);
+                executeSql(loadDdlSql("ddl", "7_client_permission.sql"), connection);
             }
 
             // 初始化数据
@@ -161,32 +165,39 @@ public class SetupServiceImpl implements SetupService {
             // 创建超级管理员用户
             final UserCreateRequest createUserRequest = new UserCreateRequest();
             Optional.ofNullable(request).orElseThrow(() -> new InvalidArgsException("初始化参数不能为空"));
-            createUserRequest.setUsername(Optional.of(request)
+            final String username = Optional.of(request)
                     .map(SetupRequest::getUsername)
                     .map(String::trim)
                     .filter(StringUtils::hasLength)
-                    .orElseThrow(() -> new InvalidArgsException("用户名称不能为空")));
-            createUserRequest.setPassword(Optional.of(request)
+                    .orElseThrow(() -> new InvalidArgsException("用户名称不能为空"));
+            final String password = Optional.of(request)
                     .map(SetupRequest::getPassword)
                     .map(String::trim)
                     .filter(StringUtils::hasLength)
-                    .orElseThrow(() -> new InvalidArgsException("用户密码不能为空")));
-            createUserRequest.setRemark("超级管理员");
-            Optional.of(request)
+                    .orElseThrow(() -> new InvalidArgsException("用户密码不能为空"));
+            final String remark = "超级管理员";
+            final String email = Optional.of(request)
                     .map(SetupRequest::getEmail)
                     .map(String::trim)
                     .filter(StringUtils::hasLength)
-                    .ifPresent(createUserRequest::setEmail);
-            Optional.of(request)
+                    .orElse("");
+            final String phone = Optional.of(request)
                     .map(SetupRequest::getPhone)
                     .map(String::trim)
                     .filter(StringUtils::hasLength)
-                    .ifPresent(createUserRequest::setPhone);
-            userService.create(createUserRequest);
+                    .orElse("");
+
+            final String sql = loadDdlSql("dml", "3_user.sql")
+                    .replace("{USERNAME}", username)
+                    .replace("{PASSWORD}", passwordEncoder.encode(password))
+                    .replace("{REMARK}", remark)
+                    .replace("{EMAIL}", email)
+                    .replace("{PHONE}", phone);
+            executeSql(sql, connection);
 
             // 注册所有权限、角色
-            permissionService.regist(List.of(PermissionInstance.class.getEnumConstants()));
-            roleService.regist(List.of(RoleInstance.class.getEnumConstants()));
+            executeSql(loadDdlSql("dml", "1_permission.sql"), connection);
+            executeSql(loadDdlSql("dml", "2_role.sql"), connection);
 
             // 提交事务
             connection.commit();
