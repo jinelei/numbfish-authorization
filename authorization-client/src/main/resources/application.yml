@@ -54,6 +54,8 @@ spring:
           max-wait: -1
           max-idle: 8
           min-idle: 0
+  liquibase:
+    change-log: classpath*:db/changelog/changelog-master.xml
 
 mybatis:
   mapper-locations: classpath*:mapper/*/*Mapper.xml,classpath*:mapper/*Mapper.xml

@@ -137,8 +137,7 @@ public class SetupServiceImpl implements SetupService {
         }
     }
 
-    @Override
-    public Boolean init(SetupRequest request) {
+    private void initSchema() {
         try (SqlSession session = sqlSessionFactory.openSession();
                 Connection connection = session.getConnection()) {
             connection.setAutoCommit(false);
@@ -160,7 +159,20 @@ public class SetupServiceImpl implements SetupService {
                 executeSql(loadDdlSql("ddl", "7_client_permission.sql"), connection);
             }
 
-            // 初始化数据
+            // 提交事务
+            connection.commit();
+            session.commit();
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new InternalException("初始化系统失败", e);
+        }
+    }
+
+    private void initData(SetupRequest request) {
+        try (SqlSession session = sqlSessionFactory.openSession();
+                Connection connection = session.getConnection()) {
+            connection.setAutoCommit(false);
 
             // 创建超级管理员用户
             final UserCreateRequest createUserRequest = new UserCreateRequest();
@@ -207,6 +219,12 @@ public class SetupServiceImpl implements SetupService {
         } catch (Exception e) {
             throw new InternalException("初始化系统失败", e);
         }
+    }
+
+    @Override
+    public Boolean init(SetupRequest request) {
+        initSchema();
+        initData(request);
         return true;
     }
 
