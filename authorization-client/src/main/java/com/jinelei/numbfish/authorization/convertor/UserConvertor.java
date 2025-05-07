@@ -2,6 +2,7 @@ package com.jinelei.numbfish.authorization.convertor;
 
 import com.jinelei.numbfish.authorization.dto.UserInfoResponse;
 import com.jinelei.numbfish.authorization.entity.UserEntity;
+import com.jinelei.numbfish.authorization.dto.SetupRequest;
 import com.jinelei.numbfish.authorization.dto.UserCreateRequest;
 import com.jinelei.numbfish.authorization.dto.UserResponse;
 import com.jinelei.numbfish.authorization.dto.UserUpdateRequest;
@@ -48,4 +49,10 @@ public interface UserConvertor {
             @Mapping(target = "permissions", ignore = true)
     })
     UserInfoResponse entityToInfoResponse(UserEntity source);
+
+    @Mappings(value = {
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "roleIds", ignore = true)
+    })
+    UserUpdateRequest entityFromSetupRequest(SetupRequest request);
 }

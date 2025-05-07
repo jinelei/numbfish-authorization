@@ -146,11 +146,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         LambdaUpdateWrapper<UserEntity> wrapper = Wrappers.lambdaUpdate(UserEntity.class);
         wrapper.eq(UserEntity::getId, request.getId());
         wrapper.set(UserEntity::getUsername, request.getUsername());
+        Optional.of(request).map(UserUpdateRequest::getPassword).ifPresent(password -> {
+            if (password.length() < 6) {
+                throw new InvalidArgsException("密码长度不能小于6位");
+            }
+            wrapper.set(UserEntity::getPassword, passwordEncoder.encode(password));
+        });
         wrapper.set(UserEntity::getAvatar, request.getAvatar());
         wrapper.set(UserEntity::getEmail, request.getEmail());
         wrapper.set(UserEntity::getPhone, request.getPhone());
         wrapper.set(UserEntity::getRemark, request.getRemark());
         int updated = baseMapper.update(wrapper);
+        Assert.state(updated == 1, "用户更新失败");
         log.debug("更新用户: {}", updated);
         int deleted = userRoleService.getBaseMapper()
                 .delete(Wrappers.lambdaUpdate(UserRoleEntity.class).eq(UserRoleEntity::getUserId, request.getId()));
@@ -168,7 +175,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
                     List<BatchResult> insert = userRoleService.getBaseMapper().insert(userRoleEntities);
                     log.debug("创建用户角色关系: {}", insert.size());
                 });
-        Assert.state(updated == 1, "角色更新失败");
     }
 
     @Override
@@ -282,14 +288,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         final Collection<GrantedAuthority> authorities = new ArrayList<>();
         List<RoleEntity> roleByUser = getRoleListByUserId(userEntity);
         List<PermissionEntity> permissionByUser = getPermissionListByUserId(userEntity, roleByUser);
-        roleByUser.stream().map(RoleEntity::getCode).map(i -> "ROLE_" + i).map(SimpleGrantedAuthority::new).forEach(authorities::add);
-        permissionByUser.stream().map(PermissionEntity::getCode).map(SimpleGrantedAuthority::new).forEach(authorities::add);
+        roleByUser.stream().map(RoleEntity::getCode).map(i -> "ROLE_" + i).map(SimpleGrantedAuthority::new)
+                .forEach(authorities::add);
+        permissionByUser.stream().map(PermissionEntity::getCode).map(SimpleGrantedAuthority::new)
+                .forEach(authorities::add);
         return new User(userEntity.getUsername(), userEntity.getPassword(), authorities);
     }
 
     private Boolean isAdmin(UserEntity user) {
-        final String username = Optional.ofNullable(user).map(UserEntity::getUsername).orElseThrow(() -> new InvalidArgsException("用户不存在"));
-        return Optional.ofNullable(property).map(AuthorizationProperty::getAdmin).map(AdminProperty::getUsername).map(username::equals).orElse(false);
+        final String username = Optional.ofNullable(user).map(UserEntity::getUsername)
+                .orElseThrow(() -> new InvalidArgsException("用户不存在"));
+        return Optional.ofNullable(property).map(AuthorizationProperty::getAdmin).map(AdminProperty::getUsername)
+                .map(username::equals).orElse(false);
     }
 
     private List<RoleEntity> getRoleListByUserId(UserEntity user) {
@@ -300,10 +310,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
             roleEntities.parallelStream().map(BaseEntity::getId).forEach(roleIds::add);
         } else {
             // 查询用户关联的所有的角色
-            final List<UserRoleEntity> userRoleEntities = userRoleService.list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, user.getId()));
+            final List<UserRoleEntity> userRoleEntities = userRoleService
+                    .list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, user.getId()));
             userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).forEach(roleIds::add);
         }
-        List<RoleEntity> allRoles = ((RoleMapper) roleService.getBaseMapper()).getRoleTreeByIds(new ArrayList<>(roleIds), TreeBuildMode.CHILD_AND_CURRENT);
+        List<RoleEntity> allRoles = ((RoleMapper) roleService.getBaseMapper())
+                .getRoleTreeByIds(new ArrayList<>(roleIds), TreeBuildMode.CHILD_AND_CURRENT);
         return allRoles;
     }
 
@@ -311,17 +323,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         final Boolean isAdmin = isAdmin(user);
         final Set<Long> permissionIds = new HashSet<>();
         if (isAdmin) {
-            final List<PermissionEntity> permissionEntities = permissionService.list(Wrappers.lambdaQuery(PermissionEntity.class));
+            final List<PermissionEntity> permissionEntities = permissionService
+                    .list(Wrappers.lambdaQuery(PermissionEntity.class));
             permissionEntities.parallelStream().map(BaseEntity::getId).forEach(permissionIds::add);
         } else {
             // 查询用户关联的所有的角色
             if (!roles.isEmpty()) {
                 List<Long> roleIds = roles.parallelStream().map(BaseEntity::getId).toList();
-                final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
-                rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId).forEach(permissionIds::add);
+                final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(
+                        Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
+                rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId)
+                        .forEach(permissionIds::add);
             }
         }
-        List<PermissionEntity> allPermissions = ((PermissionMapper) permissionService.getBaseMapper()).getPermissionTreeByIds(new ArrayList<>(permissionIds), TreeBuildMode.CHILD_AND_CURRENT);
+        List<PermissionEntity> allPermissions = ((PermissionMapper) permissionService.getBaseMapper())
+                .getPermissionTreeByIds(new ArrayList<>(permissionIds), TreeBuildMode.CHILD_AND_CURRENT);
         return allPermissions;
     }
 
