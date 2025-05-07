@@ -402,7 +402,7 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="143450355311302" />
+            <column name="id" value="143450355311303" />
             <column name="name" value="删除用户" />
             <column name="code" value="USER_DELETE" />
             <column name="type" value="2" />
@@ -496,7 +496,7 @@
         <insert tableName="permission">
             <column name="id" value="143450355311405" />
             <column name="name" value="查看客户端详情" />
-            <column name="code" value="CLIENT_SUMMARY" />
+            <column name="code" value="CLIENT_DETAIL" />
             <column name="type" value="2" />
             <column name="sort_value" value="405" />
             <column name="parent_id" value="143450355309763" />
@@ -598,12 +598,12 @@
     <changeSet id="insert_user_data" author="jinelei">
         <insert tableName="user">
             <column name="id" value="1"/>
-            <column name="username" value="{USERNAME}"/>
-            <column name="password" value="{PASSWORD}"/>
-            <column name="avatar" value="{AVATAR}"/>
-            <column name="email" value="{EMAIL}"/>
-            <column name="phone" value="{PHONE}"/>
-            <column name="remark" value="{REMARK}"/>
+            <column name="username" value="admin"/>
+            <column name="password" value=""/>
+            <column name="avatar" value=""/>
+            <column name="email" value=""/>
+            <column name="phone" value=""/>
+            <column name="remark" value=""/>
             <column name="created_user_id" value="1"/>
             <column name="created_time" valueComputed="NOW()"/>
             <column name="updated_user_id" value="1"/>

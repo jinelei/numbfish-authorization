@@ -54,14 +54,14 @@ public class SetupServiceImpl implements SetupService {
 
     @Override
     public Boolean checkIsSetup() {
-        UserEntity admin = userService.getById(0L);
+        UserEntity admin = userService.getById(1L);
         return Optional.ofNullable(admin).map(i -> i.getPassword()).map(StringUtils::hasLength).orElse(false);
     }
 
     @Override
     public Boolean init(SetupRequest request) {
         UserUpdateRequest update = userConvertor.entityFromSetupRequest(request);
-        update.setId(0L);
+        update.setId(1L);
         userService.update(update);
         return true;
     }
