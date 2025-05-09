@@ -16,12 +16,8 @@ public class RedisIdGenerator implements IdentifierGenerator {
     public Number nextId(Object entity) {
         String className = entity.getClass().getSimpleName();
         String key = KEY_PREFIX + className;
-        Long id = redisTemplate.opsForValue().increment(key);
-        if (id == null) {
-            redisTemplate.opsForValue().setIfAbsent(key, INITIAL_VALUE);
-            id = INITIAL_VALUE;
-        }
-        return id;
+        redisTemplate.opsForValue().setIfAbsent(key, INITIAL_VALUE);
+        return redisTemplate.opsForValue().increment(key);
     }
 
     @Override

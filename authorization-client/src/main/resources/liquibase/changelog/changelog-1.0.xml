@@ -196,7 +196,7 @@
 
     <changeSet id="insert_permission_data" author="jinelei">
         <insert tableName="permission">
-            <column name="id" value="109760" />
+            <column name="id" value="100100" />
             <column name="name" value="权限管理" />
             <column name="code" value="PERMISSION_MANAGE" />
             <column name="type" value="0" />
@@ -208,7 +208,7 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="109761" />
+            <column name="id" value="100200" />
             <column name="name" value="角色管理" />
             <column name="code" value="ROLE_MANAGE" />
             <column name="type" value="0" />
@@ -220,7 +220,7 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="109762" />
+            <column name="id" value="100300" />
             <column name="name" value="用户管理" />
             <column name="code" value="USER_MANAGE" />
             <column name="type" value="0" />
@@ -244,12 +244,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111101" />
+            <column name="id" value="100101" />
             <column name="name" value="添加权限" />
             <column name="code" value="PERMISSION_CREATE" />
             <column name="type" value="2" />
             <column name="sort_value" value="101" />
-            <column name="parent_id" value="109760" />
+            <column name="parent_id" value="100100" />
             <column name="remark" value="添加权限" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -257,12 +257,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111102" />
+            <column name="id" value="100102" />
             <column name="name" value="更新权限" />
             <column name="code" value="PERMISSION_UPDATE" />
             <column name="type" value="2" />
             <column name="sort_value" value="102" />
-            <column name="parent_id" value="109760" />
+            <column name="parent_id" value="100100" />
             <column name="remark" value="更新权限" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -270,12 +270,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111103" />
+            <column name="id" value="100103" />
             <column name="name" value="删除权限" />
             <column name="code" value="PERMISSION_DELETE" />
             <column name="type" value="2" />
             <column name="sort_value" value="103" />
-            <column name="parent_id" value="109760" />
+            <column name="parent_id" value="100100" />
             <column name="remark" value="删除权限" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -283,12 +283,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111104" />
+            <column name="id" value="100104" />
             <column name="name" value="查看权限概要" />
             <column name="code" value="PERMISSION_SUMMARY" />
             <column name="type" value="2" />
             <column name="sort_value" value="104" />
-            <column name="parent_id" value="109760" />
+            <column name="parent_id" value="100100" />
             <column name="remark" value="查看权限概要" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -296,12 +296,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111105" />
+            <column name="id" value="100105" />
             <column name="name" value="查看权限详情" />
             <column name="code" value="PERMISSION_DETAIL" />
             <column name="type" value="2" />
             <column name="sort_value" value="105" />
-            <column name="parent_id" value="109760" />
+            <column name="parent_id" value="100100" />
             <column name="remark" value="查看权限详情" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -310,12 +310,12 @@
         </insert>
         <!-- 其他二级权限插入 -->
         <insert tableName="permission">
-            <column name="id" value="111201" />
+            <column name="id" value="100201" />
             <column name="name" value="创建角色" />
             <column name="code" value="ROLE_CREATE" />
             <column name="type" value="2" />
             <column name="sort_value" value="201" />
-            <column name="parent_id" value="109761" />
+            <column name="parent_id" value="100200" />
             <column name="remark" value="创建角色" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -323,12 +323,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111202" />
+            <column name="id" value="100202" />
             <column name="name" value="更新角色" />
             <column name="code" value="ROLE_UPDATE" />
             <column name="type" value="2" />
             <column name="sort_value" value="203" />
-            <column name="parent_id" value="109761" />
+            <column name="parent_id" value="100200" />
             <column name="remark" value="更新角色" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -336,12 +336,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111203" />
+            <column name="id" value="100203" />
             <column name="name" value="删除角色" />
             <column name="code" value="ROLE_DELETE" />
             <column name="type" value="2" />
             <column name="sort_value" value="203" />
-            <column name="parent_id" value="109761" />
+            <column name="parent_id" value="100200" />
             <column name="remark" value="删除角色" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -349,12 +349,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111204" />
+            <column name="id" value="100204" />
             <column name="name" value="查看角色概要" />
             <column name="code" value="ROLE_SUMMARY" />
             <column name="type" value="2" />
             <column name="sort_value" value="204" />
-            <column name="parent_id" value="109761" />
+            <column name="parent_id" value="100200" />
             <column name="remark" value="查看角色概要" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -362,12 +362,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111205" />
+            <column name="id" value="100205" />
             <column name="name" value="查看角色详情" />
             <column name="code" value="ROLE_DETAIL" />
             <column name="type" value="2" />
             <column name="sort_value" value="205" />
-            <column name="parent_id" value="109761" />
+            <column name="parent_id" value="100200" />
             <column name="remark" value="查看角色详情" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -376,12 +376,12 @@
         </insert>
         <!-- 用户相关权限插入 -->
         <insert tableName="permission">
-            <column name="id" value="111301" />
+            <column name="id" value="100301" />
             <column name="name" value="创建用户" />
             <column name="code" value="USER_CREATE" />
             <column name="type" value="2" />
             <column name="sort_value" value="301" />
-            <column name="parent_id" value="109762" />
+            <column name="parent_id" value="100300" />
             <column name="remark" value="创建用户" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -389,12 +389,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111302" />
+            <column name="id" value="100302" />
             <column name="name" value="更新用户" />
             <column name="code" value="USER_UPDATE" />
             <column name="type" value="2" />
             <column name="sort_value" value="303" />
-            <column name="parent_id" value="109762" />
+            <column name="parent_id" value="100300" />
             <column name="remark" value="更新用户" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -402,12 +402,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111303" />
+            <column name="id" value="100303" />
             <column name="name" value="删除用户" />
             <column name="code" value="USER_DELETE" />
             <column name="type" value="2" />
             <column name="sort_value" value="303" />
-            <column name="parent_id" value="109762" />
+            <column name="parent_id" value="100300" />
             <column name="remark" value="删除用户" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -415,12 +415,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111304" />
+            <column name="id" value="100304" />
             <column name="name" value="查看用户概要" />
             <column name="code" value="USER_SUMMARY" />
             <column name="type" value="2" />
             <column name="sort_value" value="304" />
-            <column name="parent_id" value="109762" />
+            <column name="parent_id" value="100300" />
             <column name="remark" value="查看用户概要" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -428,12 +428,12 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111305" />
+            <column name="id" value="100305" />
             <column name="name" value="查看用户详情" />
             <column name="code" value="USER_DETAIL" />
             <column name="type" value="2" />
             <column name="sort_value" value="305" />
-            <column name="parent_id" value="109762" />
+            <column name="parent_id" value="100300" />
             <column name="remark" value="查看用户详情" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -442,7 +442,7 @@
         </insert>
         <!-- 客户端相关权限插入 -->
         <insert tableName="permission">
-            <column name="id" value="111401" />
+            <column name="id" value="100401" />
             <column name="name" value="添加客户端" />
             <column name="code" value="CLIENT_CREATE" />
             <column name="type" value="2" />
@@ -455,7 +455,7 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111402" />
+            <column name="id" value="100402" />
             <column name="name" value="更新客户端" />
             <column name="code" value="CLIENT_UPDATE" />
             <column name="type" value="2" />
@@ -468,7 +468,7 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111403" />
+            <column name="id" value="100403" />
             <column name="name" value="删除客户端" />
             <column name="code" value="CLIENT_DELETE" />
             <column name="type" value="2" />
@@ -481,7 +481,7 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111404" />
+            <column name="id" value="100404" />
             <column name="name" value="查看客户端概要" />
             <column name="code" value="CLIENT_SUMMARY" />
             <column name="type" value="2" />
@@ -494,7 +494,7 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="111405" />
+            <column name="id" value="100405" />
             <column name="name" value="查看客户端详情" />
             <column name="code" value="CLIENT_DETAIL" />
             <column name="type" value="2" />
