@@ -46,9 +46,10 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     public void create(PermissionCreateRequest request) {
         final PermissionEntity entity = permissionConvertor.entityFromCreateRequest(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("权限信息不合法"));
-        Long parentId = Optional.of(entity).map(PermissionEntity::getParentId).orElse(null);
-        Optional.ofNullable(parentId).map(baseMapper::selectById).orElseThrow(() -> new NotExistException("父级权限不存在"));
-        entity.setSortValue(Optional.ofNullable(request.getSortValue()).orElseGet(() -> baseMapper.selectMaxSortValue(parentId) + 1));
+        Optional.of(entity).map(PermissionEntity::getParentId).ifPresent(parentId -> {
+            Optional.of(parentId).map(baseMapper::selectById).orElseThrow(() -> new NotExistException("父级权限不存在"));
+            entity.setSortValue(Optional.ofNullable(request.getSortValue()).orElseGet(() -> baseMapper.selectMaxSortValue(parentId) + 1));
+        });
         int inserted = baseMapper.insert(entity);
         Assert.state(inserted == 1, "权限创建失败");
     }
@@ -67,7 +68,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             if (CollectionUtils.isEmpty(entities)) {
                 throw new InvalidArgsException("该权限下没有子权限");
             }
-            int deleted = baseMapper.deleteByIds(entities.parallelStream().map(BaseEntity::getId).toList());
+            int deleted = baseMapper.deleteByIds(entities.stream().map(BaseEntity::getId).toList());
             Assert.state(deleted == entities.size(), "权限删除失败");
         }
     }
@@ -78,7 +79,10 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         wrapper.eq(PermissionEntity::getId, request.getId());
         wrapper.set(PermissionEntity::getName, request.getName());
         wrapper.set(PermissionEntity::getCode, request.getCode());
-        wrapper.set(PermissionEntity::getParentId, request.getParentId());
+        Optional.of(request).map(PermissionUpdateRequest::getParentId).ifPresent(parentId -> {
+            Optional.of(parentId).map(baseMapper::selectById).orElseThrow(() -> new NotExistException("父级权限不存在"));
+            wrapper.set(PermissionEntity::getParentId, request.getParentId());
+        });
         wrapper.set(PermissionEntity::getSortValue, request.getSortValue());
         wrapper.set(PermissionEntity::getRemark, request.getRemark());
         int updated = baseMapper.update(wrapper);
@@ -91,6 +95,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         wrapper.eq(Objects.nonNull(request.getId()), PermissionEntity::getId, request.getId());
         wrapper.eq(Objects.nonNull(request.getName()), PermissionEntity::getName, request.getName());
         wrapper.eq(Objects.nonNull(request.getCode()), PermissionEntity::getCode, request.getCode());
+        wrapper.eq(Objects.nonNull(request.getType()), PermissionEntity::getType, request.getType());
         wrapper.eq(Objects.nonNull(request.getParentId()), PermissionEntity::getParentId, request.getParentId());
         wrapper.eq(Objects.nonNull(request.getSortValue()), PermissionEntity::getSortValue, request.getSortValue());
         return baseMapper.selectOne(wrapper);
@@ -99,8 +104,11 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public List<PermissionEntity> tree(PermissionQueryRequest request) {
         List<PermissionEntity> list = this.list(request);
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
         return baseMapper
-                .getPermissionTreeByIds(list.parallelStream().map(BaseEntity::getId).toList(), request.getMode());
+                .getPermissionTreeByIds(list.stream().map(BaseEntity::getId).toList(), request.getMode());
     }
 
     @Override
@@ -109,6 +117,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         wrapper.eq(Objects.nonNull(request.getId()), PermissionEntity::getId, request.getId());
         wrapper.eq(Objects.nonNull(request.getName()), PermissionEntity::getName, request.getName());
         wrapper.eq(Objects.nonNull(request.getCode()), PermissionEntity::getCode, request.getCode());
+        wrapper.eq(Objects.nonNull(request.getType()), PermissionEntity::getType, request.getType());
         wrapper.eq(Objects.nonNull(request.getParentId()), PermissionEntity::getParentId, request.getParentId());
         wrapper.eq(Objects.nonNull(request.getSortValue()), PermissionEntity::getSortValue, request.getSortValue());
         return baseMapper.selectList(wrapper);
@@ -120,6 +129,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         wrapper.eq(Objects.nonNull(request.getId()), PermissionEntity::getId, request.getId());
         wrapper.eq(Objects.nonNull(request.getName()), PermissionEntity::getName, request.getName());
         wrapper.eq(Objects.nonNull(request.getCode()), PermissionEntity::getCode, request.getCode());
+        wrapper.eq(Objects.nonNull(request.getType()), PermissionEntity::getType, request.getType());
         wrapper.eq(Objects.nonNull(request.getParentId()), PermissionEntity::getParentId, request.getParentId());
         wrapper.isNull(Objects.isNull(request.getParentId()), PermissionEntity::getParentId);
         wrapper.eq(Objects.nonNull(request.getSortValue()), PermissionEntity::getSortValue, request.getSortValue());
@@ -143,10 +153,10 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         final List<PermissionEntity> updateEntities = new CopyOnWriteArrayList<>();
         final Map<T, PermissionEntity> entitiesMap = new ConcurrentHashMap<>();
         final List<T> rootNodes = new CopyOnWriteArrayList<>();
-        permissions.parallelStream()
+        permissions.stream()
                 .filter(i -> Objects.isNull(i.getParent()))
                 .forEach(rootNodes::add);
-        final Map<Object, List<T>> byParentMap = permissions.parallelStream()
+        final Map<Object, List<T>> byParentMap = permissions.stream()
                 .filter(i -> Objects.nonNull(i.getParent()))
                 .collect(Collectors.groupingBy(i -> i.getParent()));
         if (rootNodes.isEmpty()) {
@@ -154,7 +164,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         }
 
         LambdaQueryWrapper<PermissionEntity> wrapper = Wrappers.lambdaQuery(PermissionEntity.class);
-        wrapper.in(PermissionEntity::getCode, permissions.parallelStream().map(i -> i.getCode()).toList());
+        wrapper.in(PermissionEntity::getCode, permissions.stream().map(i -> i.getCode()).toList());
         final List<PermissionEntity> existEntities = baseMapper.selectList(wrapper);
 
         final CountDownLatch countDownLatch = new CountDownLatch(permissions.size());
@@ -163,7 +173,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         while (countDownLatch.getCount() != 0) {
             final List<T> tempNodes = new CopyOnWriteArrayList<>();
             workNodes.forEach(node -> {
-                List<PermissionEntity> list = existEntities.parallelStream()
+                List<PermissionEntity> list = existEntities.stream()
                         .filter(i -> i.getCode().equals(node.getCode())).toList();
                 if (list.size() > 1) {
                     log.error("查询权限编码不唯一: {}", node.getCode());

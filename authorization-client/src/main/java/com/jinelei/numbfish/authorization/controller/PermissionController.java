@@ -78,7 +78,6 @@ public class PermissionController implements PermissionApi {
     @PostMapping("/tree")
     @PreAuthorize("hasAuthority('PERMISSION_SUMMARY')")
     public BaseView<List<PermissionResponse>> tree(@RequestBody @Valid PermissionQueryRequest request) {
-        // AuthorizationHelper.hasPermissions(PermissionInstance.PERMISSION_SUMMARY);
         List<PermissionEntity> entities = permissionService.tree(request);
         List<PermissionResponse> convert = permissionService.convertTree(entities);
         return new BaseView<>(convert);

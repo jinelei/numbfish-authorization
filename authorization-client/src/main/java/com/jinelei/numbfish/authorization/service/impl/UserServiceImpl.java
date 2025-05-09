@@ -104,7 +104,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         Optional.ofNullable(request.getRoleIds())
                 .filter(i -> !CollectionUtils.isEmpty(i))
                 .ifPresent(list -> {
-                    final List<UserRoleEntity> userRoleEntities = list.parallelStream()
+                    final List<UserRoleEntity> userRoleEntities = list.stream()
                             .map(id -> {
                                 UserRoleEntity userRole = new UserRoleEntity();
                                 userRole.setUserId(entity.getId());
@@ -165,7 +165,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         Optional.ofNullable(request.getRoleIds())
                 .filter(i -> !CollectionUtils.isEmpty(i))
                 .ifPresent(list -> {
-                    final List<UserRoleEntity> userRoleEntities = list.parallelStream()
+                    final List<UserRoleEntity> userRoleEntities = list.stream()
                             .map(id -> {
                                 UserRoleEntity userRole = new UserRoleEntity();
                                 userRole.setUserId(request.getId());
@@ -307,12 +307,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         final Set<Long> roleIds = new HashSet<>();
         if (isAdmin) {
             final List<RoleEntity> roleEntities = roleService.list(Wrappers.lambdaQuery(RoleEntity.class));
-            roleEntities.parallelStream().map(BaseEntity::getId).forEach(roleIds::add);
+            roleEntities.stream().map(BaseEntity::getId).forEach(roleIds::add);
         } else {
             // 查询用户关联的所有的角色
             final List<UserRoleEntity> userRoleEntities = userRoleService
                     .list(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, user.getId()));
-            userRoleEntities.parallelStream().map(UserRoleEntity::getRoleId).forEach(roleIds::add);
+            userRoleEntities.stream().map(UserRoleEntity::getRoleId).forEach(roleIds::add);
         }
         List<RoleEntity> allRoles = ((RoleMapper) roleService.getBaseMapper())
                 .getRoleTreeByIds(new ArrayList<>(roleIds), TreeBuildMode.CHILD_AND_CURRENT);
@@ -325,14 +325,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         if (isAdmin) {
             final List<PermissionEntity> permissionEntities = permissionService
                     .list(Wrappers.lambdaQuery(PermissionEntity.class));
-            permissionEntities.parallelStream().map(BaseEntity::getId).forEach(permissionIds::add);
+            permissionEntities.stream().map(BaseEntity::getId).forEach(permissionIds::add);
         } else {
             // 查询用户关联的所有的角色
             if (!roles.isEmpty()) {
-                List<Long> roleIds = roles.parallelStream().map(BaseEntity::getId).toList();
+                List<Long> roleIds = roles.stream().map(BaseEntity::getId).toList();
                 final List<RolePermissionEntity> rolePermissionEntities = rolePermissionService.list(
                         Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, roleIds));
-                rolePermissionEntities.parallelStream().map(RolePermissionEntity::getPermissionId)
+                rolePermissionEntities.stream().map(RolePermissionEntity::getPermissionId)
                         .forEach(permissionIds::add);
             }
         }

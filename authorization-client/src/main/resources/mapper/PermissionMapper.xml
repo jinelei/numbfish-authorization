@@ -19,8 +19,14 @@
                         id,
                         name,
                         code,
+                        type,
                         sort_value,
                         parent_id,
+                        remark,
+                        created_user_id,
+                        created_time,
+                        updated_user_id,
+                        updated_time,
                         0 AS level,
                         CAST(id AS CHAR(1023)) AS ancestor
                     FROM
@@ -32,8 +38,14 @@
                         p.id,
                         p.name,
                         p.code,
+                        p.type,
                         p.sort_value,
                         p.parent_id,
+                        p.remark,
+                        p.created_user_id,
+                        p.created_time,
+                        p.updated_user_id,
+                        p.updated_time,
                         pt.level + 1,
                         CONCAT(pt.ancestor, ',', CAST(p.id AS CHAR(1023)))
                     FROM
@@ -45,8 +57,14 @@
                     id,
                     name,
                     code,
+                    type,
                     sort_value,
                     parent_id,
+                    remark,
+                    created_user_id,
+                    created_time,
+                    updated_user_id,
+                    updated_time,
                     level,
                     ancestor
                 FROM
