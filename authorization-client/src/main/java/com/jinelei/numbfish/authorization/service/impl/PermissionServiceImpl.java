@@ -79,6 +79,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         wrapper.eq(PermissionEntity::getId, request.getId());
         wrapper.set(PermissionEntity::getName, request.getName());
         wrapper.set(PermissionEntity::getCode, request.getCode());
+        wrapper.set(PermissionEntity::getType, request.getType());
         Optional.of(request).map(PermissionUpdateRequest::getParentId).ifPresent(parentId -> {
             Optional.of(parentId).map(baseMapper::selectById).orElseThrow(() -> new NotExistException("父级权限不存在"));
             wrapper.set(PermissionEntity::getParentId, request.getParentId());
