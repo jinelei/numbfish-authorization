@@ -232,7 +232,7 @@
             <column name="updated_time" valueComputed="NOW()" />
         </insert>
         <insert tableName="permission">
-            <column name="id" value="109763" />
+            <column name="id" value="100400" />
             <column name="name" value="客户端管理" />
             <column name="code" value="CLIENT_MANAGE" />
             <column name="type" value="0" />
@@ -447,7 +447,7 @@
             <column name="code" value="CLIENT_CREATE" />
             <column name="type" value="2" />
             <column name="sort_value" value="401" />
-            <column name="parent_id" value="109763" />
+            <column name="parent_id" value="100400" />
             <column name="remark" value="添加客户端" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -460,7 +460,7 @@
             <column name="code" value="CLIENT_UPDATE" />
             <column name="type" value="2" />
             <column name="sort_value" value="402" />
-            <column name="parent_id" value="109763" />
+            <column name="parent_id" value="100400" />
             <column name="remark" value="更新客户端" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -473,7 +473,7 @@
             <column name="code" value="CLIENT_DELETE" />
             <column name="type" value="2" />
             <column name="sort_value" value="403" />
-            <column name="parent_id" value="109763" />
+            <column name="parent_id" value="100400" />
             <column name="remark" value="删除客户端" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -486,7 +486,7 @@
             <column name="code" value="CLIENT_SUMMARY" />
             <column name="type" value="2" />
             <column name="sort_value" value="404" />
-            <column name="parent_id" value="109763" />
+            <column name="parent_id" value="100400" />
             <column name="remark" value="查看客户端概要" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
@@ -499,7 +499,7 @@
             <column name="code" value="CLIENT_DETAIL" />
             <column name="type" value="2" />
             <column name="sort_value" value="405" />
-            <column name="parent_id" value="109763" />
+            <column name="parent_id" value="100400" />
             <column name="remark" value="查看客户端详情" />
             <column name="created_user_id" value="1" />
             <column name="created_time" valueComputed="NOW()" />
