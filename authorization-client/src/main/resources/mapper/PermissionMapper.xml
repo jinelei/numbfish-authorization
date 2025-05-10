@@ -13,7 +13,7 @@
         </if>
     </select>
 
-    <select id="getPermissionTreeByIds" resultType="com.jinelei.numbfish.authorization.entity.PermissionEntity">
+    <select id="selectTree" resultType="com.jinelei.numbfish.authorization.entity.PermissionEntity">
     WITH RECURSIVE permission_tree AS (
                     SELECT
                         id,

@@ -27,11 +27,11 @@ public class PermissionResponse implements TreeResponse<PermissionResponse>, Ser
     @Schema(description = "权限备注信息")
     private String remark;
     @Schema(description = "创建人用户 ID")
-    private String createdUserId;
+    private Long createdUserId;
     @Schema(description = "创建时间")
     private LocalDateTime createdTime;
     @Schema(description = "更新人用户 ID")
-    private String updatedUserId;
+    private Long updatedUserId;
     @Schema(description = "更新时间")
     private LocalDateTime updatedTime;
     @Schema(description = "子级列表")
@@ -93,11 +93,11 @@ public class PermissionResponse implements TreeResponse<PermissionResponse>, Ser
         this.remark = remark;
     }
 
-    public String getCreatedUserId() {
+    public Long getCreatedUserId() {
         return createdUserId;
     }
 
-    public void setCreatedUserId(String createdUserId) {
+    public void setCreatedUserId(Long createdUserId) {
         this.createdUserId = createdUserId;
     }
 
@@ -109,11 +109,11 @@ public class PermissionResponse implements TreeResponse<PermissionResponse>, Ser
         this.createdTime = createdTime;
     }
 
-    public String getUpdatedUserId() {
+    public Long getUpdatedUserId() {
         return updatedUserId;
     }
 
-    public void setUpdatedUserId(String updatedUserId) {
+    public void setUpdatedUserId(Long updatedUserId) {
         this.updatedUserId = updatedUserId;
     }
 

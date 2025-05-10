@@ -6,6 +6,7 @@ import java.util.function.Function;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jinelei.numbfish.authorization.dto.*;
+import com.jinelei.numbfish.authorization.enumeration.TreeBuildMode;
 import com.jinelei.numbfish.common.exception.NotExistException;
 import com.jinelei.numbfish.common.helper.Snowflake;
 
@@ -51,7 +52,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     @Override
     public void create(PermissionCreateRequest request) {
-        final PermissionEntity entity = permissionConvertor.entityFromCreateRequest(request);
+        final PermissionEntity entity = permissionConvertor.requestToEntity(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("权限信息不合法"));
         Optional.of(entity).map(PermissionEntity::getParentId).ifPresent(parentId -> {
             Optional.of(parentId).map(baseMapper::selectById).orElseThrow(() -> new NotExistException("父级权限不存在"));
@@ -100,41 +101,63 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public PermissionEntity get(PermissionQueryRequest request) {
         LambdaQueryWrapper<PermissionEntity> wrapper = buildQueryWrapper.apply(request);
-        return baseMapper.selectOne(wrapper);
-    }
-
-    @Override
-    public List<PermissionEntity> tree(PermissionQueryRequest request) {
-        List<PermissionEntity> list = this.list(request);
-        if (CollectionUtils.isEmpty(list)) {
-            return new ArrayList<>();
+        PermissionEntity entity = baseMapper.selectOne(wrapper);
+        if (Objects.isNull(entity)) {
+            throw new NotExistException("权限不存在");
         }
-        return baseMapper
-                .getPermissionTreeByIds(list.stream().map(BaseEntity::getId).toList(), request.getMode());
+        if (Objects.nonNull(request.getMode())) {
+            if (TreeBuildMode.CHILD_AND_CURRENT.equals(request.getMode())) {
+                List<PermissionEntity> tree = baseMapper.selectTree(List.of(entity.getId()), request.getMode());
+                tree = permissionConvertor.tree(tree);
+                if (CollectionUtils.isEmpty(tree)) {
+                    throw new NotExistException("权限不存在");
+                } else if (tree.size() != 1) {
+                    throw new InvalidArgsException("查询到多个权限");
+                } else {
+                    entity = tree.getFirst();
+                }
+            } else {
+                throw new InvalidArgsException("不支持的查询模式");
+            }
+        }
+        return entity;
     }
 
     @Override
     public List<PermissionEntity> list(PermissionQueryRequest request) {
-        LambdaQueryWrapper<PermissionEntity> wrapper = buildQueryWrapper.apply(request);
-        return baseMapper.selectList(wrapper);
+        List<PermissionEntity> list = baseMapper.selectList(buildQueryWrapper.apply(request));
+        if (Objects.nonNull(request.getMode())) {
+            List<Long> ids = Optional.ofNullable(list)
+                    .stream().flatMap(Collection::stream)
+                    .map(BaseEntity::getId)
+                    .toList();
+            list = Optional.of(ids)
+                    .filter(i -> !CollectionUtils.isEmpty(i))
+                    .map(i -> baseMapper.selectTree(i, request.getMode()))
+                    .filter(i -> !CollectionUtils.isEmpty(i))
+                    .map(l -> permissionConvertor.tree(l))
+                    .orElse(new ArrayList<>());
+        }
+        return list;
     }
 
     @Override
     public IPage<PermissionEntity> page(IPage<PermissionEntity> page, PermissionQueryRequest request) {
         LambdaQueryWrapper<PermissionEntity> wrapper = buildQueryWrapper.apply(request);
         wrapper.isNull(Objects.isNull(request.getParentId()), PermissionEntity::getParentId);
-        return baseMapper.selectPage(page, wrapper);
-    }
-
-    @Override
-    public PermissionResponse convert(PermissionEntity entity) {
-        return permissionConvertor.entityToResponse(entity);
-    }
-
-    @Override
-    public List<PermissionResponse> convertTree(List<PermissionEntity> entity) {
-        List<PermissionEntity> tree = permissionConvertor.tree(entity);
-        return tree.parallelStream().map(permissionConvertor::entityToResponse).toList();
+        final IPage<PermissionEntity> result = baseMapper.selectPage(page, wrapper);
+        if (Objects.nonNull(request.getMode())) {
+            List<Long> ids = Optional.ofNullable(result.getRecords())
+                    .stream().flatMap(Collection::stream)
+                    .map(BaseEntity::getId)
+                    .toList();
+            Optional.of(ids)
+                    .filter(i -> !CollectionUtils.isEmpty(i))
+                    .map(i -> baseMapper.selectTree(i, request.getMode()))
+                    .map(l -> permissionConvertor.tree(l))
+                    .ifPresent(result::setRecords);
+        }
+        return result;
     }
 
 }

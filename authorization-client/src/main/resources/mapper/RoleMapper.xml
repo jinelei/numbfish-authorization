@@ -29,7 +29,7 @@
         </collection>
     </resultMap>
 
-    <select id="getRoleTreeByIds" resultType="com.jinelei.numbfish.authorization.entity.RoleEntity">
+    <select id="selectTree" resultType="com.jinelei.numbfish.authorization.entity.RoleEntity">
     WITH RECURSIVE role_tree AS (
                     SELECT
                         id,

@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jinelei.numbfish.authorization.convertor.PermissionConvertor;
 import com.jinelei.numbfish.authorization.convertor.RoleConvertor;
 import com.jinelei.numbfish.authorization.dto.*;
+import com.jinelei.numbfish.authorization.entity.PermissionEntity;
 import com.jinelei.numbfish.authorization.entity.RoleEntity;
 import com.jinelei.numbfish.authorization.entity.RolePermissionEntity;
 import com.jinelei.numbfish.authorization.mapper.RoleMapper;
+import com.jinelei.numbfish.authorization.mapper.RolePermissionMapper;
 import com.jinelei.numbfish.authorization.service.PermissionService;
 import com.jinelei.numbfish.authorization.service.RolePermissionService;
 import com.jinelei.numbfish.authorization.service.RoleService;
@@ -30,6 +33,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 @Service
@@ -40,6 +44,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
 
     @Autowired
     protected RoleConvertor roleConvertor;
+    @Autowired
+    protected PermissionConvertor permissionConvertor;
     @Autowired
     protected RolePermissionService rolePermissionService;
     @Autowired
@@ -59,7 +65,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
 
     @Override
     public void create(RoleCreateRequest request) {
-        final RoleEntity entity = roleConvertor.entityFromCreateRequest(request);
+        final RoleEntity entity = roleConvertor.requestToEntity(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("角色信息不合法"));
         Optional.of(entity).map(RoleEntity::getParentId).ifPresent(parentId -> {
             Optional.of(parentId).map(baseMapper::selectById).orElseThrow(() -> new NotExistException("父级角色不存在"));
@@ -191,7 +197,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
     @Override
     public RoleEntity get(RoleQueryRequest request) {
         LambdaQueryWrapper<RoleEntity> wrapper = buildQueryWrapper.apply(request);
-        return baseMapper.selectOne(wrapper);
+        RoleEntity roleEntity = baseMapper.selectOne(wrapper);
+        return roleEntity;
     }
 
     @Override
@@ -200,7 +207,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
         if (CollectionUtils.isEmpty(list)) {
             return new ArrayList<>();
         }
-        return baseMapper.getRoleTreeByIds(
+        return baseMapper.selectTree(
                 list.parallelStream().map(BaseEntity::getId).toList(),
                 request.getMode());
     }
@@ -208,25 +215,76 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
     @Override
     public List<RoleEntity> list(RoleQueryRequest request) {
         LambdaQueryWrapper<RoleEntity> wrapper = buildQueryWrapper.apply(request);
-        return baseMapper.selectList(wrapper);
+        List<RoleEntity> roleEntities = baseMapper.selectList(wrapper);
+        Optional.ofNullable(roleEntities)
+                .map(l -> l.stream().map(BaseEntity::getId).toList())
+                .map(ids -> rolePermissionService.getBaseMapper().selectList(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, ids)))
+                .map(l -> {
+                    List<Long> ids = l.stream().map(RolePermissionEntity::getPermissionId).toList();
+                    List<PermissionEntity> permissionEntities = permissionService.getBaseMapper().selectByIds(ids);
+                    return l.stream().collect(Collectors.groupingBy(RolePermissionEntity::getRoleId, Collectors.mapping(e ->
+                            permissionEntities.stream().filter(p -> p.getId().equals(e.getPermissionId())).findFirst().orElse(null), Collectors.toList())));
+                })
+                .ifPresent(map -> {
+                    roleEntities.forEach(e -> e.setWhitePermissions(map.get(e.getId())));
+                });
+        return roleEntities;
     }
 
     @Override
     public IPage<RoleEntity> page(IPage<RoleEntity> page, RoleQueryRequest request) {
         LambdaQueryWrapper<RoleEntity> wrapper = buildQueryWrapper.apply(request);
         wrapper.isNull(Objects.isNull(request.getParentId()), RoleEntity::getParentId);
-        return baseMapper.selectPage(page, wrapper);
+        IPage<RoleEntity> result = baseMapper.selectPage(page, wrapper);
+        Optional.ofNullable(result.getRecords())
+                .map(l -> l.stream().map(BaseEntity::getId).toList())
+                .map(ids -> rolePermissionService.getBaseMapper().selectList(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, ids)))
+                .map(l -> {
+                    List<Long> ids = l.stream().map(RolePermissionEntity::getPermissionId).toList();
+                    List<PermissionEntity> permissionEntities = permissionService.getBaseMapper().selectByIds(ids);
+                    return l.stream().collect(Collectors.groupingBy(RolePermissionEntity::getRoleId, Collectors.mapping(e ->
+                            permissionEntities.stream().filter(p -> p.getId().equals(e.getPermissionId())).findFirst().orElse(null), Collectors.toList())));
+                })
+                .ifPresent(map -> {
+                    result.getRecords().forEach(e -> e.setWhitePermissions(map.get(e.getId())));
+                });
+        return result;
     }
 
     @Override
     public RoleResponse convert(RoleEntity entity) {
-        return roleConvertor.entityToResponse(entity);
+        if (Objects.isNull(entity)) {
+            return null;
+        }
+        final RoleResponse roleResponse = roleConvertor.entityToResponse(entity);
+        if (Objects.isNull(roleResponse)) {
+            return null;
+        }
+        Optional.of(roleResponse)
+                .map(RoleResponse::getWhitePermissionIds)
+                .filter(i -> !CollectionUtils.isEmpty(i))
+                .map(ids -> {
+                    PermissionQueryRequest request = new PermissionQueryRequest();
+                    request.setIds(ids);
+                    return request;
+                })
+                .map(r -> permissionService.list(r))
+                .map(list -> permissionConvertor.entityToResponse(list))
+                .ifPresent(roleResponse::setWhitePermissions);
+        return roleResponse;
     }
 
     @Override
     public List<RoleResponse> convertTree(List<RoleEntity> entity) {
         List<RoleEntity> tree = roleConvertor.tree(entity);
-        return tree.parallelStream().map(roleConvertor::entityToResponse).toList();
+        return tree.stream().map(e -> {
+            RoleResponse r = roleConvertor.entityToResponse(e);
+            Optional.ofNullable(e)
+                    .map(RoleEntity::getWhitePermissions)
+                    .map(i -> i.stream().map(permissionConvertor::entityToResponse).collect(Collectors.toList()))
+                    .ifPresent(r::setWhitePermissions);
+            return r;
+        }).toList();
     }
 
 }

@@ -57,22 +57,12 @@ public interface RoleApi {
     BaseView<RoleResponse> get(@Valid RoleQueryRequest request);
 
     /**
-     * 查询角色详情
-     *
-     * @param request 角色请求对象
-     * @return 角色响应对象
-     */
-    @ApiOperationSupport(order = 5)
-    @Operation(summary = "获取角色树")
-    BaseView<List<RoleResponse>> tree(@Valid RoleQueryRequest request);
-
-    /**
      * 查询角色列表
      *
      * @param request 角色请求对象
      * @return 角色响应对象列表
      */
-    @ApiOperationSupport(order = 6)
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取角色列表")
     ListView<RoleResponse> list(@Valid RoleQueryRequest request);
 
@@ -82,7 +72,7 @@ public interface RoleApi {
      * @param request 角色请求对象
      * @return 角色响应对象列表
      */
-    @ApiOperationSupport(order = 7)
+    @ApiOperationSupport(order = 6)
     @Operation(summary = "获取角色分页")
     PageView<RoleResponse> page(@Valid PageRequest<RoleQueryRequest> request);
 

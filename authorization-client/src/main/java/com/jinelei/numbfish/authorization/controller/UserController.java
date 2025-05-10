@@ -86,7 +86,7 @@ public class UserController implements UserApi {
                 Optional.ofNullable(request.getParams()).orElse(new UserQueryRequest()));
         List<UserResponse> collect = page.getRecords().parallelStream().map(entity -> userService.convert(entity))
                 .collect(Collectors.toList());
-        return new PageView<>(collect, page.getTotal(), page.getPages(), page.getSize());
+        return new PageView<>(collect, page.getTotal(),  page.getCurrent(), page.getSize());
     }
 
     @Override

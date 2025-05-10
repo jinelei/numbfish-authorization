@@ -11,8 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-import java.util.List;
-
 @SuppressWarnings("unused")
 @ApiSupport(order = 1)
 @Tag(name = "权限管理")
@@ -57,22 +55,12 @@ public interface PermissionApi {
     BaseView<PermissionResponse> get(@Valid PermissionQueryRequest request);
 
     /**
-     * 查询权限详情
-     *
-     * @param request 权限请求对象
-     * @return 权限响应对象
-     */
-    @ApiOperationSupport(order = 4)
-    @Operation(summary = "获取权限树")
-    BaseView<List<PermissionResponse>> tree(@Valid PermissionQueryRequest request);
-
-    /**
      * 查询权限列表
      *
      * @param request 权限请求对象
      * @return 权限响应对象列表
      */
-    @ApiOperationSupport(order = 5)
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "获取权限列表")
     ListView<PermissionResponse> list(@Valid PermissionQueryRequest request);
 
@@ -82,7 +70,7 @@ public interface PermissionApi {
      * @param request 权限请求对象
      * @return 权限响应对象列表
      */
-    @ApiOperationSupport(order = 6)
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取权限分页")
     PageView<PermissionResponse> page(@Valid PageRequest<PermissionQueryRequest> request);
 

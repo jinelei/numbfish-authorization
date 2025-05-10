@@ -16,6 +16,6 @@ public interface PermissionMapper extends BaseMapper<PermissionEntity> {
 
     int selectMaxSortValue(@Param("parentId") Long parentId);
 
-    List<PermissionEntity> getPermissionTreeByIds(@Param("ids") List<Long> ids, @Param("mode") TreeBuildMode mode);
+    List<PermissionEntity> selectTree(@Param("ids") List<Long> ids, @Param("mode") TreeBuildMode mode);
 
 }

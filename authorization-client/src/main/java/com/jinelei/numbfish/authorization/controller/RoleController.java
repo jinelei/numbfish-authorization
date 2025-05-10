@@ -1,9 +1,14 @@
 package com.jinelei.numbfish.authorization.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import com.jinelei.numbfish.authorization.convertor.RoleConvertor;
+import com.jinelei.numbfish.authorization.dto.*;
+import com.jinelei.numbfish.authorization.enumeration.TreeBuildMode;
+import com.jinelei.numbfish.authorization.mapper.RoleMapper;
+import com.jinelei.numbfish.common.entity.BaseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -18,11 +23,6 @@ import com.jinelei.numbfish.authorization.api.RoleApi;
 import com.jinelei.numbfish.authorization.entity.RoleEntity;
 import com.jinelei.numbfish.common.helper.PageHelper;
 import com.jinelei.numbfish.authorization.service.RoleService;
-import com.jinelei.numbfish.authorization.dto.RoleCreateRequest;
-import com.jinelei.numbfish.authorization.dto.RoleDeleteRequest;
-import com.jinelei.numbfish.authorization.dto.RoleQueryRequest;
-import com.jinelei.numbfish.authorization.dto.RoleResponse;
-import com.jinelei.numbfish.authorization.dto.RoleUpdateRequest;
 import com.jinelei.numbfish.common.request.PageRequest;
 import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;
@@ -38,6 +38,8 @@ public class RoleController implements RoleApi {
 
     @Autowired
     protected RoleService roleService;
+    @Autowired
+    private RoleConvertor roleConvertor;
 
     @Override
     @PostMapping("/create")
@@ -68,17 +70,8 @@ public class RoleController implements RoleApi {
     @PreAuthorize("hasAuthority('ROLE_DETAIL')")
     public BaseView<RoleResponse> get(@RequestBody @Valid RoleQueryRequest request) {
         RoleEntity entity = roleService.get(request);
-        RoleResponse convert = roleService.convert(entity);
-        return new BaseView<>(convert);
-    }
-
-    @Override
-    @PostMapping("/tree")
-    @PreAuthorize("hasAuthority('ROLE_SUMMARY')")
-    public BaseView<List<RoleResponse>> tree(@RequestBody @Valid RoleQueryRequest request) {
-        List<RoleEntity> entities = roleService.tree(request);
-        List<RoleResponse> convert = roleService.convertTree(entities);
-        return new BaseView<>(convert);
+        RoleResponse response = roleConvertor.entityToResponse(entity);
+        return new BaseView<>(response);
     }
 
     @Override
@@ -86,9 +79,13 @@ public class RoleController implements RoleApi {
     @PreAuthorize("hasAuthority('ROLE_SUMMARY')")
     public ListView<RoleResponse> list(@RequestBody @Valid RoleQueryRequest request) {
         List<RoleEntity> entities = roleService.list(request);
-        List<RoleResponse> convert = entities.parallelStream().map(entity -> roleService.convert(entity))
-                .collect(Collectors.toList());
-        return new ListView<>(convert);
+        List<RoleResponse> response = Optional.ofNullable(entities)
+                .map(l -> l.stream().map(BaseEntity::getId).toList())
+                .map(ids -> ((RoleMapper) roleService.getBaseMapper()).selectTree(ids, TreeBuildMode.CHILD_AND_CURRENT))
+                .map(l -> roleConvertor.tree(l))
+                .map(l -> roleConvertor.entityToResponse(l))
+                .orElse(new ArrayList<>());
+        return new ListView<>(response);
     }
 
     @Override
@@ -97,9 +94,10 @@ public class RoleController implements RoleApi {
     public PageView<RoleResponse> page(@RequestBody @Valid PageRequest<RoleQueryRequest> request) {
         IPage<RoleEntity> page = roleService.page(PageHelper.toPage(new PageDTO<>(), request),
                 Optional.ofNullable(request.getParams()).orElse(new RoleQueryRequest()));
-        List<RoleResponse> collect = page.getRecords().parallelStream().map(entity -> roleService.convert(entity))
-                .collect(Collectors.toList());
-        return new PageView<>(collect, page.getTotal(), page.getPages(), page.getSize());
+        List<RoleResponse> response = Optional.ofNullable(page.getRecords())
+                .map(l -> roleConvertor.entityToResponse(l))
+                .orElse(new ArrayList<>());
+        return new PageView<>(response, page.getTotal(), page.getCurrent(), page.getSize());
     }
 
 }

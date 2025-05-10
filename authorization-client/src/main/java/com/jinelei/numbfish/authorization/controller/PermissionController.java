@@ -1,9 +1,14 @@
 package com.jinelei.numbfish.authorization.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.jinelei.numbfish.authorization.convertor.PermissionConvertor;
+import com.jinelei.numbfish.authorization.enumeration.TreeBuildMode;
+import com.jinelei.numbfish.authorization.mapper.PermissionMapper;
+import com.jinelei.numbfish.common.entity.BaseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -38,6 +43,8 @@ public class PermissionController implements PermissionApi {
 
     @Autowired
     protected PermissionService permissionService;
+    @Autowired
+    private PermissionConvertor permissionConvertor;
 
     @Override
     @PostMapping("/create")
@@ -68,17 +75,8 @@ public class PermissionController implements PermissionApi {
     @PreAuthorize("hasAuthority('PERMISSION_DETAIL')")
     public BaseView<PermissionResponse> get(@RequestBody @Valid PermissionQueryRequest request) {
         PermissionEntity entity = permissionService.get(request);
-        PermissionResponse convert = permissionService.convert(entity);
-        return new BaseView<>(convert);
-    }
-
-    @Override
-    @PostMapping("/tree")
-    @PreAuthorize("hasAuthority('PERMISSION_SUMMARY')")
-    public BaseView<List<PermissionResponse>> tree(@RequestBody @Valid PermissionQueryRequest request) {
-        List<PermissionEntity> entities = permissionService.tree(request);
-        List<PermissionResponse> convert = permissionService.convertTree(entities);
-        return new BaseView<>(convert);
+        PermissionResponse response = permissionConvertor.entityToResponse(entity);
+        return new BaseView<>(response);
     }
 
     @Override
@@ -86,9 +84,13 @@ public class PermissionController implements PermissionApi {
     @PreAuthorize("hasAuthority('PERMISSION_SUMMARY')")
     public ListView<PermissionResponse> list(@RequestBody @Valid PermissionQueryRequest request) {
         List<PermissionEntity> entities = permissionService.list(request);
-        List<PermissionResponse> convert = entities.parallelStream().map(entity -> permissionService.convert(entity))
-                .collect(Collectors.toList());
-        return new ListView<>(convert);
+        List<PermissionResponse> response = Optional.ofNullable(entities)
+                .map(l -> l.stream().map(BaseEntity::getId).toList())
+                .map(ids -> ((PermissionMapper) permissionService.getBaseMapper()).selectTree(ids, TreeBuildMode.CHILD_AND_CURRENT))
+                .map(l -> permissionConvertor.tree(l))
+                .map(l -> permissionConvertor.entityToResponse(l))
+                .orElse(new ArrayList<>());
+        return new ListView<>(response);
     }
 
     @Override
@@ -97,10 +99,13 @@ public class PermissionController implements PermissionApi {
     public PageView<PermissionResponse> page(@RequestBody @Valid PageRequest<PermissionQueryRequest> request) {
         IPage<PermissionEntity> page = permissionService.page(PageHelper.toPage(new PageDTO<>(), request),
                 Optional.ofNullable(request.getParams()).orElse(new PermissionQueryRequest()));
-        List<PermissionResponse> collect = page.getRecords().parallelStream()
-                .map(entity -> permissionService.convert(entity))
-                .collect(Collectors.toList());
-        return new PageView<>(collect, page.getTotal(), page.getPages(), page.getSize());
+        List<PermissionResponse> response = Optional.ofNullable(page.getRecords())
+                .map(l -> l.stream().map(BaseEntity::getId).toList())
+                .map(ids -> ((PermissionMapper) permissionService.getBaseMapper()).selectTree(ids, TreeBuildMode.CHILD_AND_CURRENT))
+                .map(l -> permissionConvertor.tree(l))
+                .map(l -> permissionConvertor.entityToResponse(l))
+                .orElse(new ArrayList<>());
+        return new PageView<>(response, page.getTotal(), page.getCurrent(), page.getSize());
     }
 
 }

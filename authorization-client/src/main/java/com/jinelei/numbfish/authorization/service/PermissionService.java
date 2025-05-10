@@ -18,14 +18,8 @@ public interface PermissionService extends IService<PermissionEntity> {
 
     PermissionEntity get(PermissionQueryRequest request);
 
-    List<PermissionEntity> tree(PermissionQueryRequest request);
-
     List<PermissionEntity> list(PermissionQueryRequest request);
 
     IPage<PermissionEntity> page(IPage<PermissionEntity> page, PermissionQueryRequest request);
-
-    PermissionResponse convert(PermissionEntity entity);
-
-    List<PermissionResponse> convertTree(List<PermissionEntity> entity);
 
 }

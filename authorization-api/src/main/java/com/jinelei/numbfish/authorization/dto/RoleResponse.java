@@ -29,11 +29,11 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
     @Schema(description = "是否启用，0 表示启用，1 表示禁用")
     private Boolean deleted;
     @Schema(description = "创建人用户 ID")
-    private String createdUserId;
+    private Long createdUserId;
     @Schema(description = "创建时间")
     private LocalDateTime createdTime;
     @Schema(description = "更新人用户 ID")
-    private String updatedUserId;
+    private Long updatedUserId;
     @Schema(description = "更新时间")
     private LocalDateTime updatedTime;
     @Schema(description = "删除人用户 ID")
@@ -114,11 +114,11 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
         this.deleted = deleted;
     }
 
-    public String getCreatedUserId() {
+    public Long getCreatedUserId() {
         return createdUserId;
     }
 
-    public void setCreatedUserId(String createdUserId) {
+    public void setCreatedUserId(Long createdUserId) {
         this.createdUserId = createdUserId;
     }
 
@@ -130,11 +130,11 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
         this.createdTime = createdTime;
     }
 
-    public String getUpdatedUserId() {
+    public Long getUpdatedUserId() {
         return updatedUserId;
     }
 
-    public void setUpdatedUserId(String updatedUserId) {
+    public void setUpdatedUserId(Long updatedUserId) {
         this.updatedUserId = updatedUserId;
     }
 

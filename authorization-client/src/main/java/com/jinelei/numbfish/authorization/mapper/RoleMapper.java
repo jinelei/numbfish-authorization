@@ -15,6 +15,6 @@ public interface RoleMapper extends BaseMapper<RoleEntity> {
 
     int selectMaxSortValue(@Param("parentId") Long parentId);
 
-    List<RoleEntity> getRoleTreeByIds(@Param("ids") List<Long> ids, @Param("mode") TreeBuildMode mode);
+    List<RoleEntity> selectTree(@Param("ids") List<Long> ids, @Param("mode") TreeBuildMode mode);
 
 }

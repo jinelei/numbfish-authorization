@@ -273,7 +273,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
             List<RoleEntity> roleByUser = getRoleListByUserId(userEntity);
             List<PermissionEntity> permissionByUser = getPermissionListByUserId(userEntity, roleByUser);
             userInfoResponse.setRoles(roleService.convertTree(roleByUser));
-            userInfoResponse.setPermissions(permissionService.convertTree(permissionByUser));
+            userInfoResponse.setPermissions(permissionConvertor.entityToResponse(permissionByUser));
             return userInfoResponse;
         }
         return null;
@@ -315,7 +315,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
             userRoleEntities.stream().map(UserRoleEntity::getRoleId).forEach(roleIds::add);
         }
         List<RoleEntity> allRoles = ((RoleMapper) roleService.getBaseMapper())
-                .getRoleTreeByIds(new ArrayList<>(roleIds), TreeBuildMode.CHILD_AND_CURRENT);
+                .selectTree(new ArrayList<>(roleIds), TreeBuildMode.CHILD_AND_CURRENT);
         return allRoles;
     }
 
@@ -337,7 +337,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
             }
         }
         List<PermissionEntity> allPermissions = ((PermissionMapper) permissionService.getBaseMapper())
-                .getPermissionTreeByIds(new ArrayList<>(permissionIds), TreeBuildMode.CHILD_AND_CURRENT);
+                .selectTree(new ArrayList<>(permissionIds), TreeBuildMode.CHILD_AND_CURRENT);
         return allPermissions;
     }
 
