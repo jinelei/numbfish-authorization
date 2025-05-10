@@ -1,6 +1,5 @@
 package com.jinelei.numbfish.authorization.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,7 +23,6 @@ import com.jinelei.numbfish.authorization.dto.PermissionDeleteRequest;
 import com.jinelei.numbfish.authorization.dto.PermissionQueryRequest;
 import com.jinelei.numbfish.authorization.dto.PermissionResponse;
 import com.jinelei.numbfish.authorization.dto.PermissionUpdateRequest;
-import com.jinelei.numbfish.authorization.permission.declaration.PermissionDeclaration;
 import com.jinelei.numbfish.common.request.PageRequest;
 import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;
@@ -103,14 +101,6 @@ public class PermissionController implements PermissionApi {
                 .map(entity -> permissionService.convert(entity))
                 .collect(Collectors.toList());
         return new PageView<>(collect, page.getTotal(), page.getPages(), page.getSize());
-    }
-
-    @Override
-    @PostMapping("/regist")
-    @PreAuthorize("hasAnyAuthority('PERMISSION_CREATE','PERMISSION_UPDATE','PERMISSION_DELETE')")
-    public <T extends PermissionDeclaration<?>> BaseView<Boolean> regist(@Valid List<T> permissions) {
-        Boolean result = permissionService.regist(Optional.ofNullable(permissions).orElse(new ArrayList<>()));
-        return new BaseView<>(result);
     }
 
 }

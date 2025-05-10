@@ -3,7 +3,6 @@ package com.jinelei.numbfish.authorization.api;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.numbfish.authorization.dto.*;
-import com.jinelei.numbfish.authorization.permission.declaration.RoleDeclaration;
 import com.jinelei.numbfish.common.request.PageRequest;
 import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;
@@ -87,14 +86,4 @@ public interface RoleApi {
     @Operation(summary = "获取角色分页")
     PageView<RoleResponse> page(@Valid PageRequest<RoleQueryRequest> request);
 
-    /**
-     * 注册角色实例
-     *
-     * @param <T>   角色实例
-     * @param roles 角色列表
-     * @return 注册结果
-     */
-    @ApiOperationSupport(order = 8)
-    @Operation(summary = "注册角色")
-    <T extends RoleDeclaration<?>> BaseView<Boolean> regist(@Valid List<T> roles);
 }

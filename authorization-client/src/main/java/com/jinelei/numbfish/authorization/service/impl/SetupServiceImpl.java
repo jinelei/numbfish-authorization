@@ -1,34 +1,19 @@
 package com.jinelei.numbfish.authorization.service.impl;
 
-import com.jinelei.numbfish.authorization.configuration.authentication.instance.PermissionInstance;
-import com.jinelei.numbfish.authorization.configuration.authentication.instance.RoleInstance;
 import com.jinelei.numbfish.authorization.convertor.UserConvertor;
 import com.jinelei.numbfish.authorization.dto.SetupRequest;
-import com.jinelei.numbfish.authorization.dto.UserCreateRequest;
 import com.jinelei.numbfish.authorization.dto.UserUpdateRequest;
 import com.jinelei.numbfish.authorization.entity.UserEntity;
 import com.jinelei.numbfish.authorization.service.PermissionService;
 import com.jinelei.numbfish.authorization.service.RoleService;
 import com.jinelei.numbfish.authorization.service.SetupService;
 import com.jinelei.numbfish.authorization.service.UserService;
-import com.jinelei.numbfish.common.exception.BaseException;
-import com.jinelei.numbfish.common.exception.InternalException;
-import com.jinelei.numbfish.common.exception.InvalidArgsException;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings("unused")

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinelei.numbfish.authorization.dto.*;
 import com.jinelei.numbfish.authorization.entity.RoleEntity;
-import com.jinelei.numbfish.authorization.permission.declaration.RoleDeclaration;
 
 import java.util.List;
 
@@ -28,7 +27,5 @@ public interface RoleService extends IService<RoleEntity> {
     RoleResponse convert(RoleEntity entity);
 
     List<RoleResponse> convertTree(List<RoleEntity> entity);
-
-    <T extends RoleDeclaration<?>> Boolean regist(List<T> roles);
 
 }

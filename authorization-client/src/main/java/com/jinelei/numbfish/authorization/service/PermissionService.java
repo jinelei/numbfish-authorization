@@ -3,7 +3,6 @@ package com.jinelei.numbfish.authorization.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinelei.numbfish.authorization.dto.*;
-import com.jinelei.numbfish.authorization.permission.declaration.PermissionDeclaration;
 import com.jinelei.numbfish.authorization.entity.PermissionEntity;
 
 import java.util.List;
@@ -28,7 +27,5 @@ public interface PermissionService extends IService<PermissionEntity> {
     PermissionResponse convert(PermissionEntity entity);
 
     List<PermissionResponse> convertTree(List<PermissionEntity> entity);
-
-    <T extends PermissionDeclaration<?>> Boolean regist(List<T> permissions);
 
 }

@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinelei.numbfish.authorization.convertor.RoleConvertor;
 import com.jinelei.numbfish.authorization.dto.*;
-import com.jinelei.numbfish.authorization.entity.PermissionEntity;
 import com.jinelei.numbfish.authorization.entity.RoleEntity;
 import com.jinelei.numbfish.authorization.entity.RolePermissionEntity;
 import com.jinelei.numbfish.authorization.mapper.RoleMapper;
@@ -15,8 +14,6 @@ import com.jinelei.numbfish.authorization.service.PermissionService;
 import com.jinelei.numbfish.authorization.service.RolePermissionService;
 import com.jinelei.numbfish.authorization.service.RoleService;
 import com.jinelei.numbfish.authorization.enumeration.RolePermissionType;
-import com.jinelei.numbfish.authorization.permission.declaration.PermissionDeclaration;
-import com.jinelei.numbfish.authorization.permission.declaration.RoleDeclaration;
 import com.jinelei.numbfish.common.entity.BaseEntity;
 import com.jinelei.numbfish.common.exception.InvalidArgsException;
 import com.jinelei.numbfish.common.exception.NotExistException;
@@ -31,15 +28,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.function.Function;
 
 @SuppressWarnings("unused")
 @Service
@@ -55,13 +45,26 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
     @Autowired
     protected PermissionService permissionService;
 
+    private final Function<RoleQueryRequest, LambdaQueryWrapper<RoleEntity>> buildQueryWrapper = (RoleQueryRequest request) -> {
+        LambdaQueryWrapper<RoleEntity> wrapper = Wrappers.lambdaQuery(RoleEntity.class);
+        wrapper.eq(Objects.nonNull(request.getId()), RoleEntity::getId, request.getId());
+        wrapper.eq(Objects.nonNull(request.getName()), RoleEntity::getName, request.getName());
+        wrapper.eq(Objects.nonNull(request.getCode()), RoleEntity::getCode, request.getCode());
+        wrapper.eq(Objects.nonNull(request.getType()), RoleEntity::getType, request.getType());
+        wrapper.eq(Objects.nonNull(request.getParentId()), RoleEntity::getParentId, request.getParentId());
+        wrapper.eq(Objects.nonNull(request.getSortValue()), RoleEntity::getSortValue, request.getSortValue());
+        wrapper.like(Objects.nonNull(request.getRemark()), RoleEntity::getRemark, request.getRemark());
+        return wrapper;
+    };
+
     @Override
     public void create(RoleCreateRequest request) {
         final RoleEntity entity = roleConvertor.entityFromCreateRequest(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("角色信息不合法"));
-        Long parentId = Optional.of(entity).map(RoleEntity::getParentId).orElse(null);
-        Optional.ofNullable(parentId).map(baseMapper::selectById).orElseThrow(() -> new NotExistException("父级角色不存在"));
-        entity.setSortValue(Optional.ofNullable(request.getSortValue()).orElseGet(() -> baseMapper.selectMaxSortValue(parentId) + 1));
+        Optional.of(entity).map(RoleEntity::getParentId).ifPresent(parentId -> {
+            Optional.of(parentId).map(baseMapper::selectById).orElseThrow(() -> new NotExistException("父级角色不存在"));
+            entity.setSortValue(Optional.ofNullable(request.getSortValue()).orElseGet(() -> baseMapper.selectMaxSortValue(parentId) + 1));
+        });
         int inserted = baseMapper.insert(entity);
         log.debug("创建角色: {}", inserted);
         Optional.ofNullable(request.getWhitePermissionIds())
@@ -187,19 +190,16 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
 
     @Override
     public RoleEntity get(RoleQueryRequest request) {
-        LambdaQueryWrapper<RoleEntity> wrapper = Wrappers.lambdaQuery(RoleEntity.class);
-        wrapper.eq(Objects.nonNull(request.getId()), RoleEntity::getId, request.getId());
-        wrapper.eq(Objects.nonNull(request.getName()), RoleEntity::getName, request.getName());
-        wrapper.eq(Objects.nonNull(request.getCode()), RoleEntity::getCode, request.getCode());
-        wrapper.eq(RoleEntity::getType, request.getType());
-        wrapper.eq(Objects.nonNull(request.getParentId()), RoleEntity::getParentId, request.getParentId());
-        wrapper.eq(Objects.nonNull(request.getSortValue()), RoleEntity::getSortValue, request.getSortValue());
+        LambdaQueryWrapper<RoleEntity> wrapper = buildQueryWrapper.apply(request);
         return baseMapper.selectOne(wrapper);
     }
 
     @Override
     public List<RoleEntity> tree(RoleQueryRequest request) {
         List<RoleEntity> list = this.list(request);
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
         return baseMapper.getRoleTreeByIds(
                 list.parallelStream().map(BaseEntity::getId).toList(),
                 request.getMode());
@@ -207,26 +207,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
 
     @Override
     public List<RoleEntity> list(RoleQueryRequest request) {
-        LambdaQueryWrapper<RoleEntity> wrapper = Wrappers.lambdaQuery(RoleEntity.class);
-        wrapper.eq(Objects.nonNull(request.getId()), RoleEntity::getId, request.getId());
-        wrapper.eq(Objects.nonNull(request.getName()), RoleEntity::getName, request.getName());
-        wrapper.eq(Objects.nonNull(request.getCode()), RoleEntity::getCode, request.getCode());
-        wrapper.eq(RoleEntity::getType, request.getType());
-        wrapper.eq(Objects.nonNull(request.getParentId()), RoleEntity::getParentId, request.getParentId());
-        wrapper.eq(Objects.nonNull(request.getSortValue()), RoleEntity::getSortValue, request.getSortValue());
+        LambdaQueryWrapper<RoleEntity> wrapper = buildQueryWrapper.apply(request);
         return baseMapper.selectList(wrapper);
     }
 
     @Override
     public IPage<RoleEntity> page(IPage<RoleEntity> page, RoleQueryRequest request) {
-        LambdaQueryWrapper<RoleEntity> wrapper = Wrappers.lambdaQuery(RoleEntity.class);
-        wrapper.eq(Objects.nonNull(request.getId()), RoleEntity::getId, request.getId());
-        wrapper.eq(Objects.nonNull(request.getName()), RoleEntity::getName, request.getName());
-        wrapper.eq(Objects.nonNull(request.getCode()), RoleEntity::getCode, request.getCode());
-        wrapper.eq(RoleEntity::getType, request.getType());
-        wrapper.eq(Objects.nonNull(request.getParentId()), RoleEntity::getParentId, request.getParentId());
+        LambdaQueryWrapper<RoleEntity> wrapper = buildQueryWrapper.apply(request);
         wrapper.isNull(Objects.isNull(request.getParentId()), RoleEntity::getParentId);
-        wrapper.eq(Objects.nonNull(request.getSortValue()), RoleEntity::getSortValue, request.getSortValue());
         return baseMapper.selectPage(page, wrapper);
     }
 
@@ -239,123 +227,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
     public List<RoleResponse> convertTree(List<RoleEntity> entity) {
         List<RoleEntity> tree = roleConvertor.tree(entity);
         return tree.parallelStream().map(roleConvertor::entityToResponse).toList();
-    }
-
-    @SuppressWarnings("all")
-    @Override
-    public <T extends RoleDeclaration<?>> Boolean regist(List<T> roles) {
-        final Map<T, RoleEntity> entitiesMap = new ConcurrentHashMap<>();
-        final List<RoleEntity> roleEntities = new CopyOnWriteArrayList<>();
-        final List<T> rootNodes = new CopyOnWriteArrayList<>();
-        roles.parallelStream()
-                .filter(i -> Objects.isNull(i.getParent()))
-                .forEach(rootNodes::add);
-        final Map<Object, List<T>> byParentMap = roles.parallelStream()
-                .filter(i -> Objects.nonNull(i.getParent()))
-                .collect(Collectors.groupingBy(i -> i.getParent()));
-        if (rootNodes.isEmpty()) {
-            log.error("角色树错误: 缺失根节点");
-        }
-
-        // 查询所有的角色列表
-        List<PermissionDeclaration<?>> permissions = new CopyOnWriteArrayList<>();
-        roles.parallelStream()
-                .map(i -> i.getPermissions())
-                .filter(Objects::nonNull)
-                .forEach(permissions::addAll);
-        final List<String> permissionCodes = permissions.parallelStream().map(PermissionDeclaration::getCode).distinct()
-                .toList();
-        final List<PermissionEntity> existPermissionList = permissionService
-                .list(Wrappers.lambdaQuery(PermissionEntity.class).in(PermissionEntity::getCode,
-                        permissionCodes));
-        final Map<T, List<PermissionEntity>> rolePermissionMap = new ConcurrentHashMap<>();
-        roles.parallelStream()
-                .filter(i -> Objects.nonNull(i.getPermissions()))
-                .forEach(i -> {
-                    List<PermissionEntity> list = i.getPermissions()
-                            .parallelStream()
-                            .map(j -> existPermissionList.parallelStream()
-                                    .filter(it -> j.getCode().equals(it.getCode()))
-                                    .toList())
-                            .flatMap(Collection::stream)
-                            .toList();
-                    rolePermissionMap.put(i, list);
-                });
-
-        final List<RoleEntity> existEntities = baseMapper.selectList(Wrappers.lambdaQuery(RoleEntity.class)
-                .in(RoleEntity::getCode, roles.parallelStream().map(i -> i.getCode()).toList()));
-
-        final List<RolePermissionEntity> rolePermissionEntities = new CopyOnWriteArrayList<>();
-
-        final CountDownLatch countDownLatch = new CountDownLatch(roles.size());
-
-        final List<T> workNodes = new CopyOnWriteArrayList<>(rootNodes);
-        while (countDownLatch.getCount() != 0) {
-            final List<T> tempNodes = new CopyOnWriteArrayList<>();
-            workNodes.forEach(node -> {
-                List<RoleEntity> list = existEntities.parallelStream()
-                        .filter(i -> i.getCode().equals(node.getCode())).toList();
-                if (list.size() > 1) {
-                    log.error("查询角色编码不唯一: {}", node.getCode());
-                }
-                final RoleEntity entity = fromDeclaration(
-                        list.stream().findFirst().orElse(new RoleEntity()),
-                        node);
-                Optional.of(node)
-                        .map(i -> i.getParent())
-                        .map(entitiesMap::get)
-                        .map(BaseEntity::getId)
-                        .ifPresent(entity::setParentId);
-                Optional.of(node)
-                        .map(rolePermissionMap::get)
-                        .ifPresent(l -> l.parallelStream().forEach(p -> {
-                            RolePermissionEntity r = new RolePermissionEntity();
-                            r.setId(snowflake.next());
-                            r.setRoleId(entity.getId());
-                            r.setPermissionId(p.getId());
-                            r.setType(RolePermissionType.WHITE);
-                            rolePermissionEntities.add(r);
-                        }));
-                entitiesMap.put(node, entity);
-                roleEntities.add(entity);
-                countDownLatch.countDown();
-                Optional.ofNullable(byParentMap.get(node)).ifPresent(tempNodes::addAll);
-            });
-            workNodes.clear();
-            workNodes.addAll(tempNodes);
-        }
-        List<Long> roleIds = roleEntities.parallelStream().map(BaseEntity::getId).toList();
-        List<RolePermissionEntity> existRolePermissions = rolePermissionService
-                .list(Wrappers.lambdaQuery(RolePermissionEntity.class)
-                        .in(!roleIds.isEmpty(), RolePermissionEntity::getRoleId, roleIds)
-                        .eq(roleIds.isEmpty(), RolePermissionEntity::getId, 0L));
-        final List<RolePermissionEntity> updatEntities = rolePermissionEntities
-                .parallelStream()
-                .map(e -> existRolePermissions.parallelStream()
-                        .filter(i -> i.isSimilar(e))
-                        .findAny()
-                        .map(ie -> ie.cover(e))
-                        .orElse(e))
-                .toList();
-        List<Long> deleteRolePermissionIds = existRolePermissions.parallelStream()
-                .filter(i -> updatEntities.parallelStream().noneMatch(j -> j.isSimilar(i)))
-                .map(BaseEntity::getId)
-                .toList();
-        List<BatchResult> results = baseMapper.insertOrUpdate(roleEntities);
-        rolePermissionService.getBaseMapper().insertOrUpdate(updatEntities);
-        rolePermissionService.getBaseMapper().deleteByIds(deleteRolePermissionIds);
-        return true;
-    }
-
-    public <T extends RoleDeclaration<?>> RoleEntity fromDeclaration(RoleEntity role, T node) {
-        role.setId(Optional.of(role).map(BaseEntity::getId).orElse(snowflake.next()));
-        role.setCode(node.getCode());
-        role.setRemark(node.getRemark());
-        role.setName(node.getName());
-        role.setSortValue(node.getSortValue());
-        role.setType(node.getType());
-        role.setParentId(Optional.of(role).map(RoleEntity::getParentId).orElse(null));
-        return role;
     }
 
 }

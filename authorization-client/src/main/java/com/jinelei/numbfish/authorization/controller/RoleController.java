@@ -1,6 +1,5 @@
 package com.jinelei.numbfish.authorization.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,7 +23,6 @@ import com.jinelei.numbfish.authorization.dto.RoleDeleteRequest;
 import com.jinelei.numbfish.authorization.dto.RoleQueryRequest;
 import com.jinelei.numbfish.authorization.dto.RoleResponse;
 import com.jinelei.numbfish.authorization.dto.RoleUpdateRequest;
-import com.jinelei.numbfish.authorization.permission.declaration.RoleDeclaration;
 import com.jinelei.numbfish.common.request.PageRequest;
 import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;
@@ -104,11 +102,4 @@ public class RoleController implements RoleApi {
         return new PageView<>(collect, page.getTotal(), page.getPages(), page.getSize());
     }
 
-    @Override
-    @PostMapping("/regist")
-    @PreAuthorize("hasAnyAuthority('ROLE_CREATE','ROLE_UPDATE','ROLE_DELETE')")
-    public <T extends RoleDeclaration<?>> BaseView<Boolean> regist(@Valid List<T> roles) {
-        Boolean result = roleService.regist(Optional.ofNullable(roles).orElse(new ArrayList<>()));
-        return new BaseView<>(result);
-    }
 }

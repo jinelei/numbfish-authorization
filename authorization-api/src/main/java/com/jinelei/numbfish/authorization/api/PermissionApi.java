@@ -3,7 +3,6 @@ package com.jinelei.numbfish.authorization.api;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.jinelei.numbfish.authorization.dto.*;
-import com.jinelei.numbfish.authorization.permission.declaration.PermissionDeclaration;
 import com.jinelei.numbfish.common.request.PageRequest;
 import com.jinelei.numbfish.common.view.BaseView;
 import com.jinelei.numbfish.common.view.ListView;
@@ -87,14 +86,4 @@ public interface PermissionApi {
     @Operation(summary = "获取权限分页")
     PageView<PermissionResponse> page(@Valid PageRequest<PermissionQueryRequest> request);
 
-    /**
-     * 注册权限实例
-     *
-     * @param <T>         权限实例
-     * @param permissions 权限列表
-     * @return 注册状态
-     */
-    @ApiOperationSupport(order = 6)
-    @Operation(summary = "注册权限")
-    <T extends PermissionDeclaration<?>> BaseView<Boolean> regist(@Valid List<T> permissions);
 }
