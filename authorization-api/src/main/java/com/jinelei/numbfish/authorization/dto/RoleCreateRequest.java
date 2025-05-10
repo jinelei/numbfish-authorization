@@ -28,10 +28,8 @@ public class RoleCreateRequest implements Serializable {
     private Long parentId;
     @Schema(description = "角色备注")
     protected String remark;
-    @NotNull(message = "白名单权限列表不能为空")
     @Schema(description = "白名单权限列表")
     protected List<Long> whitePermissionIds;
-    @NotNull(message = "黑名单权限列表不能为空")
     @Schema(description = "黑名单权限列表")
     protected List<Long> blackPermissionIds;
 
