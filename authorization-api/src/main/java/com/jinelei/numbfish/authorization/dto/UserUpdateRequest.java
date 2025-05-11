@@ -17,6 +17,8 @@ public class UserUpdateRequest implements Serializable {
     @NotBlank(message = "用户名称不能为空")
     @Schema(description = "用户名称")
     private String username;
+    @Schema(description = "用户昵称")
+    private String nickname;
     @Schema(description = "密码")
     private String password;
     @Schema(description = "用户头像")
@@ -27,9 +29,14 @@ public class UserUpdateRequest implements Serializable {
     private String phone;
     @Schema(description = "用户备注")
     protected String remark;
-    @NotNull(message = "角色列表不能为空")
-    @Schema(description = "角色列表")
+    @Schema(description = "权限id列表")
+    protected List<Long> permissionIds;
+    @Schema(description = "权限列表")
+    protected List<PermissionResponse> permissions;
+    @Schema(description = "角色id列表")
     protected List<Long> roleIds;
+    @Schema(description = "角色列表")
+    protected List<RoleResponse> roles;
 
     public Long getId() {
         return id;
@@ -45,6 +52,14 @@ public class UserUpdateRequest implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getPassword() {
@@ -87,6 +102,22 @@ public class UserUpdateRequest implements Serializable {
         this.remark = remark;
     }
 
+    public List<Long> getPermissionIds() {
+        return permissionIds;
+    }
+
+    public void setPermissionIds(List<Long> permissionIds) {
+        this.permissionIds = permissionIds;
+    }
+
+    public List<PermissionResponse> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<PermissionResponse> permissions) {
+        this.permissions = permissions;
+    }
+
     public List<Long> getRoleIds() {
         return roleIds;
     }
@@ -95,16 +126,24 @@ public class UserUpdateRequest implements Serializable {
         this.roleIds = roleIds;
     }
 
+    public List<RoleResponse> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RoleResponse> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         UserUpdateRequest that = (UserUpdateRequest) o;
-        return Objects.equals(id, that.id) && Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(avatar, that.avatar) && Objects.equals(email, that.email) && Objects.equals(phone, that.phone) && Objects.equals(remark, that.remark) && Objects.equals(roleIds, that.roleIds);
+        return Objects.equals(id, that.id) && Objects.equals(username, that.username) && Objects.equals(nickname, that.nickname) && Objects.equals(password, that.password) && Objects.equals(avatar, that.avatar) && Objects.equals(email, that.email) && Objects.equals(phone, that.phone) && Objects.equals(remark, that.remark) && Objects.equals(permissionIds, that.permissionIds) && Objects.equals(permissions, that.permissions) && Objects.equals(roleIds, that.roleIds) && Objects.equals(roles, that.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, avatar, email, phone, remark, roleIds);
+        return Objects.hash(id, username, nickname, password, avatar, email, phone, remark, permissionIds, permissions, roleIds, roles);
     }
 
     @Override
@@ -112,12 +151,16 @@ public class UserUpdateRequest implements Serializable {
         return "UserUpdateRequest{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
                 ", password='" + password + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
                 ", remark='" + remark + '\'' +
+                ", permissionIds=" + permissionIds +
+                ", permissions=" + permissions +
                 ", roleIds=" + roleIds +
+                ", roles=" + roles +
                 '}';
     }
 }

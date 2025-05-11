@@ -45,7 +45,7 @@ public class SetupServiceImpl implements SetupService {
 
     @Override
     public Boolean init(SetupRequest request) {
-        UserUpdateRequest update = userConvertor.entityFromSetupRequest(request);
+        UserUpdateRequest update = userConvertor.setupToRequest(request);
         update.setId(1L);
         userService.update(update);
         return true;

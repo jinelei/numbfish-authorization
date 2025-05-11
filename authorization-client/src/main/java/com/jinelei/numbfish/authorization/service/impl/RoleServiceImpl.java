@@ -173,7 +173,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
                     roleEntity.setPermissions(list);
                     roleEntity.setPermissionIds(Optional.ofNullable(roleEntity.getPermissions()).stream().flatMap(Collection::stream).map(PermissionEntity::getId).collect(Collectors.toList()));
                 });
-
         return roleEntity;
     }
 

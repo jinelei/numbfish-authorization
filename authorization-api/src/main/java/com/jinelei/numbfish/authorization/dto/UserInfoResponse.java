@@ -19,8 +19,12 @@ public class UserInfoResponse implements Serializable {
     private String email;
     @Schema(description = "备注")
     private String remark;
+    @Schema(description = "权限id列表")
+    protected List<Long> permissionIds;
     @Schema(description = "权限列表")
     protected List<PermissionResponse> permissions;
+    @Schema(description = "角色id列表")
+    protected List<Long> roleIds;
     @Schema(description = "角色列表")
     protected List<RoleResponse> roles;
 
@@ -64,12 +68,28 @@ public class UserInfoResponse implements Serializable {
         this.remark = remark;
     }
 
+    public List<Long> getPermissionIds() {
+        return permissionIds;
+    }
+
+    public void setPermissionIds(List<Long> permissionIds) {
+        this.permissionIds = permissionIds;
+    }
+
     public List<PermissionResponse> getPermissions() {
         return permissions;
     }
 
     public void setPermissions(List<PermissionResponse> permissions) {
         this.permissions = permissions;
+    }
+
+    public List<Long> getRoleIds() {
+        return roleIds;
+    }
+
+    public void setRoleIds(List<Long> roleIds) {
+        this.roleIds = roleIds;
     }
 
     public List<RoleResponse> getRoles() {
@@ -84,12 +104,12 @@ public class UserInfoResponse implements Serializable {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         UserInfoResponse that = (UserInfoResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(username, that.username) && Objects.equals(phone, that.phone) && Objects.equals(email, that.email) && Objects.equals(remark, that.remark) && Objects.equals(permissions, that.permissions) && Objects.equals(roles, that.roles);
+        return Objects.equals(id, that.id) && Objects.equals(username, that.username) && Objects.equals(phone, that.phone) && Objects.equals(email, that.email) && Objects.equals(remark, that.remark) && Objects.equals(permissionIds, that.permissionIds) && Objects.equals(permissions, that.permissions) && Objects.equals(roleIds, that.roleIds) && Objects.equals(roles, that.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, phone, email, remark, permissions, roles);
+        return Objects.hash(id, username, phone, email, remark, permissionIds, permissions, roleIds, roles);
     }
 
     @Override
@@ -100,7 +120,9 @@ public class UserInfoResponse implements Serializable {
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
                 ", remark='" + remark + '\'' +
+                ", permissionIds=" + permissionIds +
                 ", permissions=" + permissions +
+                ", roleIds=" + roleIds +
                 ", roles=" + roles +
                 '}';
     }

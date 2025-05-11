@@ -14,6 +14,8 @@ public class UserCreateRequest implements Serializable {
     @NotBlank(message = "用户名称不能为空")
     @Schema(description = "用户名称")
     private String username;
+    @Schema(description = "用户昵称")
+    private String nickname;
     @Schema(description = "密码")
     private String password;
     @Schema(description = "用户头像")
@@ -24,8 +26,7 @@ public class UserCreateRequest implements Serializable {
     private String phone;
     @Schema(description = "用户备注")
     protected String remark;
-    @NotNull(message = "角色列表不能为空")
-    @Schema(description = "角色列表")
+    @Schema(description = "角色id列表")
     protected List<Long> roleIds;
 
     public String getUsername() {
@@ -34,6 +35,14 @@ public class UserCreateRequest implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getPassword() {
@@ -88,18 +97,19 @@ public class UserCreateRequest implements Serializable {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         UserCreateRequest that = (UserCreateRequest) o;
-        return Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(avatar, that.avatar) && Objects.equals(email, that.email) && Objects.equals(phone, that.phone) && Objects.equals(remark, that.remark) && Objects.equals(roleIds, that.roleIds);
+        return Objects.equals(username, that.username) && Objects.equals(nickname, that.nickname) && Objects.equals(password, that.password) && Objects.equals(avatar, that.avatar) && Objects.equals(email, that.email) && Objects.equals(phone, that.phone) && Objects.equals(remark, that.remark) && Objects.equals(roleIds, that.roleIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, password, avatar, email, phone, remark, roleIds);
+        return Objects.hash(username, nickname, password, avatar, email, phone, remark, roleIds);
     }
 
     @Override
     public String toString() {
         return "UserCreateRequest{" +
                 "username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
                 ", password='" + password + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +

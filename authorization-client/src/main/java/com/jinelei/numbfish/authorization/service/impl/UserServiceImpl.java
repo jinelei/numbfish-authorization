@@ -2,6 +2,8 @@ package com.jinelei.numbfish.authorization.service.impl;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.jinelei.numbfish.authorization.configuration.authentication.TokenAuthenticationToken;
 import com.jinelei.numbfish.authorization.configuration.authentication.TokenCacheKeyGenerator;
@@ -89,9 +91,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
         this.property = property;
     }
 
+    private final Function<UserQueryRequest, LambdaQueryWrapper<UserEntity>> buildQueryWrapper = (UserQueryRequest request) -> {
+        LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
+        wrapper.eq(Objects.nonNull(request.getId()), UserEntity::getId, request.getId());
+        wrapper.like(Objects.nonNull(request.getUsername()), UserEntity::getUsername, request.getUsername());
+        wrapper.like(Objects.nonNull(request.getNickname()), UserEntity::getNickname, request.getNickname());
+        wrapper.like(Objects.nonNull(request.getPhone()), UserEntity::getPhone, request.getPhone());
+        wrapper.like(Objects.nonNull(request.getEmail()), UserEntity::getEmail, request.getEmail());
+        wrapper.like(Objects.nonNull(request.getAvatar()), UserEntity::getAvatar, request.getAvatar());
+        wrapper.like(Objects.nonNull(request.getRemark()), UserEntity::getRemark, request.getRemark());
+        return wrapper;
+    };
+
     @Override
     public void create(UserCreateRequest request) {
-        final UserEntity entity = userConvertor.entityFromCreateRequest(request);
+        final UserEntity entity = userConvertor.requestToEntity(request);
         Optional.ofNullable(entity).orElseThrow(() -> new InvalidArgsException("角色信息不合法"));
         Optional.of(entity).map(UserEntity::getPassword).ifPresentOrElse(password -> {
             if (password.length() < 6) {
@@ -179,32 +193,60 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
 
     @Override
     public UserEntity get(UserQueryRequest request) {
-        LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
-        wrapper.eq(Objects.nonNull(request.getId()), UserEntity::getId, request.getId());
-        wrapper.like(Objects.nonNull(request.getUsername()), UserEntity::getUsername, request.getUsername());
-        wrapper.like(Objects.nonNull(request.getEmail()), UserEntity::getEmail, request.getEmail());
-        wrapper.like(Objects.nonNull(request.getPhone()), UserEntity::getPhone, request.getPhone());
-        return baseMapper.selectOne(wrapper);
+        LambdaQueryWrapper<UserEntity> wrapper = buildQueryWrapper.apply(request);
+        UserEntity userEntity = baseMapper.selectOne(wrapper);
+        Optional.ofNullable(userEntity)
+                .map(BaseEntity::getId)
+                .map(id -> userRoleService.getBaseMapper().selectList(Wrappers.lambdaQuery(UserRoleEntity.class).eq(UserRoleEntity::getUserId, id)))
+                .map(list -> list.stream().map(UserRoleEntity::getRoleId).distinct().collect(Collectors.toList()))
+                .map(ids -> roleService.getBaseMapper().selectByIds(ids))
+                .ifPresent(list -> {
+                    userEntity.setRoles(list);
+                    userEntity.setRoleIds(Optional.ofNullable(userEntity.getRoles()).stream().flatMap(Collection::stream).map(RoleEntity::getId).collect(Collectors.toList()));
+                });
+        return userEntity;
     }
 
     @Override
     public List<UserEntity> list(UserQueryRequest request) {
-        LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
-        wrapper.eq(Objects.nonNull(request.getId()), UserEntity::getId, request.getId());
-        wrapper.like(Objects.nonNull(request.getUsername()), UserEntity::getUsername, request.getUsername());
-        wrapper.like(Objects.nonNull(request.getEmail()), UserEntity::getEmail, request.getEmail());
-        wrapper.like(Objects.nonNull(request.getPhone()), UserEntity::getPhone, request.getPhone());
-        return baseMapper.selectList(wrapper);
+        LambdaQueryWrapper<UserEntity> wrapper = buildQueryWrapper.apply(request);
+        List<UserEntity> userEntities = baseMapper.selectList(wrapper);
+        Optional.ofNullable(userEntities)
+                .map(l -> l.stream().map(BaseEntity::getId).toList())
+                .map(ids -> userRoleService.getBaseMapper().selectList(Wrappers.lambdaQuery(UserRoleEntity.class).in(UserRoleEntity::getUserId, ids)))
+                .map(l -> {
+                    List<Long> ids = l.stream().map(UserRoleEntity::getRoleId).toList();
+                    List<RoleEntity> roleEntities = roleService.getBaseMapper().selectByIds(ids);
+                    return l.stream().collect(Collectors.groupingBy(UserRoleEntity::getRoleId, Collectors.mapping(e ->
+                            roleEntities.stream().filter(p -> p.getId().equals(e.getRoleId())).findFirst().orElse(null), Collectors.toList())));
+                })
+                .ifPresent(map -> userEntities.forEach(e -> {
+                    e.setRoles(map.get(e.getId()));
+                    e.setRoleIds(Optional.ofNullable(e.getRoles()).stream().flatMap(Collection::stream).map(RoleEntity::getId).collect(Collectors.toList()));
+                }));
+        return userEntities;
     }
 
     @Override
     public IPage<UserEntity> page(IPage<UserEntity> page, UserQueryRequest request) {
-        LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery(UserEntity.class);
-        wrapper.eq(Objects.nonNull(request.getId()), UserEntity::getId, request.getId());
-        wrapper.like(Objects.nonNull(request.getUsername()), UserEntity::getUsername, request.getUsername());
-        wrapper.like(Objects.nonNull(request.getEmail()), UserEntity::getEmail, request.getEmail());
-        wrapper.like(Objects.nonNull(request.getPhone()), UserEntity::getPhone, request.getPhone());
-        return baseMapper.selectPage(page, wrapper);
+        LambdaQueryWrapper<UserEntity> wrapper = buildQueryWrapper.apply(request);
+        IPage<UserEntity> result = baseMapper.selectPage(page, wrapper);
+        Optional.ofNullable(result.getRecords())
+                .map(l -> l.stream().map(BaseEntity::getId).toList())
+                .filter(list -> !CollectionUtils.isEmpty(list))
+                .map(ids -> userRoleService.getBaseMapper().selectList(Wrappers.lambdaQuery(UserRoleEntity.class).in(UserRoleEntity::getUserId, ids)))
+                .filter(list -> !CollectionUtils.isEmpty(list))
+                .map(l -> {
+                    List<Long> ids = l.stream().map(UserRoleEntity::getRoleId).toList();
+                    List<RoleEntity> roleEntities = roleService.getBaseMapper().selectByIds(ids);
+                    return l.stream().collect(Collectors.groupingBy(UserRoleEntity::getUserId, Collectors.mapping(e ->
+                            roleEntities.stream().filter(p -> p.getId().equals(e.getRoleId())).findFirst().orElse(null), Collectors.toList())));
+                })
+                .ifPresent(map -> result.getRecords().forEach(e -> {
+                    e.setRoles(map.get(e.getId()));
+                    e.setRoleIds(Optional.ofNullable(e.getRoles()).stream().flatMap(Collection::stream).map(RoleEntity::getId).collect(Collectors.toList()));
+                }));
+        return result;
     }
 
     @Override
@@ -269,7 +311,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity>
                 .orElseThrow(() -> new InvalidArgsException("用户未登录"));
         if (authentication instanceof TokenAuthenticationToken token) {
             UserEntity userEntity = getById(token.getUserId());
-            UserInfoResponse userInfoResponse = userConvertor.entityToInfoResponse(userEntity);
+            UserInfoResponse userInfoResponse = userConvertor.entityToInfo(userEntity);
             List<RoleEntity> roleByUser = getRoleListByUserId(userEntity);
             List<PermissionEntity> permissionByUser = getPermissionListByUserId(userEntity, roleByUser);
             userInfoResponse.setRoles(roleService.convertTree(roleByUser));

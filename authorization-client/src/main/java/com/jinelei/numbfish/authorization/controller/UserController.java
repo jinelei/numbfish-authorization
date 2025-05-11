@@ -1,10 +1,15 @@
 package com.jinelei.numbfish.authorization.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.jinelei.numbfish.authorization.convertor.UserConvertor;
 import com.jinelei.numbfish.authorization.dto.*;
+import com.jinelei.numbfish.authorization.enumeration.TreeBuildMode;
+import com.jinelei.numbfish.authorization.mapper.UserMapper;
+import com.jinelei.numbfish.common.entity.BaseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +39,8 @@ public class UserController implements UserApi {
 
     @Autowired
     protected UserService userService;
+    @Autowired
+    UserConvertor userConvertor;
 
     @Override
     @PostMapping("/create")
@@ -64,8 +71,8 @@ public class UserController implements UserApi {
     @PreAuthorize("hasAuthority('USER_DETAIL')")
     public BaseView<UserResponse> get(@RequestBody @Valid UserQueryRequest request) {
         UserEntity entity = userService.get(request);
-        UserResponse convert = userService.convert(entity);
-        return new BaseView<>(convert);
+        UserResponse response = userConvertor.entityToResponse(entity);
+        return new BaseView<>(response);
     }
 
     @Override
@@ -73,9 +80,8 @@ public class UserController implements UserApi {
     @PreAuthorize("hasAuthority('USER_SUMMARY')")
     public ListView<UserResponse> list(@RequestBody @Valid UserQueryRequest request) {
         List<UserEntity> entities = userService.list(request);
-        List<UserResponse> convert = entities.parallelStream().map(entity -> userService.convert(entity))
-                .collect(Collectors.toList());
-        return new ListView<>(convert);
+        List<UserResponse> response = userConvertor.entityToResponse(entities);
+        return new ListView<>(response);
     }
 
     @Override
@@ -84,9 +90,8 @@ public class UserController implements UserApi {
     public PageView<UserResponse> page(@RequestBody @Valid PageRequest<UserQueryRequest> request) {
         IPage<UserEntity> page = userService.page(PageHelper.toPage(new PageDTO<>(), request),
                 Optional.ofNullable(request.getParams()).orElse(new UserQueryRequest()));
-        List<UserResponse> collect = page.getRecords().parallelStream().map(entity -> userService.convert(entity))
-                .collect(Collectors.toList());
-        return new PageView<>(collect, page.getTotal(),  page.getCurrent(), page.getSize());
+        List<UserResponse> collect = userConvertor.entityToResponse(page.getRecords());
+        return new PageView<>(collect, page.getTotal(), page.getCurrent(), page.getSize());
     }
 
     @Override

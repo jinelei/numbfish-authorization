@@ -1,596 +1,597 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
     <changeSet id="permission_create" author="jinelei">
         <createTable tableName="permission" remarks="权限实体">
             <column name="id" type="BIGINT" autoIncrement="true" remarks="权限实体的唯一标识，自增主键">
-                <constraints primaryKey="true" primaryKeyName="pk_permission" nullable="false" />
+                <constraints primaryKey="true" primaryKeyName="pk_permission" nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)" remarks="权限名称" />
-            <column name="code" type="VARCHAR(255)" remarks="权限代码" />
-            <column name="type" type="INT" remarks="权限类型" />
-            <column name="sort_value" type="INT" defaultValueNumeric="0" remarks="权限排序值" />
-            <column name="parent_id" type="BIGINT" remarks="父权限 ID" />
-            <column name="remark" type="TEXT" remarks="权限备注信息" />
-            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID" />
+            <column name="name" type="VARCHAR(255)" remarks="权限名称"/>
+            <column name="code" type="VARCHAR(255)" remarks="权限代码"/>
+            <column name="type" type="INT" remarks="权限类型"/>
+            <column name="sort_value" type="INT" defaultValueNumeric="0" remarks="权限排序值"/>
+            <column name="parent_id" type="BIGINT" remarks="父权限 ID"/>
+            <column name="remark" type="TEXT" remarks="权限备注信息"/>
+            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID"/>
             <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"
-                remarks="创建时间" />
-            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID" />
+                    remarks="创建时间"/>
+            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID"/>
             <column name="updated_time" type="TIMESTAMP"
-                defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-                remarks="更新时间" />
+                    defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+                    remarks="更新时间"/>
         </createTable>
-        <addUniqueConstraint tableName="permission" constraintName="uk_name" columnNames="name" />
-        <addUniqueConstraint tableName="permission" constraintName="uk_code" columnNames="code" />
+        <addUniqueConstraint tableName="permission" constraintName="uk_name" columnNames="name"/>
+        <addUniqueConstraint tableName="permission" constraintName="uk_code" columnNames="code"/>
         <addForeignKeyConstraint baseTableName="permission" baseColumnNames="parent_id"
-            constraintName="fk_permission_parent"
-            referencedTableName="permission" referencedColumnNames="id"
-            onDelete="CASCADE" onUpdate="CASCADE" />
+                                 constraintName="fk_permission_parent"
+                                 referencedTableName="permission" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
     </changeSet>
 
     <changeSet id="role_create" author="jinelei">
         <createTable tableName="role" remarks="角色实体">
             <column name="id" type="BIGINT" autoIncrement="true"
-                remarks="角色实体的唯一标识，自增主键">
-                <constraints primaryKey="true" primaryKeyName="pk_role" nullable="false" />
+                    remarks="角色实体的唯一标识，自增主键">
+                <constraints primaryKey="true" primaryKeyName="pk_role" nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)" remarks="角色名称" />
-            <column name="code" type="VARCHAR(255)" remarks="角色代码" />
-            <column name="type" type="INT" remarks="角色类型" />
-            <column name="sort_value" type="INT" defaultValueNumeric="0" remarks="角色排序值" />
-            <column name="parent_id" type="BIGINT" remarks="父角色 ID" />
-            <column name="remark" type="TEXT" remarks="角色备注信息" />
-            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID" />
+            <column name="name" type="VARCHAR(255)" remarks="角色名称"/>
+            <column name="code" type="VARCHAR(255)" remarks="角色代码"/>
+            <column name="type" type="INT" remarks="角色类型"/>
+            <column name="sort_value" type="INT" defaultValueNumeric="0" remarks="角色排序值"/>
+            <column name="parent_id" type="BIGINT" remarks="父角色 ID"/>
+            <column name="remark" type="TEXT" remarks="角色备注信息"/>
+            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID"/>
             <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"
-                remarks="创建时间" />
-            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID" />
+                    remarks="创建时间"/>
+            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID"/>
             <column name="updated_time" type="TIMESTAMP"
-                defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间" />
+                    defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间"/>
         </createTable>
-        <addUniqueConstraint tableName="role" constraintName="uk_name" columnNames="name" />
-        <addUniqueConstraint tableName="role" constraintName="uk_code" columnNames="code" />
+        <addUniqueConstraint tableName="role" constraintName="uk_name" columnNames="name"/>
+        <addUniqueConstraint tableName="role" constraintName="uk_code" columnNames="code"/>
         <addForeignKeyConstraint baseTableName="role" baseColumnNames="parent_id"
-            constraintName="fk_role_parent"
-            referencedTableName="role" referencedColumnNames="id"
-            onDelete="CASCADE" onUpdate="CASCADE" />
+                                 constraintName="fk_role_parent"
+                                 referencedTableName="role" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
     </changeSet>
 
     <changeSet id="user_create" author="jinelei">
         <createTable tableName="user" remarks="用户实体">
             <column name="id" type="BIGINT" autoIncrement="true"
-                remarks="角色实体的唯一标识，自增主键">
-                <constraints primaryKey="true" primaryKeyName="pk_user" nullable="false" />
+                    remarks="角色实体的唯一标识，自增主键">
+                <constraints primaryKey="true" primaryKeyName="pk_user" nullable="false"/>
             </column>
-            <column name="username" type="VARCHAR(255)" remarks="用户名称" />
-            <column name="password" type="VARCHAR(255)" remarks="密码" />
-            <column name="avatar" type="VARCHAR(255)" remarks="用户头像" />
-            <column name="email" type="VARCHAR(255)" remarks="邮箱" />
-            <column name="phone" type="VARCHAR(255)" remarks="手机号" />
-            <column name="remark" type="TEXT" remarks="角色备注信息" />
-            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID" />
+            <column name="username" type="VARCHAR(255)" remarks="用户名"/>
+            <column name="nickname" type="VARCHAR(255)" remarks="用户昵称"/>
+            <column name="password" type="VARCHAR(255)" remarks="密码"/>
+            <column name="avatar" type="VARCHAR(255)" remarks="用户头像"/>
+            <column name="email" type="VARCHAR(255)" remarks="邮箱"/>
+            <column name="phone" type="VARCHAR(255)" remarks="手机号"/>
+            <column name="remark" type="TEXT" remarks="角色备注信息"/>
+            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID"/>
             <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"
-                remarks="创建时间" />
-            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID" />
+                    remarks="创建时间"/>
+            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID"/>
             <column name="updated_time" type="TIMESTAMP"
-                defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间" />
+                    defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间"/>
         </createTable>
-        <addUniqueConstraint tableName="user" constraintName="uk_name" columnNames="username" />
+        <addUniqueConstraint tableName="user" constraintName="uk_name" columnNames="username"/>
     </changeSet>
 
     <changeSet id="client_create" author="jinelei">
         <createTable tableName="client" remarks="客户端实体">
             <column name="id" type="BIGINT" autoIncrement="true"
-                remarks="客户端实体的唯一标识，自增主键">
-                <constraints primaryKey="true" primaryKeyName="pk_client" nullable="false" />
+                    remarks="客户端实体的唯一标识，自增主键">
+                <constraints primaryKey="true" primaryKeyName="pk_client" nullable="false"/>
             </column>
-            <column name="access_key" type="VARCHAR(255)" remarks="客户端访问密钥" />
-            <column name="secret_key" type="VARCHAR(255)" remarks="客户端密钥" />
-            <column name="expired_at" type="TIMESTAMP" remarks="客户端密钥过期时间" />
-            <column name="remark" type="TEXT" remarks="角色备注信息" />
-            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人客户端 ID" />
+            <column name="access_key" type="VARCHAR(255)" remarks="客户端访问密钥"/>
+            <column name="secret_key" type="VARCHAR(255)" remarks="客户端密钥"/>
+            <column name="expired_at" type="TIMESTAMP" remarks="客户端密钥过期时间"/>
+            <column name="remark" type="TEXT" remarks="角色备注信息"/>
+            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人客户端 ID"/>
             <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"
-                remarks="创建时间" />
-            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人客户端 ID" />
+                    remarks="创建时间"/>
+            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人客户端 ID"/>
             <column name="updated_time" type="TIMESTAMP"
-                defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间" />
+                    defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间"/>
             <column name="deleted" type="TINYINT(1)" defaultValueNumeric="0"
-                remarks="是否启用，0 表示启用，1 表示禁用" />
-            <column name="deleted_user_id" type="VARCHAR(255)" remarks="删除人客户端 ID" />
-            <column name="deleted_time" type="TIMESTAMP" remarks="删除时间" />
+                    remarks="是否启用，0 表示启用，1 表示禁用"/>
+            <column name="deleted_user_id" type="VARCHAR(255)" remarks="删除人客户端 ID"/>
+            <column name="deleted_time" type="TIMESTAMP" remarks="删除时间"/>
         </createTable>
         <addUniqueConstraint tableName="client" constraintName="uk_access_key"
-            columnNames="access_key" />
+                             columnNames="access_key"/>
     </changeSet>
 
     <changeSet id="role_permission_table_create" author="jinelei">
         <createTable tableName="role_permission" remarks="角色和权限关联">
             <column name="id" type="BIGINT" autoIncrement="true"
-                remarks="关联记录的唯一标识，自增主键">
-                <constraints primaryKey="true" primaryKeyName="pk_role_permission" nullable="false" />
+                    remarks="关联记录的唯一标识，自增主键">
+                <constraints primaryKey="true" primaryKeyName="pk_role_permission" nullable="false"/>
             </column>
-            <column name="role_id" type="BIGINT" remarks="角色 ID，关联 role 表的 id" />
+            <column name="role_id" type="BIGINT" remarks="角色 ID，关联 role 表的 id"/>
             <column name="permission_id" type="BIGINT"
-                remarks="权限 ID，关联 permission 表的 id" />
-            <column name="remark" type="TEXT" remarks="角色备注信息" />
-            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID" />
+                    remarks="权限 ID，关联 permission 表的 id"/>
+            <column name="remark" type="TEXT" remarks="角色备注信息"/>
+            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID"/>
             <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"
-                remarks="创建时间" />
-            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID" />
+                    remarks="创建时间"/>
+            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID"/>
             <column name="updated_time" type="TIMESTAMP"
-                defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间" />
+                    defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间"/>
         </createTable>
         <addForeignKeyConstraint baseTableName="role_permission" baseColumnNames="role_id"
-            constraintName="fk_role_permission_role"
-            referencedTableName="role" referencedColumnNames="id"
-            onDelete="CASCADE" onUpdate="CASCADE" />
+                                 constraintName="fk_role_permission_role"
+                                 referencedTableName="role" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
         <addForeignKeyConstraint baseTableName="role_permission" baseColumnNames="permission_id"
-            constraintName="fk_role_permission_permission"
-            referencedTableName="permission" referencedColumnNames="id"
-            onDelete="CASCADE" onUpdate="CASCADE" />
+                                 constraintName="fk_role_permission_permission"
+                                 referencedTableName="permission" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
         <addUniqueConstraint tableName="role_permission" constraintName="uk_role_permission"
-            columnNames="role_id,permission_id" />
+                             columnNames="role_id,permission_id"/>
     </changeSet>
 
     <changeSet id="user_role_table_create" author="jinelei">
         <createTable tableName="user_role" remarks="用户和角色关联">
             <column name="id" type="BIGINT" autoIncrement="true"
-                remarks="关联记录的唯一标识，自增主键">
-                <constraints primaryKey="true" primaryKeyName="pk_user_role" nullable="false" />
+                    remarks="关联记录的唯一标识，自增主键">
+                <constraints primaryKey="true" primaryKeyName="pk_user_role" nullable="false"/>
             </column>
-            <column name="user_id" type="BIGINT" remarks="用户 ID，关联 user 表的 id" />
-            <column name="role_id" type="BIGINT" remarks="角色 ID，关联 role 表的 id" />
-            <column name="type" type="INT" remarks="角色权限关联类型" />
-            <column name="remark" type="TEXT" remarks="角色备注信息" />
-            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID" />
+            <column name="user_id" type="BIGINT" remarks="用户 ID，关联 user 表的 id"/>
+            <column name="role_id" type="BIGINT" remarks="角色 ID，关联 role 表的 id"/>
+            <column name="type" type="INT" remarks="角色权限关联类型"/>
+            <column name="remark" type="TEXT" remarks="角色备注信息"/>
+            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID"/>
             <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"
-                remarks="创建时间" />
-            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID" />
+                    remarks="创建时间"/>
+            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID"/>
             <column name="updated_time" type="TIMESTAMP"
-                defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间" />
+                    defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间"/>
         </createTable>
         <addForeignKeyConstraint baseTableName="user_role" baseColumnNames="role_id"
-            constraintName="fk_user_role_role"
-            referencedTableName="role" referencedColumnNames="id"
-            onDelete="CASCADE" onUpdate="CASCADE" />
+                                 constraintName="fk_user_role_role"
+                                 referencedTableName="role" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
         <addForeignKeyConstraint baseTableName="user_role" baseColumnNames="user_id"
-            constraintName="fk_user_role_user"
-            referencedTableName="user" referencedColumnNames="id"
-            onDelete="CASCADE" onUpdate="CASCADE" />
+                                 constraintName="fk_user_role_user"
+                                 referencedTableName="user" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
         <addUniqueConstraint tableName="user_role" constraintName="uk_user_role"
-            columnNames="role_id,user_id" />
+                             columnNames="role_id,user_id"/>
     </changeSet>
 
     <changeSet id="client_permission_table_create" author="jinelei">
         <createTable tableName="client_permission" remarks="客户端和权限关联">
             <column name="id" type="BIGINT" autoIncrement="true" remarks="关联记录的唯一标识，自增主键">
                 <constraints primaryKey="true" primaryKeyName="pk_client_permission"
-                    nullable="false" />
+                             nullable="false"/>
             </column>
-            <column name="client_id" type="BIGINT" remarks="客户端 ID，关联 client 表的 id" />
+            <column name="client_id" type="BIGINT" remarks="客户端 ID，关联 client 表的 id"/>
             <column name="permission_id" type="BIGINT"
-                remarks="权限 ID，关联 permission 表的 id" />
-            <column name="type" type="INT" remarks="客户端权限关联类型" />
-            <column name="remark" type="TEXT" remarks="客户端备注信息" />
-            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID" />
+                    remarks="权限 ID，关联 permission 表的 id"/>
+            <column name="type" type="INT" remarks="客户端权限关联类型"/>
+            <column name="remark" type="TEXT" remarks="客户端备注信息"/>
+            <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID"/>
             <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"
-                remarks="创建时间" />
-            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID" />
+                    remarks="创建时间"/>
+            <column name="updated_user_id" type="VARCHAR(255)" remarks="更新人用户 ID"/>
             <column name="updated_time" type="TIMESTAMP"
-                defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间" />
+                    defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="更新时间"/>
         </createTable>
         <addForeignKeyConstraint baseTableName="client_permission" baseColumnNames="client_id"
-            constraintName="fk_client_permission_client"
-            referencedTableName="client" referencedColumnNames="id"
-            onDelete="CASCADE" onUpdate="CASCADE" />
+                                 constraintName="fk_client_permission_client"
+                                 referencedTableName="client" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
         <addForeignKeyConstraint baseTableName="client_permission" baseColumnNames="permission_id"
-            constraintName="fk_client_permission_permission"
-            referencedTableName="permission" referencedColumnNames="id"
-            onDelete="CASCADE" onUpdate="CASCADE" />
+                                 constraintName="fk_client_permission_permission"
+                                 referencedTableName="permission" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
         <addUniqueConstraint tableName="client_permission" constraintName="uk_client_permission"
-            columnNames="client_id,permission_id" />
+                             columnNames="client_id,permission_id"/>
     </changeSet>
 
     <changeSet id="insert_permission_data" author="jinelei">
         <insert tableName="permission">
-            <column name="id" value="100100" />
-            <column name="name" value="权限管理" />
-            <column name="code" value="PERMISSION_MANAGE" />
-            <column name="type" value="0" />
-            <column name="sort_value" value="100" />
-            <column name="remark" value="权限管理" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100100"/>
+            <column name="name" value="权限管理"/>
+            <column name="code" value="PERMISSION_MANAGE"/>
+            <column name="type" value="0"/>
+            <column name="sort_value" value="100"/>
+            <column name="remark" value="权限管理"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100200" />
-            <column name="name" value="角色管理" />
-            <column name="code" value="ROLE_MANAGE" />
-            <column name="type" value="0" />
-            <column name="sort_value" value="200" />
-            <column name="remark" value="角色管理" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100200"/>
+            <column name="name" value="角色管理"/>
+            <column name="code" value="ROLE_MANAGE"/>
+            <column name="type" value="0"/>
+            <column name="sort_value" value="200"/>
+            <column name="remark" value="角色管理"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100300" />
-            <column name="name" value="用户管理" />
-            <column name="code" value="USER_MANAGE" />
-            <column name="type" value="0" />
-            <column name="sort_value" value="300" />
-            <column name="remark" value="用户管理" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100300"/>
+            <column name="name" value="用户管理"/>
+            <column name="code" value="USER_MANAGE"/>
+            <column name="type" value="0"/>
+            <column name="sort_value" value="300"/>
+            <column name="remark" value="用户管理"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100400" />
-            <column name="name" value="客户端管理" />
-            <column name="code" value="CLIENT_MANAGE" />
-            <column name="type" value="0" />
-            <column name="sort_value" value="400" />
-            <column name="remark" value="客户端管理" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100400"/>
+            <column name="name" value="客户端管理"/>
+            <column name="code" value="CLIENT_MANAGE"/>
+            <column name="type" value="0"/>
+            <column name="sort_value" value="400"/>
+            <column name="remark" value="客户端管理"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100101" />
-            <column name="name" value="添加权限" />
-            <column name="code" value="PERMISSION_CREATE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="101" />
-            <column name="parent_id" value="100100" />
-            <column name="remark" value="添加权限" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100101"/>
+            <column name="name" value="添加权限"/>
+            <column name="code" value="PERMISSION_CREATE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="101"/>
+            <column name="parent_id" value="100100"/>
+            <column name="remark" value="添加权限"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100102" />
-            <column name="name" value="更新权限" />
-            <column name="code" value="PERMISSION_UPDATE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="102" />
-            <column name="parent_id" value="100100" />
-            <column name="remark" value="更新权限" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100102"/>
+            <column name="name" value="更新权限"/>
+            <column name="code" value="PERMISSION_UPDATE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="102"/>
+            <column name="parent_id" value="100100"/>
+            <column name="remark" value="更新权限"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100103" />
-            <column name="name" value="删除权限" />
-            <column name="code" value="PERMISSION_DELETE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="103" />
-            <column name="parent_id" value="100100" />
-            <column name="remark" value="删除权限" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100103"/>
+            <column name="name" value="删除权限"/>
+            <column name="code" value="PERMISSION_DELETE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="103"/>
+            <column name="parent_id" value="100100"/>
+            <column name="remark" value="删除权限"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100104" />
-            <column name="name" value="查看权限概要" />
-            <column name="code" value="PERMISSION_SUMMARY" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="104" />
-            <column name="parent_id" value="100100" />
-            <column name="remark" value="查看权限概要" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100104"/>
+            <column name="name" value="查看权限概要"/>
+            <column name="code" value="PERMISSION_SUMMARY"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="104"/>
+            <column name="parent_id" value="100100"/>
+            <column name="remark" value="查看权限概要"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100105" />
-            <column name="name" value="查看权限详情" />
-            <column name="code" value="PERMISSION_DETAIL" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="105" />
-            <column name="parent_id" value="100100" />
-            <column name="remark" value="查看权限详情" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100105"/>
+            <column name="name" value="查看权限详情"/>
+            <column name="code" value="PERMISSION_DETAIL"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="105"/>
+            <column name="parent_id" value="100100"/>
+            <column name="remark" value="查看权限详情"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <!-- 其他二级权限插入 -->
         <insert tableName="permission">
-            <column name="id" value="100201" />
-            <column name="name" value="创建角色" />
-            <column name="code" value="ROLE_CREATE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="201" />
-            <column name="parent_id" value="100200" />
-            <column name="remark" value="创建角色" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100201"/>
+            <column name="name" value="创建角色"/>
+            <column name="code" value="ROLE_CREATE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="201"/>
+            <column name="parent_id" value="100200"/>
+            <column name="remark" value="创建角色"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100202" />
-            <column name="name" value="更新角色" />
-            <column name="code" value="ROLE_UPDATE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="203" />
-            <column name="parent_id" value="100200" />
-            <column name="remark" value="更新角色" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100202"/>
+            <column name="name" value="更新角色"/>
+            <column name="code" value="ROLE_UPDATE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="203"/>
+            <column name="parent_id" value="100200"/>
+            <column name="remark" value="更新角色"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100203" />
-            <column name="name" value="删除角色" />
-            <column name="code" value="ROLE_DELETE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="203" />
-            <column name="parent_id" value="100200" />
-            <column name="remark" value="删除角色" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100203"/>
+            <column name="name" value="删除角色"/>
+            <column name="code" value="ROLE_DELETE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="203"/>
+            <column name="parent_id" value="100200"/>
+            <column name="remark" value="删除角色"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100204" />
-            <column name="name" value="查看角色概要" />
-            <column name="code" value="ROLE_SUMMARY" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="204" />
-            <column name="parent_id" value="100200" />
-            <column name="remark" value="查看角色概要" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100204"/>
+            <column name="name" value="查看角色概要"/>
+            <column name="code" value="ROLE_SUMMARY"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="204"/>
+            <column name="parent_id" value="100200"/>
+            <column name="remark" value="查看角色概要"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100205" />
-            <column name="name" value="查看角色详情" />
-            <column name="code" value="ROLE_DETAIL" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="205" />
-            <column name="parent_id" value="100200" />
-            <column name="remark" value="查看角色详情" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100205"/>
+            <column name="name" value="查看角色详情"/>
+            <column name="code" value="ROLE_DETAIL"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="205"/>
+            <column name="parent_id" value="100200"/>
+            <column name="remark" value="查看角色详情"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <!-- 用户相关权限插入 -->
         <insert tableName="permission">
-            <column name="id" value="100301" />
-            <column name="name" value="创建用户" />
-            <column name="code" value="USER_CREATE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="301" />
-            <column name="parent_id" value="100300" />
-            <column name="remark" value="创建用户" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100301"/>
+            <column name="name" value="创建用户"/>
+            <column name="code" value="USER_CREATE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="301"/>
+            <column name="parent_id" value="100300"/>
+            <column name="remark" value="创建用户"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100302" />
-            <column name="name" value="更新用户" />
-            <column name="code" value="USER_UPDATE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="303" />
-            <column name="parent_id" value="100300" />
-            <column name="remark" value="更新用户" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100302"/>
+            <column name="name" value="更新用户"/>
+            <column name="code" value="USER_UPDATE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="303"/>
+            <column name="parent_id" value="100300"/>
+            <column name="remark" value="更新用户"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100303" />
-            <column name="name" value="删除用户" />
-            <column name="code" value="USER_DELETE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="303" />
-            <column name="parent_id" value="100300" />
-            <column name="remark" value="删除用户" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100303"/>
+            <column name="name" value="删除用户"/>
+            <column name="code" value="USER_DELETE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="303"/>
+            <column name="parent_id" value="100300"/>
+            <column name="remark" value="删除用户"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100304" />
-            <column name="name" value="查看用户概要" />
-            <column name="code" value="USER_SUMMARY" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="304" />
-            <column name="parent_id" value="100300" />
-            <column name="remark" value="查看用户概要" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100304"/>
+            <column name="name" value="查看用户概要"/>
+            <column name="code" value="USER_SUMMARY"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="304"/>
+            <column name="parent_id" value="100300"/>
+            <column name="remark" value="查看用户概要"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100305" />
-            <column name="name" value="查看用户详情" />
-            <column name="code" value="USER_DETAIL" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="305" />
-            <column name="parent_id" value="100300" />
-            <column name="remark" value="查看用户详情" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100305"/>
+            <column name="name" value="查看用户详情"/>
+            <column name="code" value="USER_DETAIL"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="305"/>
+            <column name="parent_id" value="100300"/>
+            <column name="remark" value="查看用户详情"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <!-- 客户端相关权限插入 -->
         <insert tableName="permission">
-            <column name="id" value="100401" />
-            <column name="name" value="添加客户端" />
-            <column name="code" value="CLIENT_CREATE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="401" />
-            <column name="parent_id" value="100400" />
-            <column name="remark" value="添加客户端" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100401"/>
+            <column name="name" value="添加客户端"/>
+            <column name="code" value="CLIENT_CREATE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="401"/>
+            <column name="parent_id" value="100400"/>
+            <column name="remark" value="添加客户端"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100402" />
-            <column name="name" value="更新客户端" />
-            <column name="code" value="CLIENT_UPDATE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="402" />
-            <column name="parent_id" value="100400" />
-            <column name="remark" value="更新客户端" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100402"/>
+            <column name="name" value="更新客户端"/>
+            <column name="code" value="CLIENT_UPDATE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="402"/>
+            <column name="parent_id" value="100400"/>
+            <column name="remark" value="更新客户端"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100403" />
-            <column name="name" value="删除客户端" />
-            <column name="code" value="CLIENT_DELETE" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="403" />
-            <column name="parent_id" value="100400" />
-            <column name="remark" value="删除客户端" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100403"/>
+            <column name="name" value="删除客户端"/>
+            <column name="code" value="CLIENT_DELETE"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="403"/>
+            <column name="parent_id" value="100400"/>
+            <column name="remark" value="删除客户端"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100404" />
-            <column name="name" value="查看客户端概要" />
-            <column name="code" value="CLIENT_SUMMARY" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="404" />
-            <column name="parent_id" value="100400" />
-            <column name="remark" value="查看客户端概要" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100404"/>
+            <column name="name" value="查看客户端概要"/>
+            <column name="code" value="CLIENT_SUMMARY"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="404"/>
+            <column name="parent_id" value="100400"/>
+            <column name="remark" value="查看客户端概要"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="permission">
-            <column name="id" value="100405" />
-            <column name="name" value="查看客户端详情" />
-            <column name="code" value="CLIENT_DETAIL" />
-            <column name="type" value="2" />
-            <column name="sort_value" value="405" />
-            <column name="parent_id" value="100400" />
-            <column name="remark" value="查看客户端详情" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="100405"/>
+            <column name="name" value="查看客户端详情"/>
+            <column name="code" value="CLIENT_DETAIL"/>
+            <column name="type" value="2"/>
+            <column name="sort_value" value="405"/>
+            <column name="parent_id" value="100400"/>
+            <column name="remark" value="查看客户端详情"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
     </changeSet>
 
     <changeSet id="insert_role_data" author="jinelei">
         <insert tableName="role">
-            <column name="id" value="148544" />
-            <column name="name" value="超级管理员" />
-            <column name="code" value="super_administrator" />
-            <column name="type" value="1" />
-            <column name="sort_value" value="10000" />
-            <column name="remark" value="超级管理员" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="148544"/>
+            <column name="name" value="超级管理员"/>
+            <column name="code" value="super_administrator"/>
+            <column name="type" value="1"/>
+            <column name="sort_value" value="10000"/>
+            <column name="remark" value="超级管理员"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="role">
-            <column name="id" value="148608" />
-            <column name="name" value="权限管理员" />
-            <column name="code" value="permission_admin" />
-            <column name="type" value="1" />
-            <column name="sort_value" value="10100" />
-            <column name="remark" value="权限管理员" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="148608"/>
+            <column name="name" value="权限管理员"/>
+            <column name="code" value="permission_admin"/>
+            <column name="type" value="1"/>
+            <column name="sort_value" value="10100"/>
+            <column name="remark" value="权限管理员"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="role">
-            <column name="id" value="148736" />
-            <column name="name" value="角色管理员" />
-            <column name="code" value="ROLE_ADMIN" />
-            <column name="type" value="1" />
-            <column name="sort_value" value="10200" />
-            <column name="remark" value="角色管理员" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="148736"/>
+            <column name="name" value="角色管理员"/>
+            <column name="code" value="ROLE_ADMIN"/>
+            <column name="type" value="1"/>
+            <column name="sort_value" value="10200"/>
+            <column name="remark" value="角色管理员"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="role">
-            <column name="id" value="148928" />
-            <column name="name" value="用户管理员" />
-            <column name="code" value="USER_ADMIN" />
-            <column name="type" value="1" />
-            <column name="sort_value" value="10300" />
-            <column name="remark" value="用户管理员" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="148928"/>
+            <column name="name" value="用户管理员"/>
+            <column name="code" value="USER_ADMIN"/>
+            <column name="type" value="1"/>
+            <column name="sort_value" value="10300"/>
+            <column name="remark" value="用户管理员"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="role">
-            <column name="id" value="149248" />
-            <column name="name" value="客户端管理员" />
-            <column name="code" value="CLIENT_ADMIN" />
-            <column name="type" value="1" />
-            <column name="sort_value" value="10400" />
-            <column name="remark" value="客户端管理员" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="149248"/>
+            <column name="name" value="客户端管理员"/>
+            <column name="code" value="CLIENT_ADMIN"/>
+            <column name="type" value="1"/>
+            <column name="sort_value" value="10400"/>
+            <column name="remark" value="客户端管理员"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="role">
-            <column name="id" value="149440" />
-            <column name="name" value="角色分配员" />
-            <column name="code" value="USER_ALLOCATOR" />
-            <column name="type" value="0" />
-            <column name="sort_value" value="10301" />
-            <column name="remark" value="角色分配员" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="149440"/>
+            <column name="name" value="角色分配员"/>
+            <column name="code" value="USER_ALLOCATOR"/>
+            <column name="type" value="0"/>
+            <column name="sort_value" value="10301"/>
+            <column name="remark" value="角色分配员"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
         <insert tableName="role">
-            <column name="id" value="149824" />
-            <column name="name" value="普通用户" />
-            <column name="code" value="USER_NORMAL" />
-            <column name="type" value="0" />
-            <column name="sort_value" value="10302" />
-            <column name="remark" value="普通用户" />
-            <column name="created_user_id" value="1" />
-            <column name="created_time" valueComputed="NOW()" />
-            <column name="updated_user_id" value="1" />
-            <column name="updated_time" valueComputed="NOW()" />
+            <column name="id" value="149824"/>
+            <column name="name" value="普通用户"/>
+            <column name="code" value="USER_NORMAL"/>
+            <column name="type" value="0"/>
+            <column name="sort_value" value="10302"/>
+            <column name="remark" value="普通用户"/>
+            <column name="created_user_id" value="1"/>
+            <column name="created_time" valueComputed="NOW()"/>
+            <column name="updated_user_id" value="1"/>
+            <column name="updated_time" valueComputed="NOW()"/>
         </insert>
     </changeSet>
 
@@ -598,6 +599,7 @@
         <insert tableName="user">
             <column name="id" value="1"/>
             <column name="username" value="admin"/>
+            <column name="nickname" value="admin"/>
             <column name="password" value=""/>
             <column name="avatar" value=""/>
             <column name="email" value=""/>
