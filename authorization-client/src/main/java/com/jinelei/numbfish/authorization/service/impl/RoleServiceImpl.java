@@ -239,6 +239,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity>
         Optional.ofNullable(result.getRecords())
                 .map(l -> l.stream().map(BaseEntity::getId).toList())
                 .map(ids -> rolePermissionService.getBaseMapper().selectList(Wrappers.lambdaQuery(RolePermissionEntity.class).in(RolePermissionEntity::getRoleId, ids)))
+                .filter(list -> !CollectionUtils.isEmpty(list))
                 .map(l -> {
                     List<Long> ids = l.stream().map(RolePermissionEntity::getPermissionId).toList();
                     List<PermissionEntity> permissionEntities = permissionService.getBaseMapper().selectByIds(ids);
