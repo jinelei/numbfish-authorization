@@ -1,7 +1,6 @@
 package com.jinelei.numbfish.authorization.convertor;
 
 import com.jinelei.numbfish.authorization.dto.PermissionResponse;
-import com.jinelei.numbfish.authorization.entity.PermissionEntity;
 import com.jinelei.numbfish.authorization.entity.RoleEntity;
 import com.jinelei.numbfish.authorization.dto.RoleCreateRequest;
 import com.jinelei.numbfish.authorization.dto.RoleResponse;
@@ -64,8 +63,6 @@ public interface RoleConvertor {
             @Mapping(target = "createdUserId", ignore = true),
             @Mapping(target = "updatedTime", ignore = true),
             @Mapping(target = "updatedUserId", ignore = true),
-            @Mapping(target = "blackPermissions", ignore = true),
-            @Mapping(target = "whitePermissions", ignore = true),
             @Mapping(target = "level", ignore = true),
             @Mapping(target = "ancestor", ignore = true),
     })
@@ -83,8 +80,6 @@ public interface RoleConvertor {
             @Mapping(target = "createdUserId", ignore = true),
             @Mapping(target = "updatedTime", ignore = true),
             @Mapping(target = "updatedUserId", ignore = true),
-            @Mapping(target = "blackPermissions", ignore = true),
-            @Mapping(target = "whitePermissions", ignore = true),
             @Mapping(target = "level", ignore = true),
             @Mapping(target = "ancestor", ignore = true),
     })
@@ -105,16 +100,11 @@ public interface RoleConvertor {
      * @return 响应对象
      */
     @Mappings({
-            @Mapping(target = "deleted", ignore = true),
-            @Mapping(target = "deletedTime", ignore = true),
-            @Mapping(target = "deletedUserId", ignore = true),
-            @Mapping(target = "blackPermissionIds", ignore = true),
-            @Mapping(target = "whitePermissionIds", ignore = true),
     })
     RoleResponse entityToResponse(RoleEntity source);
 
     default RoleResponse coverPermissionResponse(RoleResponse response, List<PermissionResponse> permissions) {
-        response.setWhitePermissions(permissions);
+        response.setPermissions(permissions);
         return response;
     }
 

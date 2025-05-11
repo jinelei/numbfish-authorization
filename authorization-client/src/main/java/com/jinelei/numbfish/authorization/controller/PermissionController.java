@@ -11,6 +11,7 @@ import com.jinelei.numbfish.authorization.mapper.PermissionMapper;
 import com.jinelei.numbfish.common.entity.BaseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -100,6 +101,7 @@ public class PermissionController implements PermissionApi {
         IPage<PermissionEntity> page = permissionService.page(PageHelper.toPage(new PageDTO<>(), request),
                 Optional.ofNullable(request.getParams()).orElse(new PermissionQueryRequest()));
         List<PermissionResponse> response = Optional.ofNullable(page.getRecords())
+                .filter(list -> !CollectionUtils.isEmpty(list))
                 .map(l -> l.stream().map(BaseEntity::getId).toList())
                 .map(ids -> ((PermissionMapper) permissionService.getBaseMapper()).selectTree(ids, TreeBuildMode.CHILD_AND_CURRENT))
                 .map(l -> permissionConvertor.tree(l))

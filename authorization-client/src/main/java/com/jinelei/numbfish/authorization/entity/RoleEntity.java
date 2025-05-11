@@ -6,6 +6,7 @@ import com.jinelei.numbfish.authorization.enumeration.RoleType;
 import com.jinelei.numbfish.common.entity.BaseEntity;
 
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 @TableName("role")
@@ -22,9 +23,9 @@ public class RoleEntity extends BaseEntity<Long> {
     @TableField(exist = false)
     private List<RoleEntity> children;
     @TableField(exist = false)
-    private List<PermissionEntity> whitePermissions;
+    private List<Long> permissionIds;
     @TableField(exist = false)
-    private List<PermissionEntity> blackPermissions;
+    private List<PermissionEntity> permissions;
 
     public String getName() {
         return name;
@@ -90,101 +91,54 @@ public class RoleEntity extends BaseEntity<Long> {
         this.children = children;
     }
 
-    public List<PermissionEntity> getWhitePermissions() {
-        return whitePermissions;
+    public List<Long> getPermissionIds() {
+        return permissionIds;
     }
 
-    public void setWhitePermissions(List<PermissionEntity> whitePermissions) {
-        this.whitePermissions = whitePermissions;
+    public void setPermissionIds(List<Long> permissionIds) {
+        this.permissionIds = permissionIds;
     }
 
-    public List<PermissionEntity> getBlackPermissions() {
-        return blackPermissions;
+    public List<PermissionEntity> getPermissions() {
+        return permissions;
     }
 
-    public void setBlackPermissions(List<PermissionEntity> blackPermissions) {
-        this.blackPermissions = blackPermissions;
+    public void setPermissions(List<PermissionEntity> permissions) {
+        this.permissions = permissions;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        RoleEntity other = (RoleEntity) obj;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (code == null) {
-            if (other.code != null)
-                return false;
-        } else if (!code.equals(other.code))
-            return false;
-        if (type != other.type)
-            return false;
-        if (sortValue == null) {
-            if (other.sortValue != null)
-                return false;
-        } else if (!sortValue.equals(other.sortValue))
-            return false;
-        if (parentId == null) {
-            if (other.parentId != null)
-                return false;
-        } else if (!parentId.equals(other.parentId))
-            return false;
-        if (level == null) {
-            if (other.level != null)
-                return false;
-        } else if (!level.equals(other.level))
-            return false;
-        if (ancestor == null) {
-            if (other.ancestor != null)
-                return false;
-        } else if (!ancestor.equals(other.ancestor))
-            return false;
-        if (children == null) {
-            if (other.children != null)
-                return false;
-        } else if (!children.equals(other.children))
-            return false;
-        if (whitePermissions == null) {
-            if (other.whitePermissions != null)
-                return false;
-        } else if (!whitePermissions.equals(other.whitePermissions))
-            return false;
-        if (blackPermissions == null) {
-            return other.blackPermissions == null;
-        } else {
-            return blackPermissions.equals(other.blackPermissions);
-        }
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        RoleEntity that = (RoleEntity) o;
+        return Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(level, that.level) && Objects.equals(ancestor, that.ancestor) && Objects.equals(children, that.children) && Objects.equals(permissionIds, that.permissionIds) && Objects.equals(permissions, that.permissions);
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((code == null) ? 0 : code.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + ((sortValue == null) ? 0 : sortValue.hashCode());
-        result = prime * result + ((parentId == null) ? 0 : parentId.hashCode());
-        result = prime * result + ((level == null) ? 0 : level.hashCode());
-        result = prime * result + ((ancestor == null) ? 0 : ancestor.hashCode());
-        result = prime * result + ((children == null) ? 0 : children.hashCode());
-        result = prime * result + ((whitePermissions == null) ? 0 : whitePermissions.hashCode());
-        result = prime * result + ((blackPermissions == null) ? 0 : blackPermissions.hashCode());
-        return result;
+        return Objects.hash(super.hashCode(), name, code, type, sortValue, parentId, level, ancestor, children, permissionIds, permissions);
     }
 
     @Override
     public String toString() {
-        return "RoleEntity [name=" + name + ", code=" + code + ", type=" + type + ", sortValue=" + sortValue
-                + ", parentId=" + parentId + ", level=" + level + ", ancestor=" + ancestor + ", children=" + children
-                + ", whitePermissions=" + whitePermissions + ", blackPermissions=" + blackPermissions + "]";
+        return "RoleEntity{" +
+                "name='" + name + '\'' +
+                ", code='" + code + '\'' +
+                ", type=" + type +
+                ", sortValue=" + sortValue +
+                ", parentId=" + parentId +
+                ", level=" + level +
+                ", ancestor='" + ancestor + '\'' +
+                ", children=" + children +
+                ", permissionIds=" + permissionIds +
+                ", permissions=" + permissions +
+                ", id=" + id +
+                ", remark='" + remark + '\'' +
+                ", createdUserId=" + createdUserId +
+                ", createdTime=" + createdTime +
+                ", updatedUserId=" + updatedUserId +
+                ", updatedTime=" + updatedTime +
+                '}';
     }
 }

@@ -23,7 +23,7 @@
     <resultMap id="RoleWithPermissionsResultMap" type="com.jinelei.numbfish.authorization.entity.RoleEntity">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
-        <collection property="whitePermissions" ofType="com.jinelei.numbfish.authorization.entity.PermissionEntity">
+        <collection property="permissions" ofType="com.jinelei.numbfish.authorization.entity.PermissionEntity">
             <id property="id" column="p_id"/>
             <result property="name" column="p_name"/>
         </collection>

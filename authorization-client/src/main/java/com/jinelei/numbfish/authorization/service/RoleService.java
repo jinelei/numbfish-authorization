@@ -18,13 +18,9 @@ public interface RoleService extends IService<RoleEntity> {
 
     RoleEntity get(RoleQueryRequest request);
 
-    List<RoleEntity> tree(RoleQueryRequest request);
-
     List<RoleEntity> list(RoleQueryRequest request);
 
     IPage<RoleEntity> page(IPage<RoleEntity> page, RoleQueryRequest request);
-
-    RoleResponse convert(RoleEntity entity);
 
     List<RoleResponse> convertTree(List<RoleEntity> entity);
 

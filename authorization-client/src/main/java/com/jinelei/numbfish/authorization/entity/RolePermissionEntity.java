@@ -1,7 +1,6 @@
 package com.jinelei.numbfish.authorization.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jinelei.numbfish.authorization.enumeration.RolePermissionType;
 import com.jinelei.numbfish.common.entity.BaseEntity;
 
 import java.util.Objects;
@@ -12,7 +11,6 @@ import java.util.Optional;
 public class RolePermissionEntity extends BaseEntity<Long> {
     protected Long roleId;
     protected Long permissionId;
-    protected RolePermissionType type;
 
     public boolean isSimilar(RolePermissionEntity other) {
         return Optional.ofNullable(roleId).equals(Optional.ofNullable(other).map(RolePermissionEntity::getRoleId))
@@ -20,7 +18,6 @@ public class RolePermissionEntity extends BaseEntity<Long> {
     }
 
     public RolePermissionEntity cover(RolePermissionEntity other) {
-        Optional.ofNullable(other).map(RolePermissionEntity::getType).ifPresent(this::setType);
         Optional.ofNullable(other).map(BaseEntity::getRemark).ifPresent(this::setRemark);
         return this;
     }
@@ -41,34 +38,30 @@ public class RolePermissionEntity extends BaseEntity<Long> {
         this.permissionId = permissionId;
     }
 
-    public RolePermissionType getType() {
-        return type;
-    }
-
-    public void setType(RolePermissionType type) {
-        this.type = type;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass())
-            return false;
-        if (!super.equals(o))
-            return false;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         RolePermissionEntity that = (RolePermissionEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(roleId, that.roleId)
-                && Objects.equals(permissionId, that.permissionId) && type == that.type;
+        return Objects.equals(roleId, that.roleId) && Objects.equals(permissionId, that.permissionId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, roleId, permissionId, type);
+        return Objects.hash(super.hashCode(), roleId, permissionId);
     }
 
     @Override
     public String toString() {
-        return "RolePermissionEntity [roleId=" + roleId + ", permissionId=" + permissionId + ", type=" + type + ", id="
-                + id + ", remark=" + remark + ", createdUserId=" + createdUserId + ", createdTime=" + createdTime
-                + ", updatedUserId=" + updatedUserId + ", updatedTime=" + updatedTime + "]";
+        return "RolePermissionEntity{" +
+                "roleId=" + roleId +
+                ", permissionId=" + permissionId +
+                ", id=" + id +
+                ", remark='" + remark + '\'' +
+                ", createdUserId=" + createdUserId +
+                ", createdTime=" + createdTime +
+                ", updatedUserId=" + updatedUserId +
+                ", updatedTime=" + updatedTime +
+                '}';
     }
 }

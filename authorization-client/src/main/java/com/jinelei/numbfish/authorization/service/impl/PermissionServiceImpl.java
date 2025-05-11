@@ -41,8 +41,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     private final Function<PermissionQueryRequest, LambdaQueryWrapper<PermissionEntity>> buildQueryWrapper = (PermissionQueryRequest request) -> {
         LambdaQueryWrapper<PermissionEntity> wrapper = Wrappers.lambdaQuery(PermissionEntity.class);
         wrapper.eq(Objects.nonNull(request.getId()), PermissionEntity::getId, request.getId());
-        wrapper.eq(Objects.nonNull(request.getName()), PermissionEntity::getName, request.getName());
-        wrapper.eq(Objects.nonNull(request.getCode()), PermissionEntity::getCode, request.getCode());
+        wrapper.like(Objects.nonNull(request.getName()), PermissionEntity::getName, request.getName());
+        wrapper.like(Objects.nonNull(request.getCode()), PermissionEntity::getCode, request.getCode());
         wrapper.eq(Objects.nonNull(request.getType()), PermissionEntity::getType, request.getType());
         wrapper.eq(Objects.nonNull(request.getParentId()), PermissionEntity::getParentId, request.getParentId());
         wrapper.eq(Objects.nonNull(request.getSortValue()), PermissionEntity::getSortValue, request.getSortValue());

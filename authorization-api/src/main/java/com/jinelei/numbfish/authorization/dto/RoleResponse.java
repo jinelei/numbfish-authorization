@@ -41,14 +41,11 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
     @Schema(description = "删除时间")
     private LocalDateTime deletedTime;
     private List<RoleResponse> children;
-    @Schema(description = "白名单权限列表")
-    protected List<Long> whitePermissionIds;
-    @Schema(description = "白名单权限实体列表")
-    protected List<PermissionResponse> whitePermissions;
-    @Schema(description = "黑名单权限列表")
-    protected List<Long> blackPermissionIds;
-    @Schema(description = "黑名单权限列表")
-    protected List<PermissionResponse> blackPermissions;
+    @Schema(description = "权限列表")
+    protected List<Long> permissionIds;
+    @Schema(description = "权限实体列表")
+    protected List<PermissionResponse> permissions;
+
 
     public Long getId() {
         return id;
@@ -170,48 +167,32 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
         this.children = children;
     }
 
-    public List<Long> getWhitePermissionIds() {
-        return whitePermissionIds;
+    public List<Long> getPermissionIds() {
+        return permissionIds;
     }
 
-    public void setWhitePermissionIds(List<Long> whitePermissionIds) {
-        this.whitePermissionIds = whitePermissionIds;
+    public void setPermissionIds(List<Long> permissionIds) {
+        this.permissionIds = permissionIds;
     }
 
-    public List<PermissionResponse> getWhitePermissions() {
-        return whitePermissions;
+    public List<PermissionResponse> getPermissions() {
+        return permissions;
     }
 
-    public void setWhitePermissions(List<PermissionResponse> whitePermissions) {
-        this.whitePermissions = whitePermissions;
-    }
-
-    public List<Long> getBlackPermissionIds() {
-        return blackPermissionIds;
-    }
-
-    public void setBlackPermissionIds(List<Long> blackPermissionIds) {
-        this.blackPermissionIds = blackPermissionIds;
-    }
-
-    public List<PermissionResponse> getBlackPermissions() {
-        return blackPermissions;
-    }
-
-    public void setBlackPermissions(List<PermissionResponse> blackPermissions) {
-        this.blackPermissions = blackPermissions;
+    public void setPermissions(List<PermissionResponse> permissions) {
+        this.permissions = permissions;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         RoleResponse that = (RoleResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(deleted, that.deleted) && Objects.equals(createdUserId, that.createdUserId) && Objects.equals(createdTime, that.createdTime) && Objects.equals(updatedUserId, that.updatedUserId) && Objects.equals(updatedTime, that.updatedTime) && Objects.equals(deletedUserId, that.deletedUserId) && Objects.equals(deletedTime, that.deletedTime) && Objects.equals(children, that.children) && Objects.equals(whitePermissionIds, that.whitePermissionIds) && Objects.equals(whitePermissions, that.whitePermissions) && Objects.equals(blackPermissionIds, that.blackPermissionIds) && Objects.equals(blackPermissions, that.blackPermissions);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(deleted, that.deleted) && Objects.equals(createdUserId, that.createdUserId) && Objects.equals(createdTime, that.createdTime) && Objects.equals(updatedUserId, that.updatedUserId) && Objects.equals(updatedTime, that.updatedTime) && Objects.equals(deletedUserId, that.deletedUserId) && Objects.equals(deletedTime, that.deletedTime) && Objects.equals(children, that.children) && Objects.equals(permissionIds, that.permissionIds) && Objects.equals(permissions, that.permissions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, code, type, sortValue, parentId, remark, deleted, createdUserId, createdTime, updatedUserId, updatedTime, deletedUserId, deletedTime, children, whitePermissionIds, whitePermissions, blackPermissionIds, blackPermissions);
+        return Objects.hash(id, name, code, type, sortValue, parentId, remark, deleted, createdUserId, createdTime, updatedUserId, updatedTime, deletedUserId, deletedTime, children, permissionIds, permissions);
     }
 
     @Override
@@ -225,17 +206,15 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
                 ", parentId=" + parentId +
                 ", remark='" + remark + '\'' +
                 ", deleted=" + deleted +
-                ", createdUserId='" + createdUserId + '\'' +
+                ", createdUserId=" + createdUserId +
                 ", createdTime=" + createdTime +
-                ", updatedUserId='" + updatedUserId + '\'' +
+                ", updatedUserId=" + updatedUserId +
                 ", updatedTime=" + updatedTime +
                 ", deletedUserId='" + deletedUserId + '\'' +
                 ", deletedTime=" + deletedTime +
                 ", children=" + children +
-                ", whitePermissionIds=" + whitePermissionIds +
-                ", whitePermissions=" + whitePermissions +
-                ", blackPermissionIds=" + blackPermissionIds +
-                ", blackPermissions=" + blackPermissions +
+                ", permissionIds=" + permissionIds +
+                ", permissions=" + permissions +
                 '}';
     }
 }

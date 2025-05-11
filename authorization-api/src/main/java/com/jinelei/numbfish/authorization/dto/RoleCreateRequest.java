@@ -28,10 +28,8 @@ public class RoleCreateRequest implements Serializable {
     private Long parentId;
     @Schema(description = "角色备注")
     protected String remark;
-    @Schema(description = "白名单权限列表")
-    protected List<Long> whitePermissionIds;
-    @Schema(description = "黑名单权限列表")
-    protected List<Long> blackPermissionIds;
+    @Schema(description = "权限列表")
+    protected List<Long> permissionIds;
 
     public String getName() {
         return name;
@@ -81,32 +79,24 @@ public class RoleCreateRequest implements Serializable {
         this.remark = remark;
     }
 
-    public List<Long> getWhitePermissionIds() {
-        return whitePermissionIds;
+    public List<Long> getPermissionIds() {
+        return permissionIds;
     }
 
-    public void setWhitePermissionIds(List<Long> whitePermissionIds) {
-        this.whitePermissionIds = whitePermissionIds;
-    }
-
-    public List<Long> getBlackPermissionIds() {
-        return blackPermissionIds;
-    }
-
-    public void setBlackPermissionIds(List<Long> blackPermissionIds) {
-        this.blackPermissionIds = blackPermissionIds;
+    public void setPermissionIds(List<Long> permissionIds) {
+        this.permissionIds = permissionIds;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         RoleCreateRequest that = (RoleCreateRequest) o;
-        return Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(whitePermissionIds, that.whitePermissionIds) && Objects.equals(blackPermissionIds, that.blackPermissionIds);
+        return Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(permissionIds, that.permissionIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, code, type, sortValue, parentId, remark, whitePermissionIds, blackPermissionIds);
+        return Objects.hash(name, code, type, sortValue, parentId, remark, permissionIds);
     }
 
     @Override
@@ -118,8 +108,7 @@ public class RoleCreateRequest implements Serializable {
                 ", sortValue=" + sortValue +
                 ", parentId=" + parentId +
                 ", remark='" + remark + '\'' +
-                ", whitePermissionIds=" + whitePermissionIds +
-                ", blackPermissionIds=" + blackPermissionIds +
+                ", permissionIds=" + permissionIds +
                 '}';
     }
 }

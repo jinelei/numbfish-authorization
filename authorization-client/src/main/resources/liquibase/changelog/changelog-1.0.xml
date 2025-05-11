@@ -114,7 +114,6 @@
             <column name="role_id" type="BIGINT" remarks="角色 ID，关联 role 表的 id" />
             <column name="permission_id" type="BIGINT"
                 remarks="权限 ID，关联 permission 表的 id" />
-            <column name="type" type="INT" remarks="角色权限关联类型" />
             <column name="remark" type="TEXT" remarks="角色备注信息" />
             <column name="created_user_id" type="VARCHAR(255)" remarks="创建人用户 ID" />
             <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"
