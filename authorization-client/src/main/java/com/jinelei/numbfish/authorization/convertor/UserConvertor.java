@@ -30,6 +30,7 @@ public interface UserConvertor {
             @Mapping(target = "updatedUserId", ignore = true),
             @Mapping(target = "permissionIds", ignore = true),
             @Mapping(target = "permissions", ignore = true),
+            @Mapping(target = "roles", ignore = true),
     })
     UserEntity requestToEntity(UserCreateRequest source);
 
@@ -46,6 +47,7 @@ public interface UserConvertor {
             @Mapping(target = "updatedUserId", ignore = true),
             @Mapping(target = "permissionIds", ignore = true),
             @Mapping(target = "permissions", ignore = true),
+            @Mapping(target = "roles", ignore = true),
     })
     UserEntity requestToEntity(UserUpdateRequest source);
 
@@ -91,7 +93,7 @@ public interface UserConvertor {
      */
     @Mappings(value = {
             @Mapping(target = "id", ignore = true),
-            @Mapping(target = "password", ignore = true),
+            @Mapping(target = "nickname", ignore = true),
             @Mapping(target = "roleIds", ignore = true),
             @Mapping(target = "roles", ignore = true),
             @Mapping(target = "permissionIds", ignore = true),

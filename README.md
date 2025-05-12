@@ -12,8 +12,7 @@
 
 3. 切换到authorization-client下，执行docker build构建镜像
 
-``cd authorization-client``  
-``docker build --rm -t numbfish-authorization .``
+``docker build --rm -t numbfish-authorization ./authorization-client``
 
 ### Docker 暴露环境变量说明
 

@@ -54,11 +54,13 @@
             <groupId>com.jinelei.numbfish</groupId>
             <artifactId>common</artifactId>
             <version>${numbfish-common.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.jinelei.numbfish</groupId>
             <artifactId>authorization-api</artifactId>
             <version>${numbfish-authorization-api.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -121,10 +123,6 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
@@ -152,10 +150,6 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
     </dependencies>

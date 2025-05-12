@@ -26,8 +26,6 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
     private Long parentId;
     @Schema(description = "角色备注信息")
     private String remark;
-    @Schema(description = "是否启用，0 表示启用，1 表示禁用")
-    private Boolean deleted;
     @Schema(description = "创建人用户 ID")
     private Long createdUserId;
     @Schema(description = "创建时间")
@@ -36,10 +34,6 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
     private Long updatedUserId;
     @Schema(description = "更新时间")
     private LocalDateTime updatedTime;
-    @Schema(description = "删除人用户 ID")
-    private String deletedUserId;
-    @Schema(description = "删除时间")
-    private LocalDateTime deletedTime;
     private List<RoleResponse> children;
     @Schema(description = "权限列表")
     protected List<Long> permissionIds;
@@ -103,14 +97,6 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
         this.remark = remark;
     }
 
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
     public Long getCreatedUserId() {
         return createdUserId;
     }
@@ -143,22 +129,6 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
         this.updatedTime = updatedTime;
     }
 
-    public String getDeletedUserId() {
-        return deletedUserId;
-    }
-
-    public void setDeletedUserId(String deletedUserId) {
-        this.deletedUserId = deletedUserId;
-    }
-
-    public LocalDateTime getDeletedTime() {
-        return deletedTime;
-    }
-
-    public void setDeletedTime(LocalDateTime deletedTime) {
-        this.deletedTime = deletedTime;
-    }
-
     public List<RoleResponse> getChildren() {
         return children;
     }
@@ -184,37 +154,110 @@ public class RoleResponse implements TreeResponse<RoleResponse>, Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        RoleResponse that = (RoleResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && type == that.type && Objects.equals(sortValue, that.sortValue) && Objects.equals(parentId, that.parentId) && Objects.equals(remark, that.remark) && Objects.equals(deleted, that.deleted) && Objects.equals(createdUserId, that.createdUserId) && Objects.equals(createdTime, that.createdTime) && Objects.equals(updatedUserId, that.updatedUserId) && Objects.equals(updatedTime, that.updatedTime) && Objects.equals(deletedUserId, that.deletedUserId) && Objects.equals(deletedTime, that.deletedTime) && Objects.equals(children, that.children) && Objects.equals(permissionIds, that.permissionIds) && Objects.equals(permissions, that.permissions);
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        RoleResponse other = (RoleResponse) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (code == null) {
+            if (other.code != null)
+                return false;
+        } else if (!code.equals(other.code))
+            return false;
+        if (type != other.type)
+            return false;
+        if (sortValue == null) {
+            if (other.sortValue != null)
+                return false;
+        } else if (!sortValue.equals(other.sortValue))
+            return false;
+        if (parentId == null) {
+            if (other.parentId != null)
+                return false;
+        } else if (!parentId.equals(other.parentId))
+            return false;
+        if (remark == null) {
+            if (other.remark != null)
+                return false;
+        } else if (!remark.equals(other.remark))
+            return false;
+        if (createdUserId == null) {
+            if (other.createdUserId != null)
+                return false;
+        } else if (!createdUserId.equals(other.createdUserId))
+            return false;
+        if (createdTime == null) {
+            if (other.createdTime != null)
+                return false;
+        } else if (!createdTime.equals(other.createdTime))
+            return false;
+        if (updatedUserId == null) {
+            if (other.updatedUserId != null)
+                return false;
+        } else if (!updatedUserId.equals(other.updatedUserId))
+            return false;
+        if (updatedTime == null) {
+            if (other.updatedTime != null)
+                return false;
+        } else if (!updatedTime.equals(other.updatedTime))
+            return false;
+        if (children == null) {
+            if (other.children != null)
+                return false;
+        } else if (!children.equals(other.children))
+            return false;
+        if (permissionIds == null) {
+            if (other.permissionIds != null)
+                return false;
+        } else if (!permissionIds.equals(other.permissionIds))
+            return false;
+        if (permissions == null) {
+            if (other.permissions != null)
+                return false;
+        } else if (!permissions.equals(other.permissions))
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, code, type, sortValue, parentId, remark, deleted, createdUserId, createdTime, updatedUserId, updatedTime, deletedUserId, deletedTime, children, permissionIds, permissions);
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((code == null) ? 0 : code.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((sortValue == null) ? 0 : sortValue.hashCode());
+        result = prime * result + ((parentId == null) ? 0 : parentId.hashCode());
+        result = prime * result + ((remark == null) ? 0 : remark.hashCode());
+        result = prime * result + ((createdUserId == null) ? 0 : createdUserId.hashCode());
+        result = prime * result + ((createdTime == null) ? 0 : createdTime.hashCode());
+        result = prime * result + ((updatedUserId == null) ? 0 : updatedUserId.hashCode());
+        result = prime * result + ((updatedTime == null) ? 0 : updatedTime.hashCode());
+        result = prime * result + ((children == null) ? 0 : children.hashCode());
+        result = prime * result + ((permissionIds == null) ? 0 : permissionIds.hashCode());
+        result = prime * result + ((permissions == null) ? 0 : permissions.hashCode());
+        return result;
     }
 
     @Override
     public String toString() {
-        return "RoleResponse{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", code='" + code + '\'' +
-                ", type=" + type +
-                ", sortValue=" + sortValue +
-                ", parentId=" + parentId +
-                ", remark='" + remark + '\'' +
-                ", deleted=" + deleted +
-                ", createdUserId=" + createdUserId +
-                ", createdTime=" + createdTime +
-                ", updatedUserId=" + updatedUserId +
-                ", updatedTime=" + updatedTime +
-                ", deletedUserId='" + deletedUserId + '\'' +
-                ", deletedTime=" + deletedTime +
-                ", children=" + children +
-                ", permissionIds=" + permissionIds +
-                ", permissions=" + permissions +
-                '}';
+        return "RoleResponse [id=" + id + ", name=" + name + ", code=" + code + ", type=" + type + ", sortValue="
+                + sortValue + ", parentId=" + parentId + ", remark=" + remark + ", createdUserId=" + createdUserId
+                + ", createdTime=" + createdTime + ", updatedUserId=" + updatedUserId + ", updatedTime=" + updatedTime
+                + ", children=" + children + ", permissionIds=" + permissionIds + ", permissions=" + permissions + "]";
     }
 }
