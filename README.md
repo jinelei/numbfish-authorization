@@ -4,11 +4,11 @@
 
 1. install整个numbfish-authorization项目
 
-``./mvnw install -f ./pom.xml``
+``mvn install -f ./pom.xml``
 
 2. package整个numbfish-authorization项目
 
-``./mvnw package -f ./pom.xml``
+``mvn package -f ./pom.xml``
 
 3. 切换到authorization-client下，执行docker build构建镜像
 
